@@ -31,10 +31,31 @@ func maxProfit2(prices []int) int {
 	return maxProfit
 }
 
-// O(n^2) time and O(1) space
+// Ultra-efficient O(n) time and O(1) space - optimal single-pass solution
 func maxProfit(prices []int) int {
+	if len(prices) == 0 {
+		return 0
+	}
+
 	maxProfit := 0
-	// O(n²) approach with modern range syntax (still not recommended for production)
+	minPrice := prices[0]
+	
+	// Modern range-over-int with optimal single-pass algorithm
+	for i := range len(prices) {
+		if prices[i] < minPrice {
+			minPrice = prices[i]
+		} else if profit := prices[i] - minPrice; profit > maxProfit {
+			maxProfit = profit
+		}
+	}
+
+	return maxProfit
+}
+
+// Inefficient O(n²) brute force - DO NOT USE (kept for comparison)
+func maxProfitInefficient(prices []int) int {
+	maxProfit := 0
+	// O(n²) approach - terrible for large inputs
 	for i := range len(prices) {
 		buyPrice := prices[i]
 		maxSellPrice := 0

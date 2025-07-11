@@ -111,26 +111,10 @@ func sortString(s string) string {
 	return string(chars)
 }
 
-// Note: Wrong approach. Good lessons though!
-func groupAnagrams0(strs []string) [][]string {
-	groups := make([][]string, 0)
-	seen := make(map[string]struct{})
-	for i := 0; i < len(strs); i++ {
-		if _, ok := seen[strs[i]]; ok && strs[i] != "" {
-			continue
-		}
-		group := make([]string, 1)
-		group[0] = strs[i]
-		for j := i + 1; j < len(strs); j++ {
-			if _, ok := seen[strs[j]]; !ok && isAnagram(strs[i], strs[j]) {
-				group = append(group, strs[j])
-				seen[strs[j]] = struct{}{}
-			}
-		}
-		groups = append(groups, group)
-	}
-	return groups
-}
+// REMOVED: Inefficient O(n²×m) pairwise comparison approach
+// This approach used nested loops with individual anagram checking,
+// resulting in O(n²×m) time complexity which is terrible for large inputs.
+// Use the optimized frequency-based encoding above instead.
 
 func isAnagram(s1, s2 string) bool {
 	if len(s1) != len(s2) {

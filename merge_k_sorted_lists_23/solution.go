@@ -6,14 +6,6 @@ type ListNode struct {
 	Next *ListNode
 }
 
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- */
-
 // My first solution to divide and conquer.
 func mergeKListsDivideAndConquer(lists []*ListNode) *ListNode {
 	if len(lists) == 0 {
@@ -62,14 +54,17 @@ func mergeKListsDivideAndConquerClever(lists []*ListNode) *ListNode {
 	return lists[0]
 }
 
+// Ultra-efficient O(kN log k) divide-and-conquer solution
 func mergeKLists(lists []*ListNode) *ListNode {
-	var merged *ListNode
-
-	for i := 0; i < len(lists); i++ {
-		merged = mergeTwoLists(merged, lists[i])
+	if len(lists) == 0 {
+		return nil
+	}
+	if len(lists) == 1 {
+		return lists[0]
 	}
 
-	return merged
+	// Use optimal divide-and-conquer approach
+	return mergeKListsDivideAndConquerClever(lists)
 }
 
 func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {

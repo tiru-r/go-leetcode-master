@@ -18,17 +18,6 @@ func maxProduct(nums []int) int {
 	return result
 }
 
-// First, O(n^2) solution.
-func maxProduct0(nums []int) int {
-	result := nums[0]
-	for i, num := range nums {
-		product := num
-		result = max(result, product)
-		for _, nextNum := range nums[i+1:] {
-			product *= nextNum
-			result = max(result, product)
-		}
-	}
-
-	return result
-}
+// REMOVED: O(n²) brute force solution
+// This approach checked all possible subarrays with nested loops,
+// resulting in O(n²) time complexity. Use the O(n) Kadane variant above instead.

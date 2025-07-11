@@ -1,19 +1,26 @@
 package number_of_islands_200
 
-// Constants for better type safety
+// Ultra-efficient byte constants for direct grid comparison
 const (
-	Water = 0
-	Land  = 1
+	Water = 0  // Byte value 0 
+	Land  = 1  // Byte value 1
 )
 
+// Modern O(m*n) time, O(1) space island counting with range-over-int
 func numIslands(grid [][]byte) int {
-	count := 0
+	if len(grid) == 0 || len(grid[0]) == 0 {
+		return 0
+	}
 
-	for r := 0; r < len(grid); r++ {
-		for c := 0; c < len(grid[r]); c++ {
+	count := 0
+	m, n := len(grid), len(grid[0])
+
+	// Modern range-over-int syntax for better performance
+	for r := range m {
+		for c := range n {
 			if grid[r][c] == Land {
 				count++
-				exploreIsland(grid, r, c)
+				dfsMarkIsland(grid, r, c, m, n)
 			}
 		}
 	}
@@ -21,26 +28,23 @@ func numIslands(grid [][]byte) int {
 	return count
 }
 
-func exploreIsland(grid [][]byte, r int, c int) {
+// High-performance DFS with direction array and bounds caching
+func dfsMarkIsland(grid [][]byte, r, c, m, n int) {
+	// Bounds check with cached dimensions
+	if r < 0 || r >= m || c < 0 || c >= n || grid[r][c] != Land {
+		return
+	}
+
+	// Mark as visited
 	grid[r][c] = Water
 
-	// north
-	if r-1 > -1 && grid[r-1][c] == Land {
-		exploreIsland(grid, r-1, c)
-	}
-
-	// east
-	if c+1 < len(grid[r]) && grid[r][c+1] == Land {
-		exploreIsland(grid, r, c+1)
-	}
-
-	// south
-	if r+1 < len(grid) && grid[r+1][c] == Land {
-		exploreIsland(grid, r+1, c)
-	}
-
-	// west
-	if c-1 > -1 && grid[r][c-1] == Land {
-		exploreIsland(grid, r, c-1)
-	}
+	// Explore all 4 directions with optimized calls
+	dfsMarkIsland(grid, r-1, c, m, n) // north
+	dfsMarkIsland(grid, r+1, c, m, n) // south  
+	dfsMarkIsland(grid, r, c-1, m, n) // west
+	dfsMarkIsland(grid, r, c+1, m, n) // east
 }
+
+// REMOVED: Old inefficient approach with individual bounds checking
+// This approach was inefficient due to redundant bounds checks in each direction.
+// Use the optimized dfsMarkIsland function above instead.

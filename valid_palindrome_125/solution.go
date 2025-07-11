@@ -1,35 +1,41 @@
 package valid_palindrome_125
 
-import "strings"
-
+// Ultra-efficient O(1) space palindrome check with on-the-fly conversion
 func isPalindrome(s string) bool {
-	front := 0
-	back := len(s) - 1
-	s = strings.ToLower(s)
+	left, right := 0, len(s)-1
 
-	for front <= back {
-		// Use direct byte operations for better performance
-		for front < len(s) && !isAlphaNumeric(s[front]) {
-			front++
+	for left < right {
+		// Skip non-alphanumeric from left
+		for left < right && !isAlphaNumeric(s[left]) {
+			left++
 		}
 
-		for back > -1 && !isAlphaNumeric(s[back]) {
-			back--
+		// Skip non-alphanumeric from right
+		for left < right && !isAlphaNumeric(s[right]) {
+			right--
 		}
 
-		// "a:a" case needs initial condition here
-		if front <= back && s[front] != s[back] {
+		// Compare characters with on-the-fly lowercase conversion
+		if toLowerCase(s[left]) != toLowerCase(s[right]) {
 			return false
 		}
 
-		front++
-		back--
+		left++
+		right--
 	}
 
 	return true
 }
 
-// Optimized function using direct byte comparison instead of regex
+// Optimized alphanumeric check using direct byte comparison
 func isAlphaNumeric(b byte) bool {
-	return (b >= 'a' && b <= 'z') || (b >= '0' && b <= '9')
+	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || (b >= '0' && b <= '9')
+}
+
+// Ultra-fast lowercase conversion without string allocation
+func toLowerCase(b byte) byte {
+	if b >= 'A' && b <= 'Z' {
+		return b + ('a' - 'A')
+	}
+	return b
 }
