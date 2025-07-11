@@ -1,9 +1,9 @@
 package number_of_islands_200
 
-// Ultra-efficient byte constants for direct grid comparison
+// Byte constants for direct grid comparison
 const (
-	Water = 0  // Byte value 0 
-	Land  = 1  // Byte value 1
+	Water = 0 // Byte value 0
+	Land  = 1 // Byte value 1
 )
 
 // Modern O(m*n) time, O(1) space island counting with range-over-int
@@ -40,11 +40,7 @@ func dfsMarkIsland(grid [][]byte, r, c, m, n int) {
 
 	// Explore all 4 directions with optimized calls
 	dfsMarkIsland(grid, r-1, c, m, n) // north
-	dfsMarkIsland(grid, r+1, c, m, n) // south  
+	dfsMarkIsland(grid, r+1, c, m, n) // south
 	dfsMarkIsland(grid, r, c-1, m, n) // west
 	dfsMarkIsland(grid, r, c+1, m, n) // east
 }
-
-// REMOVED: Old inefficient approach with individual bounds checking
-// This approach was inefficient due to redundant bounds checks in each direction.
-// Use the optimized dfsMarkIsland function above instead.
