@@ -38,7 +38,7 @@ func watchedVideosByFriends(watchedVideos [][]string, friends [][]int, id int, l
 		title string
 		freq  int
 	}
-	
+
 	videos := make([]videoFreq, 0, len(freq))
 	for title, frequency := range freq {
 		videos = append(videos, videoFreq{title, frequency})

@@ -17,7 +17,7 @@ func compareLogs(a, b string) int {
 	// Use strings.Cut for cleaner parsing instead of Split + TrimPrefix
 	aId, aContent, _ := strings.Cut(a, " ")
 	bId, bContent, _ := strings.Cut(b, " ")
-	
+
 	// Use direct byte comparison for better performance
 	aIsDigit := aContent[0] >= '0' && aContent[0] <= '9'
 	bIsDigit := bContent[0] >= '0' && bContent[0] <= '9'
@@ -29,12 +29,12 @@ func compareLogs(a, b string) int {
 		}
 		return -1 // a is letter, b is digit, so a comes first
 	}
-	
+
 	// Both are digit logs - preserve original order
 	if aIsDigit && bIsDigit {
 		return 0
 	}
-	
+
 	// Both are letter logs - compare by content, then by identifier using cmp.Or
 	return cmp.Or(
 		strings.Compare(aContent, bContent),

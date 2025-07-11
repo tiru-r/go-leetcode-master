@@ -1,6 +1,5 @@
 package find_the_highest_altitude_1732
 
-
 // -4 -3 -2 -1   4  3  2
 //
 //	^

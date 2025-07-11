@@ -22,23 +22,19 @@ func singleNumber(nums []int) int {
 }
 
 func singleNumber2(nums []int) int {
-	seen := make(map[int]bool)
-	for i := 0; i < len(nums); i++ {
-		_, ok := seen[nums[i]]
-		if !ok {
-			seen[nums[i]] = false
+	seen := make(map[int]struct{})
+	for _, num := range nums {
+		if _, exists := seen[num]; exists {
+			delete(seen, num)
 		} else {
-			seen[nums[i]] = true
+			seen[num] = struct{}{}
 		}
 	}
 
-	single := -1
-	for k, v := range seen {
-		if !v {
-			single = k
-			break
-		}
+	// Return the only remaining number
+	for k := range seen {
+		return k
 	}
 
-	return single
+	return -1 // Should never reach here given problem constraints
 }

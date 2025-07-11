@@ -7,7 +7,7 @@ func removeDuplicates(nums []int) int {
 	if len(nums) == 0 {
 		return 0
 	}
-	
+
 	writeIndex := 1
 	for readIndex := 1; readIndex < len(nums); readIndex++ {
 		if nums[readIndex] != nums[readIndex-1] {
@@ -15,7 +15,7 @@ func removeDuplicates(nums []int) int {
 			writeIndex++
 		}
 	}
-	
+
 	return writeIndex
 }
 
@@ -24,7 +24,7 @@ func removeDuplicatesCompact(nums []int) int {
 	if len(nums) == 0 {
 		return 0
 	}
-	
+
 	// slices.Compact removes consecutive duplicate elements in-place
 	compacted := slices.Compact(nums)
 	return len(compacted)

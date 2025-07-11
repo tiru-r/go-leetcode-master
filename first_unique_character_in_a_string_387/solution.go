@@ -1,6 +1,5 @@
 package first_unique_character_in_a_string_387
 
-
 func firstUniqChar(s string) int {
 	charMap := make(map[uint8]int)
 

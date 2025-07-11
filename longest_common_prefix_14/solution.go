@@ -47,11 +47,11 @@ func longestCommonPrefixBinary(strs []string) string {
 	if len(strs) == 0 {
 		return ""
 	}
-	
+
 	minLen := len(slices.MinFunc(strs, func(a, b string) int {
 		return cmp.Compare(len(a), len(b))
 	}))
-	
+
 	low, high := 0, minLen
 	for low < high {
 		mid := (low + high + 1) / 2
@@ -61,7 +61,7 @@ func longestCommonPrefixBinary(strs []string) string {
 			high = mid - 1
 		}
 	}
-	
+
 	return strs[0][:low]
 }
 

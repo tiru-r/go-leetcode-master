@@ -11,7 +11,7 @@ func reverse(x int) int {
 
 	// if out overflows positive (2^32 - 1) or negative (-2^31) 32bit integer
 	// Use built-in 32-bit integer limits instead of math package
-	if out > (1<<31 - 1) || out < (-1<<31) {
+	if out > (1<<31-1) || out < (-1<<31) {
 		return 0
 	}
 

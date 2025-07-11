@@ -1,8 +1,8 @@
 package intersection_of_two_linked_lists_160
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 func Test_getIntersectionNode(t *testing.T) {

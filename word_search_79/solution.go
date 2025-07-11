@@ -1,9 +1,5 @@
 package word_search_79
 
-import (
-	"strings"
-)
-
 // Time: O(N * 4^(L (len of word)))
 // Space: O(L) recursion stack at most L
 func exist(board [][]byte, word string) bool {
@@ -34,14 +30,14 @@ func explore(board [][]byte, word string, step, r, c int) bool {
 		return false
 	}
 
-	// if the character has been seen before
-	if strings.HasPrefix(string(board[r][c]), "_") {
+	// if the character has been seen before (marked with 0 for visited)
+	if board[r][c] == 0 {
 		return false
 	}
 
 	// choose to mark the character as seen
 	original := board[r][c]
-	board[r][c] = '_' + original
+	board[r][c] = 0 // Mark as visited
 
 	// explore each direction in search for word
 	// short circuit recursion when we've found word

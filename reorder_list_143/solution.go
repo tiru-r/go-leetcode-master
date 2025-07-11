@@ -45,7 +45,7 @@ func reorderListModern(head *ListNode) {
 	// Reorder using slice indices for O(1) access
 	left, right := 0, len(nodes)-1
 	current := head
-	
+
 	for left < right {
 		// Take from left
 		if current != nodes[left] {
@@ -53,7 +53,7 @@ func reorderListModern(head *ListNode) {
 			current = current.Next
 		}
 		left++
-		
+
 		// Take from right if still valid
 		if left <= right {
 			current.Next = nodes[right]
@@ -61,13 +61,13 @@ func reorderListModern(head *ListNode) {
 			right--
 		}
 	}
-	
+
 	// Handle middle element for odd length
 	if left == right {
 		current.Next = nodes[left]
 		current = current.Next
 	}
-	
+
 	// Terminate the list
 	current.Next = nil
 }

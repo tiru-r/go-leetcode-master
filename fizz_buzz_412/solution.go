@@ -9,7 +9,7 @@ func fizzBuzz(n int) []string {
 	a := make([]string, n)
 	for i := 1; i <= n; i++ {
 		var builder strings.Builder
-		
+
 		if i%3 == 0 {
 			builder.WriteString("Fizz")
 		}

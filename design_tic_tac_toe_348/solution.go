@@ -17,15 +17,17 @@ func Constructor(n int) TicTacToe {
 	}
 }
 
-/** Player {player} makes a move at ({row}, {col}).
-  @param row The row of the board.
-  @param col The column of the board.
-  @param player The player, can be either 1 or 2.
-  @return The current winning condition, can be either:
-          0: No one wins.
-          1: Player 1 wins.
-          2: Player 2 wins. */
-func (this *TicTacToe) Move(row int, col int, player int) int {
+/*
+  - Player {player} makes a move at ({row}, {col}).
+    @param row The row of the board.
+    @param col The column of the board.
+    @param player The player, can be either 1 or 2.
+    @return The current winning condition, can be either:
+    0: No one wins.
+    1: Player 1 wins.
+    2: Player 2 wins.
+*/
+func (t *TicTacToe) Move(row int, col int, player int) int {
 	// Note: intuition is that each row, col, and diagonal has a count.
 	// For a player to win, it's count must be equal to the row, col, or diagonal length.
 	// Let's choose +1 for player 1 and -1 from player 2. If the absolute value of the
@@ -40,28 +42,28 @@ func (this *TicTacToe) Move(row int, col int, player int) int {
 	}
 
 	// increase the counts for each row and column
-	this.rowCounts[row] += count
-	this.colCounts[col] += count
+	t.rowCounts[row] += count
+	t.colCounts[col] += count
 
 	// increase backward slash diagonal count
 	if row == col {
-		this.backwardDiagCount += count
+		t.backwardDiagCount += count
 	}
 
 	// increase forward slash diagonal count
 	// tricky observation for the forward slash diagonal
 	// works for matching on columns as well
-	if row == len(this.rowCounts)-col-1 {
-		this.forwardDiagCount += count
+	if row == len(t.rowCounts)-col-1 {
+		t.forwardDiagCount += count
 	}
 
 	// if the count at this move becomes boardSize or -boardSize, the current player
 	// just won the game. Use direct comparison instead of math.Abs
-	boardSize := len(this.rowCounts)
-	if this.rowCounts[row] == boardSize || this.rowCounts[row] == -boardSize ||
-		this.colCounts[col] == boardSize || this.colCounts[col] == -boardSize ||
-		this.forwardDiagCount == boardSize || this.forwardDiagCount == -boardSize ||
-		this.backwardDiagCount == boardSize || this.backwardDiagCount == -boardSize {
+	boardSize := len(t.rowCounts)
+	if t.rowCounts[row] == boardSize || t.rowCounts[row] == -boardSize ||
+		t.colCounts[col] == boardSize || t.colCounts[col] == -boardSize ||
+		t.forwardDiagCount == boardSize || t.forwardDiagCount == -boardSize ||
+		t.backwardDiagCount == boardSize || t.backwardDiagCount == -boardSize {
 		return player
 	}
 

@@ -10,7 +10,8 @@ func canFinishBFS(numCourses int, prerequisites [][]int) bool {
 		return true
 	}
 
-	adjList := make(map[int][]int)
+	// Pre-allocate adjacency list with better capacity
+	adjList := make(map[int][]int, numCourses)
 	for _, pre := range prerequisites {
 		adjList[pre[0]] = append(adjList[pre[0]], pre[1])
 	}
@@ -21,8 +22,8 @@ func canFinishBFS(numCourses int, prerequisites [][]int) bool {
 		inDegrees[prereq[1]]++
 	}
 
-	// enqueue all verticies with in-degree of 0
-	zeroInQueue := make([]int, 0)
+	// enqueue all vertices with in-degree of 0 using optimized allocation
+	zeroInQueue := make([]int, 0, numCourses/4) // Better initial capacity
 	for course, inDegree := range inDegrees {
 		if inDegree == 0 {
 			zeroInQueue = append(zeroInQueue, course)

@@ -1,6 +1,5 @@
 package maximum_average_subarray_i_643
 
-
 func findMaxAverage(nums []int, k int) float64 {
 	start := 0
 	end := k - 1

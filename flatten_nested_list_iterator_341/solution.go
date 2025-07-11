@@ -18,7 +18,7 @@ package flatten_nested_list_iterator_341
  * func (n *NestedInteger) SetInteger(value int) {}
  *
  * // Set this NestedInteger to hold a nested list and adds a nested integer to it.
- * func (this *NestedInteger) Add(elem NestedInteger) {}
+ * func (ni *NestedInteger) Add(elem NestedInteger) {}
  *
  * // Return the nested list that this NestedInteger holds, if it holds a nested list
  * // The list length is zero if this NestedInteger holds a single integer
@@ -42,15 +42,15 @@ func NewNestedInteger(value any) *NestedInteger {
 	}
 }
 
-func (this NestedInteger) IsInteger() bool {
-	return this.isInt
+func (ni NestedInteger) IsInteger() bool {
+	return ni.isInt
 }
-func (this NestedInteger) GetInteger() int {
-	v := this.value.(int)
+func (ni NestedInteger) GetInteger() int {
+	v := ni.value.(int)
 	return v
 }
-func (this NestedInteger) GetList() []*NestedInteger {
-	v := this.value.([]*NestedInteger)
+func (ni NestedInteger) GetList() []*NestedInteger {
+	v := ni.value.([]*NestedInteger)
 	return v
 }
 
@@ -105,14 +105,14 @@ func Constructor(nestedList []*NestedInteger) *NestedIterator {
 	}
 }
 
-func (this *NestedIterator) Next() int {
-	current := this.stack.Peek()
+func (nit *NestedIterator) Next() int {
+	current := nit.stack.Peek()
 	for !current.List[current.Idx].IsInteger() {
 		next := &ListIndex{
 			Idx:  0,
 			List: current.List[current.Idx].GetList(),
 		}
-		this.stack.Push(next)
+		nit.stack.Push(next)
 
 		current.Idx++
 		current = next
@@ -122,12 +122,12 @@ func (this *NestedIterator) Next() int {
 	current.Idx++
 
 	if current.Idx == len(current.List) {
-		this.stack.Pop()
+		nit.stack.Pop()
 	}
 
 	return value
 }
 
-func (this *NestedIterator) HasNext() bool {
-	return !this.stack.IsEmpty() && this.stack.Peek().Idx != len(this.stack.Peek().List)
+func (nit *NestedIterator) HasNext() bool {
+	return !nit.stack.IsEmpty() && nit.stack.Peek().Idx != len(nit.stack.Peek().List)
 }

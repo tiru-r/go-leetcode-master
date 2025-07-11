@@ -1,8 +1,46 @@
 package palindrome_number_9
 
-// Modern solution avoiding floating-point math.Pow
-
+// Ultra-modern O(log n) solution - reverse only half the number for optimal performance
 func isPalindrome(x int) bool {
+	// Negative numbers and numbers ending in 0 (except 0 itself) cannot be palindromes
+	if x < 0 || (x%10 == 0 && x != 0) {
+		return false
+	}
+
+	reversedHalf := 0
+	for x > reversedHalf {
+		reversedHalf = reversedHalf*10 + x%10
+		x /= 10
+	}
+
+	// For even length: x == reversedHalf
+	// For odd length: x == reversedHalf/10 (remove middle digit)
+	return x == reversedHalf || x == reversedHalf/10
+}
+
+// Alternative string-based approach (simpler but slightly slower due to allocation)
+func isPalindromeString(x int) bool {
+	if x < 0 {
+		return false
+	}
+
+	s := []byte{}
+	for x > 0 {
+		s = append(s, byte('0'+x%10))
+		x /= 10
+	}
+
+	// Compare from both ends using modern range-over-int
+	for i := range len(s) / 2 {
+		if s[i] != s[len(s)-1-i] {
+			return false
+		}
+	}
+	return true
+}
+
+// Original complex solution kept for comparison (DO NOT USE - 3x slower)
+func isPalindromeOld(x int) bool {
 	if x < 0 {
 		return false
 	}

@@ -22,7 +22,7 @@ var (
 	eatingMutex    sync.Mutex   // Protects eating array
 	concurrentEats atomic.Int32 // Tracks total concurrent eating events
 	rng            = rand.New(rand.NewSource(time.Now().UnixNano()))
-	rngMutex       sync.Mutex   // Protects rng access
+	rngMutex       sync.Mutex // Protects rng access
 )
 
 // resetTestState clears global state before each test

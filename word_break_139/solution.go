@@ -5,9 +5,9 @@ package word_break_139
 // Note: study again. DP.
 func wordBreak(s string, wordDict []string) bool {
 	// create a set of words for fast lookup
-	wordDictSet := make(map[string]bool, len(wordDict))
+	wordDictSet := make(map[string]struct{}, len(wordDict))
 	for _, w := range wordDict {
-		wordDictSet[w] = true
+		wordDictSet[w] = struct{}{}
 	}
 
 	// create a dp array which stores whether the i-th
@@ -24,9 +24,11 @@ func wordBreak(s string, wordDict []string) bool {
 			// dp[i] = true.
 			partition1 := dp[j]
 			partition2 := s[j:i]
-			if partition1 && wordDictSet[partition2] {
-				dp[i] = true
-				break
+			if partition1 {
+				if _, exists := wordDictSet[partition2]; exists {
+					dp[i] = true
+					break
+				}
 			}
 		}
 	}
@@ -37,15 +39,15 @@ func wordBreak(s string, wordDict []string) bool {
 // Recursive solution, which exceeds the time limit.
 func wordBreak0(s string, wordDict []string) bool {
 	// create a set of words in wordDict for fast lookup using modern map operations
-	wordDictSet := make(map[string]bool, len(wordDict))
+	wordDictSet := make(map[string]struct{}, len(wordDict))
 	for _, w := range wordDict {
-		wordDictSet[w] = true
+		wordDictSet[w] = struct{}{}
 	}
 
 	return wordBreakHelper(s, wordDictSet, 0)
 }
 
-func wordBreakHelper(s string, wordDictSet map[string]bool, start int) bool {
+func wordBreakHelper(s string, wordDictSet map[string]struct{}, start int) bool {
 	// if we've reached the start of s, the string has been broken up
 	if start == len(s) {
 		return true
@@ -53,7 +55,7 @@ func wordBreakHelper(s string, wordDictSet map[string]bool, start int) bool {
 
 	// for each character in s
 	for i := start; i <= len(s); i++ {
-		if wordDictSet[s[start:i]] && wordBreakHelper(s, wordDictSet, i) {
+		if _, exists := wordDictSet[s[start:i]]; exists && wordBreakHelper(s, wordDictSet, i) {
 			return true
 		}
 	}

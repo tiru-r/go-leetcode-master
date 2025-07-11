@@ -1,6 +1,5 @@
 package longest_repeating_character_replacement_424
 
-
 func characterReplacement(s string, k int) int {
 	// Use byte keys instead of string keys for better performance
 	counts := make(map[byte]int)

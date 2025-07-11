@@ -4,14 +4,13 @@ import "math"
 
 func isHappy(n int) bool {
 	cycles := false
-	seen := make(map[int]bool)
+	seen := make(map[int]struct{})
 	for n != 1 {
-		_, ok := seen[n]
-		if ok {
+		if _, ok := seen[n]; ok {
 			cycles = true
 			break
 		}
-		seen[n] = true
+		seen[n] = struct{}{}
 
 		sum := 0
 		for n != 0 {

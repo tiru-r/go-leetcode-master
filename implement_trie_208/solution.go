@@ -18,8 +18,8 @@ func Constructor() Trie {
 }
 
 // Inserts a word into the trie
-func (this *Trie) Insert(word string) {
-	curr := this.root
+func (tr *Trie) Insert(word string) {
+	curr := tr.root
 	for i := 0; i < len(word); i++ {
 		slot := word[i] - 'a'
 
@@ -39,17 +39,17 @@ func (this *Trie) Insert(word string) {
 }
 
 // Returns true if the word is in the trie
-func (this *Trie) Search(word string) bool {
-	return this.search(word, true)
+func (tr *Trie) Search(word string) bool {
+	return tr.search(word, true)
 }
 
 // Returns true if there is any word in the trie that starts with the given prefix
-func (this *Trie) StartsWith(prefix string) bool {
-	return this.search(prefix, false)
+func (tr *Trie) StartsWith(prefix string) bool {
+	return tr.search(prefix, false)
 }
 
-func (this *Trie) search(word string, needsEnd bool) bool {
-	curr := this.root
+func (tr *Trie) search(word string, needsEnd bool) bool {
+	curr := tr.root
 	for i := 0; i < len(word); i++ {
 		slot := word[i] - 'a'
 		if curr.children[slot] == nil {

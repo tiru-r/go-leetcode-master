@@ -77,25 +77,25 @@ func removeDuplicates(nums []int) []int {
 func findDifferenceWithMaps(nums1 []int, nums2 []int) [][]int {
 	set1 := sliceToSet(nums1)
 	set2 := sliceToSet(nums2)
-	
+
 	// Create copies for manipulation
 	diff1Set := maps.Clone(set1)
 	diff2Set := maps.Clone(set2)
-	
+
 	// Remove common elements
 	maps.DeleteFunc(diff1Set, func(k int, _ struct{}) bool {
 		_, exists := set2[k]
 		return exists
 	})
-	
+
 	maps.DeleteFunc(diff2Set, func(k int, _ struct{}) bool {
 		_, exists := set1[k]
 		return exists
 	})
-	
+
 	// Convert map keys to slices using modern maps.Keys() with slices.Collect
 	diff1 := slices.Collect(maps.Keys(diff1Set))
 	diff2 := slices.Collect(maps.Keys(diff2Set))
-	
+
 	return [][]int{diff1, diff2}
 }

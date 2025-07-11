@@ -88,7 +88,7 @@ func (q *SQL) Exp(name string) []string {
 		if len(row) > 0 {
 			capacity-- // remove last comma
 		}
-		
+
 		var builder strings.Builder
 		builder.Grow(capacity)
 		builder.WriteString(idStr)
@@ -96,7 +96,7 @@ func (q *SQL) Exp(name string) []string {
 			builder.WriteByte(',')
 			builder.WriteString(col)
 		}
-		
+
 		rows = append(rows, builder.String())
 	}
 

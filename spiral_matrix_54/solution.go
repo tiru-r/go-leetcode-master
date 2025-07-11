@@ -1,13 +1,19 @@
 package spiral_matrix_54
 
 func spiralOrder(matrix [][]int) []int {
-	seen := make(map[int]bool)
-	spiral := make([]int, 0)
+	if len(matrix) == 0 || len(matrix[0]) == 0 {
+		return []int{}
+	}
+	
+	const maxDimension = 10000 // Support matrices up to 10000x10000
+	seen := make(map[int]struct{})
+	var spiral []int
 	seenStep := false
 	dir := "east"
 	var r, c int
+	
 	for !seenStep && !isOutOfBounds(matrix, r, c) {
-		seen[r*10+c] = true
+		seen[r*maxDimension+c] = struct{}{}
 		spiral = append(spiral, matrix[r][c])
 
 		switch dir {
@@ -21,7 +27,7 @@ func spiralOrder(matrix [][]int) []int {
 			c--
 		}
 
-		_, seenStep = seen[r*10+c]
+		_, seenStep = seen[r*maxDimension+c]
 		if isOutOfBounds(matrix, r, c) || seenStep {
 			switch dir {
 			case "north":
@@ -43,7 +49,7 @@ func spiralOrder(matrix [][]int) []int {
 			}
 		}
 
-		_, seenStep = seen[r*10+c]
+		_, seenStep = seen[r*maxDimension+c]
 	}
 
 	return spiral
@@ -51,5 +57,5 @@ func spiralOrder(matrix [][]int) []int {
 
 func isOutOfBounds(m [][]int, r, c int) bool {
 	return r < 0 || r >= len(m) ||
-		c < 0 || c >= len(m[r])
+		c < 0 || (r >= 0 && r < len(m) && c >= len(m[r]))
 }

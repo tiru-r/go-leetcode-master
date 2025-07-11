@@ -5,8 +5,7 @@ import "slices"
 // Time: O(n)
 // Space: O(n) (output space)
 func sumZero(n int) []int {
-	uniques := make([]int, 0)
-	uniques = slices.Grow(uniques, n)
+	uniques := slices.Grow([]int(nil), n)
 	var neg, pos = -1, 1
 	for i := 0; i < n/2; i++ {
 		uniques = append(uniques, []int{pos, neg}...)

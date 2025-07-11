@@ -40,34 +40,34 @@ func ConstructorSlice(size int) MovingAverageSlice {
 	}
 }
 
-func (this *MovingAverage) Next(val int) float64 {
-	if this.count == this.size {
+func (ma *MovingAverage) Next(val int) float64 {
+	if ma.count == ma.size {
 		// Buffer is full, subtract the value we're overwriting
-		this.sum -= this.data[this.head]
+		ma.sum -= ma.data[ma.head]
 	} else {
-		this.count++
+		ma.count++
 	}
-	
+
 	// Set new value at current head position
-	this.data[this.head] = val
-	this.sum += val
-	
+	ma.data[ma.head] = val
+	ma.sum += val
+
 	// Move head to next position (circular)
-	this.head = (this.head + 1) % this.size
-	
-	return float64(this.sum) / float64(this.count)
+	ma.head = (ma.head + 1) % ma.size
+
+	return float64(ma.sum) / float64(ma.count)
 }
 
 // Alternative slice-based implementation with modern Go patterns
-func (this *MovingAverageSlice) Next(val int) float64 {
-	if len(this.q) == this.size {
+func (mas *MovingAverageSlice) Next(val int) float64 {
+	if len(mas.q) == mas.size {
 		// Remove first element
-		this.sum -= this.q[0]
-		this.q = this.q[1:]
+		mas.sum -= mas.q[0]
+		mas.q = mas.q[1:]
 	}
-	
-	this.q = append(this.q, val)
-	this.sum += val
-	
-	return float64(this.sum) / float64(len(this.q))
+
+	mas.q = append(mas.q, val)
+	mas.sum += val
+
+	return float64(mas.sum) / float64(len(mas.q))
 }

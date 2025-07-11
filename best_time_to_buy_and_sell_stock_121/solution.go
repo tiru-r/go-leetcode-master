@@ -5,7 +5,7 @@ func maxProfit3(prices []int) int {
 	if len(prices) == 0 {
 		return 0
 	}
-	
+
 	res := 0
 	low := prices[0]
 	for _, p := range prices {
@@ -19,7 +19,8 @@ func maxProfit3(prices []int) int {
 func maxProfit2(prices []int) int {
 	maxProfit := 0
 	minPrice := prices[0]
-	for i := 0; i < len(prices); i++ {
+	// Modern range-over-int for cleaner, faster bounds checking
+	for i := range len(prices) {
 		if prices[i] < minPrice {
 			minPrice = prices[i]
 		} else if maxProfit < prices[i]-minPrice {
@@ -33,12 +34,13 @@ func maxProfit2(prices []int) int {
 // O(n^2) time and O(1) space
 func maxProfit(prices []int) int {
 	maxProfit := 0
-	for i := 0; i < len(prices); i++ {
+	// O(n²) approach with modern range syntax (still not recommended for production)
+	for i := range len(prices) {
 		buyPrice := prices[i]
 		maxSellPrice := 0
 
-		for j := i + 1; j < len(prices); j++ {
-			sellPrice := prices[j]
+		for j := range prices[i+1:] {
+			sellPrice := prices[i+1+j]
 
 			if sellPrice > buyPrice {
 				maxSellPrice = max(maxSellPrice, sellPrice)

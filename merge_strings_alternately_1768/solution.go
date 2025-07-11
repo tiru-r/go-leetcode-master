@@ -6,7 +6,7 @@ import "strings"
 func mergeAlternately(word1 string, word2 string) string {
 	var builder strings.Builder
 	builder.Grow(len(word1) + len(word2)) // Pre-allocate capacity
-	
+
 	i, j := 0, 0
 	for i < len(word1) || j < len(word2) {
 		if i < len(word1) {

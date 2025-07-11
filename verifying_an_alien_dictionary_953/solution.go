@@ -28,7 +28,7 @@ func compareAlienStrings(s1, s2 string, charToIndex map[byte]int) int {
 		// Use direct byte access for better performance
 		idx1 := charToIndex[s1[i]]
 		idx2 := charToIndex[s2[i]]
-		
+
 		if result := cmp.Compare(idx1, idx2); result != 0 {
 			return result
 		}

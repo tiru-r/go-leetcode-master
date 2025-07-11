@@ -17,17 +17,17 @@ func reverseWords(s string) string {
 func reverseWordsBuilder(s string) string {
 	words := strings.Fields(s)
 	slices.Reverse(words)
-	
+
 	var builder strings.Builder
 	builder.Grow(len(s)) // Pre-allocate capacity
-	
+
 	for i, word := range words {
 		if i > 0 {
 			builder.WriteByte(' ')
 		}
 		builder.WriteString(word)
 	}
-	
+
 	return builder.String()
 }
 
@@ -38,13 +38,13 @@ func reverseWordsArrayReversal(s string) string {
 	tokens := make([]string, 0)
 	tokens = slices.Grow(tokens, 16)
 	start := 0
-	
+
 	for finish := 0; finish < len(s); finish++ {
 		if s[finish] == ' ' { // Compare byte directly
 			if start < finish { // Only add non-empty tokens
 				tokens = append(tokens, s[start:finish])
 			}
-			
+
 			// Skip multiple spaces
 			for finish < len(s) && s[finish] == ' ' {
 				finish++
@@ -53,7 +53,7 @@ func reverseWordsArrayReversal(s string) string {
 			finish-- // Compensate for loop increment
 		}
 	}
-	
+
 	// Add final token
 	if start < len(s) {
 		tokens = append(tokens, s[start:])

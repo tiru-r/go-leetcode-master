@@ -32,10 +32,10 @@ func criticalConnections(n int, connections [][]int) [][]int {
 	return dfs(connections[0][0], adjList, disc, low, parents, 0, make([][]int, 0))
 }
 
-func dfs(node int, adjList map[int][]int, disc, low, parents []int, time int, critical [][]int) [][]int {
-	time++
-	disc[node] = time
-	low[node] = time
+func dfs(node int, adjList map[int][]int, disc, low, parents []int, currentTime int, critical [][]int) [][]int {
+	currentTime++
+	disc[node] = currentTime
+	low[node] = currentTime
 
 	// for every node in the adjacency list, dfs
 	for _, edge := range adjList[node] {
@@ -43,7 +43,7 @@ func dfs(node int, adjList map[int][]int, disc, low, parents []int, time int, cr
 
 		// if we have not seen the node over the edge before
 		if disc[edge] == -1 {
-			critical = dfs(edge, adjList, disc, low, parents, time, critical)
+			critical = dfs(edge, adjList, disc, low, parents, currentTime, critical)
 
 			// compare the low values of both nodes to update the current
 			// nodes connectivity to the earliest node possible

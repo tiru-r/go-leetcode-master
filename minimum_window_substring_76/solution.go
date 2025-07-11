@@ -15,7 +15,7 @@ func minWindow(s string, t string) string {
 	required := len(tFreq)
 	formed := 0
 	windowCounts := make(map[rune]int)
-	
+
 	left, right := 0, 0
 	minLen := len(s) + 1
 	minStart := 0
@@ -49,7 +49,6 @@ func minWindow(s string, t string) string {
 	}
 	return s[minStart : minStart+minLen]
 }
-
 
 // Initial solution. Pretty close, but overly complicated
 // and assumed that duplicates of t were not allowed, meaning

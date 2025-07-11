@@ -23,12 +23,12 @@ func TestReverseList(t *testing.T) {
 			input := FromSlice(tt.input)
 			result := ReverseList(input)
 			actual := ToSlice(result)
-			
+
 			if len(actual) != len(tt.expected) {
 				t.Errorf("ReverseList() length = %v, want %v", len(actual), len(tt.expected))
 				return
 			}
-			
+
 			for i, v := range actual {
 				if v != tt.expected[i] {
 					t.Errorf("ReverseList() = %v, want %v", actual, tt.expected)
@@ -56,12 +56,12 @@ func TestReverseListRecursive(t *testing.T) {
 			input := FromSlice(tt.input)
 			result := ReverseListRecursive(input)
 			actual := ToSlice(result)
-			
+
 			if len(actual) != len(tt.expected) {
 				t.Errorf("ReverseListRecursive() length = %v, want %v", len(actual), len(tt.expected))
 				return
 			}
-			
+
 			for i, v := range actual {
 				if v != tt.expected[i] {
 					t.Errorf("ReverseListRecursive() = %v, want %v", actual, tt.expected)
@@ -90,7 +90,7 @@ func TestEqual(t *testing.T) {
 			listA := FromSlice(tt.a)
 			listB := FromSlice(tt.b)
 			result := Equal(listA, listB)
-			
+
 			if result != tt.expected {
 				t.Errorf("Equal() = %v, want %v", result, tt.expected)
 			}
@@ -116,7 +116,7 @@ func TestIsSorted(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			list := FromSlice(tt.input)
 			result := IsSorted(list)
-			
+
 			if result != tt.expected {
 				t.Errorf("IsSorted() = %v, want %v", result, tt.expected)
 			}
@@ -127,14 +127,14 @@ func TestIsSorted(t *testing.T) {
 // Benchmark tests
 func BenchmarkReverseList(b *testing.B) {
 	sizes := []int{10, 100, 1000, 10000}
-	
+
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("size_%d", size), func(b *testing.B) {
 			vals := make([]int, size)
 			for i := 0; i < size; i++ {
 				vals[i] = i
 			}
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				list := FromSlice(vals)
@@ -146,14 +146,14 @@ func BenchmarkReverseList(b *testing.B) {
 
 func BenchmarkReverseListRecursive(b *testing.B) {
 	sizes := []int{10, 100, 1000}
-	
+
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("size_%d", size), func(b *testing.B) {
 			vals := make([]int, size)
 			for i := 0; i < size; i++ {
 				vals[i] = i
 			}
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				list := FromSlice(vals)
@@ -165,14 +165,14 @@ func BenchmarkReverseListRecursive(b *testing.B) {
 
 func BenchmarkReverseListWithStdLib(b *testing.B) {
 	sizes := []int{10, 100, 1000, 10000}
-	
+
 	for _, size := range sizes {
 		b.Run(fmt.Sprintf("size_%d", size), func(b *testing.B) {
 			vals := make([]int, size)
 			for i := 0; i < size; i++ {
 				vals[i] = i
 			}
-			
+
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				list := FromSlice(vals)

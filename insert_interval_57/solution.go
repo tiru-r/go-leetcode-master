@@ -8,7 +8,7 @@ func insert(intervals [][]int, newInterval []int) [][]int {
 		return [][]int{newInterval}
 	}
 
-	merged := make([][]int, 0)
+	var merged [][]int
 
 	// discard all non-overlapping intervals by placing them into merged
 	i := 0

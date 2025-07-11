@@ -11,7 +11,7 @@ func reverseStr(s string, k int) string {
 		j := min(i+k-1, len(s)-1)
 
 		// Use modern slices.Reverse for efficient in-place reversal
-		slices.Reverse(r[i:j+1])
+		slices.Reverse(r[i : j+1])
 	}
 
 	return string(r)
@@ -29,13 +29,13 @@ func reverseStrOrig(s string, k int) string {
 
 	// Convert to []rune for efficient manipulation
 	r := []rune(s)
-	
+
 	for i := 0; i < len(r); i += 2 * k {
 		end := min(i+k, len(r))
 		// Use slices.Reverse for O(n) performance instead of string concatenation
 		slices.Reverse(r[i:end])
 	}
-	
+
 	s = string(r)
 
 	return s

@@ -1,8 +1,5 @@
 package maximum_length_of_a_concatenated_string_with_unique_characters_1239
 
-// import "slices" // Only needed for commented alternative solution
-
-
 // Note: Study again. Good problem with bit manipulation to detect
 // if a string has unique characters.
 func maxLength(arr []string) int {

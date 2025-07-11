@@ -4,13 +4,13 @@ import "slices"
 
 // Original optimized solution using map for O(n) time complexity
 func containsDuplicate(nums []int) bool {
-	m := make(map[int]bool)
+	m := make(map[int]struct{})
 	for _, n := range nums {
-		if m[n] {
+		if _, exists := m[n]; exists {
 			return true
 		}
 
-		m[n] = true
+		m[n] = struct{}{}
 	}
 
 	return false

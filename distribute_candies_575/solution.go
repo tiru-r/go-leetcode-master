@@ -1,14 +1,9 @@
 package distribute_candies_575
 
 func distributeCandies(candies []int) int {
-	cm := make(map[int]int)
-	for _, v := range candies {
-		_, ok := cm[v]
-		if ok {
-			cm[v]++
-		} else {
-			cm[v] = 1
-		}
+	uniqueCandies := make(map[int]struct{})
+	for _, candy := range candies {
+		uniqueCandies[candy] = struct{}{}
 	}
 
 	// Key idea here is that the maximum number of candies to
@@ -17,7 +12,7 @@ func distributeCandies(candies []int) int {
 	// of unique candies available. She can have at most unique number
 	// of candies unless there are more unique number of candies than
 	// half of them.
-	return min(len(cm), len(candies)/2)
+	return min(len(uniqueCandies), len(candies)/2)
 }
 
 /*
