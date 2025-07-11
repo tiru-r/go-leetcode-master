@@ -1,8 +1,9 @@
 package climbing_stairs_70
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_climbStairs(t *testing.T) {
@@ -15,32 +16,46 @@ func Test_climbStairs(t *testing.T) {
 		want int
 	}{
 		{
-			name: "climbing stairs",
+			name: "climbing stairs n=1",
 			args: args{
 				n: 1,
 			},
 			want: 1,
 		},
 		{
-			name: "climbing stairs",
+			name: "climbing stairs n=2",
 			args: args{
 				n: 2,
 			},
 			want: 2,
 		},
 		{
-			name: "climbing stairs",
+			name: "climbing stairs n=3",
 			args: args{
 				n: 3,
 			},
 			want: 3,
 		},
 		{
-			name: "climbing stairs",
+			name: "climbing stairs n=44",
 			args: args{
 				n: 44,
 			},
 			want: 1134903170,
+		},
+		{
+			name: "climbing stairs n=0", // Added test case for n=0
+			args: args{
+				n: 0,
+			},
+			want: 1,
+		},
+		{
+			name: "climbing stairs n=negative", // Added test case for negative n
+			args: args{
+				n: -5,
+			},
+			want: 0,
 		},
 	}
 	for _, tt := range tests {
