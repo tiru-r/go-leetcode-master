@@ -32,10 +32,6 @@ func combinationSum4(nums []int, target int) int {
 	dp := make([]int, target+1)
 	dp[0] = 1 // Base case: one way to make sum 0 (empty combination).
 
-	// Optional: Use modulo to handle large outputs if required by problem constraints.
-	// Uncomment the following line if the problem specifies a modulo (e.g., 10^9 + 7).
-	// const mod = 1_000_000_007
-
 	// Build combinations for each sum from 1 to target.
 	for i := 1; i <= target; i++ {
 		// Iterate through sorted numbers to find valid contributions to sum i.
@@ -48,8 +44,6 @@ func combinationSum4(nums []int, target int) int {
 			// Add the number of combinations for sum (i-n) to dp[i], as n can be the last number.
 			// Example: for i=3, n=1, add dp[2] to dp[3] for combinations ending with 1.
 			dp[i] += dp[i-n]
-			// If using modulo, replace above line with:
-			// dp[i] = (dp[i] + dp[i-n]) % mod
 		}
 	}
 
