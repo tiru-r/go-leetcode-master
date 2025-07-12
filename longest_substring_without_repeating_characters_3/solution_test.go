@@ -19,7 +19,7 @@ func Test_lengthOfLongestSubstring(t *testing.T) {
 		{"example 1", "abcabcbb", 3},
 		{"example 2", "pwwkew", 3},
 		{"mixed", "adcab", 4},
-		{"with spaces", "a b c a b", 5},
+		{"with spaces", "a b c a b", 3},
 		{"unicode safe", "üöäüö", 3},
 	}
 	for _, tt := range tests {
