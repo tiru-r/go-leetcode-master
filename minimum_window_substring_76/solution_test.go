@@ -1,72 +1,29 @@
 package minimum_window_substring_76
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_minWindow(t *testing.T) {
-	type args struct {
-		s string
-		t string
-	}
+func TestMinWindow(t *testing.T) {
 	tests := []struct {
-		name string
-		args args
-		want string
+		name, s, t, want string
 	}{
-		{
-			name: "minimum window substring",
-			args: args{
-				s: "ABAACBAB",
-				t: "ABC",
-			},
-			want: "ACB",
-		},
-		{
-			name: "minimum window substring",
-			args: args{
-				s: "ZADOBECOAEBANC",
-				t: "ABC",
-			},
-			want: "BANC",
-		},
-		{
-			name: "minimum window substring",
-			args: args{
-				s: "A",
-				t: "A",
-			},
-			want: "A",
-		},
-		{
-			name: "minimum window substring",
-			args: args{
-				s: "A",
-				t: "B",
-			},
-			want: "",
-		},
-		{
-			name: "minimum window substring",
-			args: args{
-				s: "AB",
-				t: "A",
-			},
-			want: "A",
-		},
-		{
-			name: "minimum window substring",
-			args: args{
-				s: "AB",
-				t: "B",
-			},
-			want: "B",
-		},
+		{"duplicate chars", "ABAACBAB", "ABC", "ACB"},
+		{"classic leetcode", "ZADOBECOAEBANC", "ABC", "BANC"},
+		{"single exact", "A", "A", "A"},
+		{"single missing", "A", "B", ""},
+		{"two chars target first", "AB", "A", "A"},
+		{"two chars target last", "AB", "B", "B"},
+		{"duplicates needed", "aa", "aa", "aa"},
+		{"impossible", "a", "aa", ""},
+		{"empty s", "", "a", ""},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, minWindow(tt.args.s, tt.args.t))
+			assert.Equal(t, tt.want, minWindow(tt.s, tt.t))
 		})
 	}
 }

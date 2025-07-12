@@ -1,234 +1,56 @@
 package merge_k_sorted_lists_23
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_mergeKListsDivideAndConquer(t *testing.T) {
-	type args struct {
-		lists []*ListNode
-	}
+func TestMergeKLists(t *testing.T) {
 	tests := []struct {
-		name string
-		args args
-		want *ListNode
+		name  string
+		lists [][]int
+		want  []int
 	}{
-		{
-			name: "merge k sorted lists",
-			args: args{
-				lists: []*ListNode{
-					{
-						Val: 1,
-						Next: &ListNode{
-							Val: 4,
-							Next: &ListNode{
-								Val:  5,
-								Next: nil,
-							},
-						},
-					},
-					{
-						Val: 1,
-						Next: &ListNode{
-							Val: 3,
-							Next: &ListNode{
-								Val:  4,
-								Next: nil,
-							},
-						},
-					},
-					{
-						Val: 2,
-						Next: &ListNode{
-							Val:  6,
-							Next: nil,
-						},
-					},
-				},
-			},
-			want: &ListNode{
-				Val: 1,
-				Next: &ListNode{
-					Val: 1,
-					Next: &ListNode{
-						Val: 2,
-						Next: &ListNode{
-							Val: 3,
-							Next: &ListNode{
-								Val: 4,
-								Next: &ListNode{
-									Val: 4,
-									Next: &ListNode{
-										Val: 5,
-										Next: &ListNode{
-											Val:  6,
-											Next: nil,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
+		{"empty input", [][]int{}, nil},
+		{"single list", [][]int{{1, 4, 5}}, []int{1, 4, 5}},
+		{"two lists", [][]int{{1, 4, 5}, {1, 3, 4}}, []int{1, 1, 3, 4, 4, 5}},
+		{"three lists", [][]int{{1, 4, 5}, {1, 3, 4}, {2, 6}}, []int{1, 1, 2, 3, 4, 4, 5, 6}},
+		{"with nil", [][]int{{}, {0}}, []int{0}},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, mergeKListsDivideAndConquer(tt.args.lists))
+			var heads []*ListNode
+			for _, nums := range tt.lists {
+				heads = append(heads, fromSlice(nums))
+			}
+			got := toSlice(mergeKLists(heads))
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
-func Test_mergeKListsDivideAndConquerClever(t *testing.T) {
-	type args struct {
-		lists []*ListNode
+// ---------- lightweight helpers ----------
+
+func fromSlice(nums []int) *ListNode {
+	if len(nums) == 0 {
+		return nil
 	}
-	tests := []struct {
-		name string
-		args args
-		want *ListNode
-	}{
-		{
-			name: "merge k sorted lists",
-			args: args{
-				lists: []*ListNode{
-					{
-						Val: 1,
-						Next: &ListNode{
-							Val: 4,
-							Next: &ListNode{
-								Val:  5,
-								Next: nil,
-							},
-						},
-					},
-					{
-						Val: 1,
-						Next: &ListNode{
-							Val: 3,
-							Next: &ListNode{
-								Val:  4,
-								Next: nil,
-							},
-						},
-					},
-					{
-						Val: 2,
-						Next: &ListNode{
-							Val:  6,
-							Next: nil,
-						},
-					},
-				},
-			},
-			want: &ListNode{
-				Val: 1,
-				Next: &ListNode{
-					Val: 1,
-					Next: &ListNode{
-						Val: 2,
-						Next: &ListNode{
-							Val: 3,
-							Next: &ListNode{
-								Val: 4,
-								Next: &ListNode{
-									Val: 4,
-									Next: &ListNode{
-										Val: 5,
-										Next: &ListNode{
-											Val:  6,
-											Next: nil,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
+	nodes := make([]ListNode, len(nums))
+	for i, v := range nums {
+		nodes[i].Val = v
+		if i < len(nums)-1 {
+			nodes[i].Next = &nodes[i+1]
+		}
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, mergeKListsDivideAndConquerClever(tt.args.lists))
-		})
-	}
+	return &nodes[0]
 }
 
-func Test_mergeKLists(t *testing.T) {
-	type args struct {
-		lists []*ListNode
+func toSlice(head *ListNode) []int {
+	var res []int
+	for cur := head; cur != nil; cur = cur.Next {
+		res = append(res, cur.Val)
 	}
-	tests := []struct {
-		name string
-		args args
-		want *ListNode
-	}{
-		{
-			name: "merge k sorted lists",
-			args: args{
-				lists: []*ListNode{
-					{
-						Val: 1,
-						Next: &ListNode{
-							Val: 4,
-							Next: &ListNode{
-								Val:  5,
-								Next: nil,
-							},
-						},
-					},
-					{
-						Val: 1,
-						Next: &ListNode{
-							Val: 3,
-							Next: &ListNode{
-								Val:  4,
-								Next: nil,
-							},
-						},
-					},
-					{
-						Val: 2,
-						Next: &ListNode{
-							Val:  6,
-							Next: nil,
-						},
-					},
-				},
-			},
-			want: &ListNode{
-				Val: 1,
-				Next: &ListNode{
-					Val: 1,
-					Next: &ListNode{
-						Val: 2,
-						Next: &ListNode{
-							Val: 3,
-							Next: &ListNode{
-								Val: 4,
-								Next: &ListNode{
-									Val: 4,
-									Next: &ListNode{
-										Val: 5,
-										Next: &ListNode{
-											Val:  6,
-											Next: nil,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, mergeKLists(tt.args.lists))
-		})
-	}
+	return res
 }

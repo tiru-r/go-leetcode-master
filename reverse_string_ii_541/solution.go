@@ -16,27 +16,3 @@ func reverseStr(s string, k int) string {
 
 	return string(r)
 }
-
-// Note: original solution from mock interview.
-// I learned how to reverse string in place by using []rune or []byte.
-// Having to reverse by string concatenation make this problem tough.
-// Also, the problem description was vague in cases with characters
-// remaining to sort.
-func reverseStrOrig(s string, k int) string {
-	if len(s) < k {
-		return s
-	}
-
-	// Convert to []rune for efficient manipulation
-	r := []rune(s)
-
-	for i := 0; i < len(r); i += 2 * k {
-		end := min(i+k, len(r))
-		// Use slices.Reverse for O(n) performance instead of string concatenation
-		slices.Reverse(r[i:end])
-	}
-
-	s = string(r)
-
-	return s
-}

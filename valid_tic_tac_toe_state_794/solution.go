@@ -1,86 +1,57 @@
 package valid_tic_tac_toe_state_794
 
-import (
-	"strings"
-)
-
+// validTicTacToe returns true iff the board is legal.
+// board[i] is exactly three runes long and contains only {'X','O',' '}.
 func validTicTacToe(board []string) bool {
-	x := 0
-	o := 0
-	for i := 0; i < len(board); i++ {
-		for j := 0; j < len(board[i]); j++ {
-			// Use direct character comparison for better performance
-			if board[i][j] == 'X' {
+	x, o := 0, 0
+	for _, row := range board {
+		for _, c := range row {
+			switch c {
+			case 'X':
 				x++
-			} else if board[i][j] == 'O' {
+			case 'O':
 				o++
 			}
 		}
 	}
 
-	oWin := 0
-	xWin := 0
-	winners := getWinner(board)
-	for _, w := range winners {
-		if w == "X" {
-			xWin++
-		} else {
-			oWin++
-		}
-	}
-
-	// x and o counts must be equal and x must be one greater than o
+	// Turn-order rule
 	if x != o && x != o+1 {
 		return false
 	}
 
-	// if x wins, it must be on x's turn
-	if xWin == 1 && x != o+1 {
-		return false
+	// Pre-computed magic indices for the 8 lines.
+	lines := [8][3]int{
+		{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // rows
+		{0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // cols
+		{0, 4, 8}, {2, 4, 6}, // diagonals
 	}
 
-	// if o wins, it must be on o's turn
-	if oWin == 1 && x != o {
-		return false
-	}
-
-	return true
-}
-
-func getWinner(board []string) []string {
-	b := strings.Join(board, "")
-	win := [][]int{
-		{0, 1, 2},
-		{3, 4, 5},
-		{6, 7, 8},
-		{0, 3, 6},
-		{1, 4, 7},
-		{2, 5, 8},
-		{0, 4, 8},
-		{2, 4, 6},
-	}
-
-	winners := make([]string, 0)
-	for _, w := range win {
-		x := 0
-		o := 0
-		for _, s := range w {
-			// Use direct character comparison for better performance
-			if b[s] == 'X' {
-				x++
-			} else if b[s] == 'O' {
-				o++
+	flat := board[0] + board[1] + board[2]
+	xWin, oWin := false, false
+	for _, ln := range lines {
+		c0, c1, c2 := flat[ln[0]], flat[ln[1]], flat[ln[2]]
+		if c0 == c1 && c1 == c2 {
+			switch c0 {
+			case 'X':
+				xWin = true
+			case 'O':
+				oWin = true
 			}
 		}
-
-		if x == 3 {
-			winners = append(winners, "X")
-		}
-
-		if o == 3 {
-			winners = append(winners, "O")
-		}
 	}
 
-	return winners
+	// Mutual win impossible
+	if xWin && oWin {
+		return false
+	}
+	// If X wins, X must have played last
+	if xWin && x != o+1 {
+		return false
+	}
+	// If O wins, O must have played last
+	if oWin && x != o {
+		return false
+	}
+	return true
 }

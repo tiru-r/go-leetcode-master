@@ -1,40 +1,38 @@
 package two_sum_1
 
-// twoSum does not assume that nums is sorted.
+// TwoSum returns the indices of the two numbers in nums that add up to target.
+// Exactly one solution is assumed to exist; if the caller violates this
+// guarantee, an empty slice is returned.
+//
+// Time complexity: O(n) average, O(n²) worst (pathological hash collisions)
+// Space complexity: O(n)
 func twoSum(nums []int, target int) []int {
-	if len(nums) < 2 {
-		return []int{}
-	}
+	// Pre-size the map to avoid rehashing.
+	index := make(map[int]int, len(nums))
 
-	numToIndex := make(map[int]int, len(nums))
-	for idx, num := range nums {
-		if mIdx, ok := numToIndex[target-num]; ok {
-			return []int{mIdx, idx}
+	for currIdx, num := range nums {
+		if prevIdx, ok := index[target-num]; ok {
+			return []int{prevIdx, currIdx}
 		}
-		numToIndex[num] = idx
+		index[num] = currIdx
 	}
-
 	return []int{}
 }
 
-// twoSumSortedInput assumes that nums is sorted.
-func twoSumSortedInput(nums []int, target int) []int {
-	if len(nums) < 2 {
-		return []int{}
-	}
-
-	front, rear := 0, len(nums)-1
-	for front < rear {
-		sum := nums[front] + nums[rear]
+// TwoSumSorted assumes nums is in non-decreasing order.
+// Time: O(n), Space: O(1)
+func twoSumSorted(nums []int, target int) (int, int) {
+	i, j := 0, len(nums)-1
+	for i < j {
+		sum := nums[i] + nums[j]
 		switch {
 		case sum == target:
-			return []int{front, rear}
+			return i, j
 		case sum < target:
-			front++
+			i++
 		default:
-			rear--
+			j--
 		}
 	}
-
-	return []int{}
+	return -1, -1 // sentinel: no solution
 }

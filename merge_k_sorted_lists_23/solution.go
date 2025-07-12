@@ -1,93 +1,51 @@
 package merge_k_sorted_lists_23
 
-// Definition for singly-linked list.
+// ListNode is a node in a singly-linked list.
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
-// My first solution to divide and conquer.
-func mergeKListsDivideAndConquer(lists []*ListNode) *ListNode {
-	if len(lists) == 0 {
-		return nil
-	}
-
-	k := len(lists)
-	for k > 1 {
-		acc := 0
-		for i := 0; i < k; i += 2 {
-			if i+1 == k {
-				lists[i-acc] = lists[i]
-				break
-			}
-
-			lists[i-acc] = mergeTwoLists(lists[i], lists[i+1])
-			acc++
-		}
-
-		if k%2 == 1 {
-			k = k/2 + 1
-		} else {
-			k /= 2
-		}
-	}
-
-	return lists[0]
-}
-
-// Clever solution to divide and conquer found on leetcode.
-// Debugged to understand more.
-func mergeKListsDivideAndConquerClever(lists []*ListNode) *ListNode {
-	if len(lists) == 0 {
-		return nil
-	}
-
-	amount := len(lists)
-	interval := 1
-	for interval < amount {
-		for i := 0; i < amount-interval; i += interval * 2 {
-			lists[i] = mergeTwoLists(lists[i], lists[i+interval])
-		}
-		interval *= 2
-	}
-
-	return lists[0]
-}
-
-// Ultra-efficient O(kN log k) divide-and-conquer solution
+// mergeKLists merges k sorted linked lists into one sorted list.
+// Time: O(N log k)  Space: O(log k)  (recursion stack)
 func mergeKLists(lists []*ListNode) *ListNode {
 	if len(lists) == 0 {
 		return nil
 	}
-	if len(lists) == 1 {
-		return lists[0]
-	}
-
-	// Use optimal divide-and-conquer approach
-	return mergeKListsDivideAndConquerClever(lists)
+	return mergeRange(lists, 0, len(lists)-1)
 }
 
-func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
-	holdFront := &ListNode{}
-	current := holdFront
+// mergeRange recursively merges lists[left:right] inclusive.
+func mergeRange(lists []*ListNode, left, right int) *ListNode {
+	if left == right {
+		return lists[left]
+	}
+	mid := left + (right-left)/2
+	l := mergeRange(lists, left, mid)
+	r := mergeRange(lists, mid+1, right)
+	return mergeTwoLists(l, r)
+}
+
+// mergeTwoLists merges two sorted lists iteratively.
+func mergeTwoLists(l1, l2 *ListNode) *ListNode {
+	dummy := &ListNode{}
+	curr := dummy
 
 	for l1 != nil && l2 != nil {
 		if l1.Val <= l2.Val {
-			current.Next = l1
+			curr.Next = l1
 			l1 = l1.Next
 		} else {
-			current.Next = l2
+			curr.Next = l2
 			l2 = l2.Next
 		}
-
-		current = current.Next
+		curr = curr.Next
 	}
 
-	if l1 == nil {
-		current.Next = l2
+	if l1 != nil {
+		curr.Next = l1
 	} else {
-		current.Next = l1
+		curr.Next = l2
 	}
-
-	return holdFront.Next
+	return dummy.Next
 }

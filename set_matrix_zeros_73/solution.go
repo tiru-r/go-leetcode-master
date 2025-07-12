@@ -58,9 +58,3 @@ func setZeroes(matrix [][]int) {
 		}
 	}
 }
-
-// REMOVED: Inefficient O(m×n×(m+n)) solution with redundant operations
-// This approach had terrible performance because it set entire rows/columns
-// immediately upon finding each zero, leading to O(m×n×(m+n)) complexity.
-// It also had edge case issues with MaxInt64/MinInt64 values.
-// Use the optimized O(m×n) marker-based solution above instead.
