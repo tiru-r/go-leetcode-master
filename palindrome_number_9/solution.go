@@ -17,4 +17,3 @@ func isPalindrome(x int) bool {
 	// For odd length: x == reversedHalf/10 (remove middle digit)
 	return x == reversedHalf || x == reversedHalf/10
 }
-

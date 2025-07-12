@@ -15,7 +15,7 @@ func threeSum(nums []int) [][]int {
 		if i > 0 && nums[i] == nums[i-1] {
 			continue
 		}
-		
+
 		// Early termination: if smallest element is positive, no solution exists
 		if nums[i] > 0 {
 			break
@@ -47,4 +47,3 @@ func threeSum(nums []int) [][]int {
 
 	return result
 }
-

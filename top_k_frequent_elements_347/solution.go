@@ -16,7 +16,7 @@ func topKFrequent(nums []int, k int) []int {
 
 	// Get unique numbers using modern maps.Keys()
 	unique := slices.Collect(maps.Keys(freq))
-	
+
 	// Sort by frequency in descending order
 	slices.SortFunc(unique, func(a, b int) int {
 		return cmp.Compare(freq[b], freq[a]) // Descending by frequency
@@ -24,4 +24,3 @@ func topKFrequent(nums []int, k int) []int {
 
 	return unique[:k]
 }
-

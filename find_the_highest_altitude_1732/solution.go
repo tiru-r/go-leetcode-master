@@ -9,12 +9,12 @@ package find_the_highest_altitude_1732
 func largestAltitude(gain []int) int {
 	highest := 0
 	currentAltitude := 0
-	
+
 	// Process gains directly without intermediate storage
 	for _, g := range gain {
 		currentAltitude += g
 		highest = max(highest, currentAltitude)
 	}
-	
+
 	return highest
 }

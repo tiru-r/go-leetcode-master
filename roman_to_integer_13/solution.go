@@ -9,10 +9,10 @@ func romanToInt(s string) int {
 	values['C'] = 100
 	values['D'] = 500
 	values['M'] = 1000
-	
+
 	total := 0
 	prev := 0
-	
+
 	for i := len(s) - 1; i >= 0; i-- {
 		curr := values[s[i]]
 		if curr < prev {
@@ -22,6 +22,6 @@ func romanToInt(s string) int {
 		}
 		prev = curr
 	}
-	
+
 	return total
 }

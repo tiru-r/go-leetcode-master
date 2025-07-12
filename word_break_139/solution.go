@@ -23,7 +23,7 @@ func wordBreak(s string, wordDict []string) bool {
 		if !dp[i] {
 			continue // Skip if current position is unreachable
 		}
-		
+
 		// Check all possible word endings from current position
 		for j := i + 1; j <= len(s); j++ {
 			if _, exists := wordSet[s[i:j]]; exists {
@@ -37,5 +37,3 @@ func wordBreak(s string, wordDict []string) bool {
 
 	return dp[len(s)]
 }
-
-

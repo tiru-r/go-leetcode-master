@@ -15,4 +15,3 @@ func maxSubArray(nums []int) int {
 
 	return maxSum
 }
-

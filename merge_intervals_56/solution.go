@@ -28,4 +28,3 @@ func merge(intervals [][]int) [][]int {
 
 	return merged
 }
-
