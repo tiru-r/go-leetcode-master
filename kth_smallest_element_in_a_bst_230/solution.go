@@ -1,9 +1,5 @@
 package kth_smallest_element_in_a_bst_230
 
-import (
-	"math"
-)
-
 // Definition for a binary tree node.
 type TreeNode struct {
 	Val   int
@@ -11,29 +7,28 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
+// kthSmallest returns the k-th (1-based) smallest element in the BST.
+// Runs in O(h + k) time and O(h) space (stack height h).
 func kthSmallest(root *TreeNode, k int) int {
-	_, v := inOrderTraverse(root, k)
-	return v
-}
+	var stack []*TreeNode
+	curr := root
 
-func inOrderTraverse(root *TreeNode, k int) (int, int) {
-	if root == nil {
-		return k, math.MaxInt32
+	for curr != nil || len(stack) > 0 {
+		// push left spine
+		for curr != nil {
+			stack = append(stack, curr)
+			curr = curr.Left
+		}
+
+		curr = stack[len(stack)-1]
+		stack = stack[:len(stack)-1]
+
+		k--
+		if k == 0 {
+			return curr.Val
+		}
+
+		curr = curr.Right
 	}
-
-	var val int
-	k, val = inOrderTraverse(root.Left, k)
-
-	// Stop traverse when the kth smallest number has been found
-	if val != math.MaxInt32 {
-		return k, val
-	}
-
-	// When k becomes zero, the kth smallest number has been found
-	k--
-	if k == 0 {
-		return k, root.Val
-	}
-
-	return inOrderTraverse(root.Right, k)
+	return -1 // unreachable if 1 <= k <= #nodes
 }

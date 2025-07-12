@@ -1,67 +1,44 @@
 package implement_trie_208
 
-type Trie struct {
-	root *trieNode
-}
+// Trie is exported for LeetCode tests.
+type Trie struct{ root *node }
 
-type trieNode struct {
-	char     byte
+type node struct {
 	end      bool
-	children [26]*trieNode
+	children [26]*node
 }
 
-// Returns a Trie
-func Constructor() Trie {
-	return Trie{
-		root: &trieNode{},
-	}
-}
+// Constructor returns an empty Trie.
+func Constructor() Trie { return Trie{root: &node{}} }
 
-// Inserts a word into the trie
-func (tr *Trie) Insert(word string) {
-	curr := tr.root
-	for i := 0; i < len(word); i++ {
-		slot := word[i] - 'a'
-
-		// If the child doesn't exist, create it
-		if curr.children[slot] == nil {
-			curr.children[slot] = &trieNode{
-				char: word[i],
-			}
+// Insert adds word to the trie.
+func (t *Trie) Insert(word string) {
+	curr := t.root
+	for _, ch := range word {
+		idx := ch - 'a'
+		if curr.children[idx] == nil {
+			curr.children[idx] = &node{}
 		}
-
-		// Advance curr to the slot
-		curr = curr.children[slot]
+		curr = curr.children[idx]
 	}
-
-	// Mark the last node as the end of an inserted word
 	curr.end = true
 }
 
-// Returns true if the word is in the trie
-func (tr *Trie) Search(word string) bool {
-	return tr.search(word, true)
-}
+// Search returns true if word is stored in the trie.
+func (t *Trie) Search(word string) bool { return t.walk(word, true) }
 
-// Returns true if there is any word in the trie that starts with the given prefix
-func (tr *Trie) StartsWith(prefix string) bool {
-	return tr.search(prefix, false)
-}
+// StartsWith returns true if any stored word starts with prefix.
+func (t *Trie) StartsWith(prefix string) bool { return t.walk(prefix, false) }
 
-func (tr *Trie) search(word string, needsEnd bool) bool {
-	curr := tr.root
-	for i := 0; i < len(word); i++ {
-		slot := word[i] - 'a'
-		if curr.children[slot] == nil {
+// walk performs common traversal logic.
+func (t *Trie) walk(s string, needEnd bool) bool {
+	curr := t.root
+	for _, ch := range s {
+		idx := ch - 'a'
+		if curr.children[idx] == nil {
 			return false
 		}
-
-		curr = curr.children[slot]
+		curr = curr.children[idx]
 	}
-
-	if needsEnd {
-		return curr.end
-	}
-
-	return true
+	return !needEnd || curr.end
 }

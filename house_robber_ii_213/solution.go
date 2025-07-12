@@ -1,30 +1,28 @@
 package house_robber_ii_213
 
-// Modern solution using built-in max function (Go 1.21+)
-
+// rob returns the maximum money that can be robbed from a circular street.
+// Time: O(n)  Space: O(1)
 func rob(nums []int) int {
-	if len(nums) == 0 {
+	n := len(nums)
+	switch n {
+	case 0:
 		return 0
-	}
-	if len(nums) == 1 {
+	case 1:
 		return nums[0]
+	case 2:
+		return max(nums[0], nums[1])
 	}
 
-	// The max is the max between robbing houses
-	// where the beginning and end do not connect
-	// into the ring of houses. So, that means house
-	// 0 to one from the end, and house 1 to the end.
-	return max(
-		robInRange(nums[0:len(nums)-1]),
-		robInRange(nums[1:]))
+	// Two linear scans:
+	// 1. skip last house  2. skip first house
+	return max(robLinear(nums[0:n-1]), robLinear(nums[1:]))
 }
 
-func robInRange(nums []int) int {
-	dp := make([]int, len(nums)+1)
-	dp[1] = nums[0]
-	for i := 1; i < len(nums); i++ {
-		dp[i+1] = max(dp[i], nums[i]+dp[i-1])
+// robLinear solves the linear version (LeetCode 198).
+func robLinear(nums []int) int {
+	prev2, prev1 := 0, 0
+	for _, v := range nums {
+		prev2, prev1 = prev1, max(prev1, v+prev2)
 	}
-
-	return dp[len(dp)-1]
+	return prev1
 }

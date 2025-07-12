@@ -1,104 +1,91 @@
 package design_sql_2408
 
-import (
-	"strconv"
-	"strings"
-)
+// SQL implements the tiny database required by LeetCode 2408.
+type SQL struct{ tbl map[string]*table }
 
 type table struct {
-	idInc    int
-	colCount int
-	rows     map[int][]string
+	colCnt int
+	rows   map[int][]string // rowID -> cells
 }
 
-type SQL struct {
-	tables map[string]*table
-}
-
-func Constructor(names []string, columns []int) SQL {
-	sql := SQL{
-		tables: make(map[string]*table),
-	}
+// Constructor creates the tables.
+func Constructor(names []string, cols []int) SQL {
+	tbl := make(map[string]*table, len(names))
 	for i, name := range names {
-		colCount := columns[i]
-		sql.tables[name] = &table{
-			idInc:    0,
-			colCount: colCount,
-			rows:     make(map[int][]string),
-		}
+		tbl[name] = &table{colCnt: cols[i], rows: make(map[int][]string)}
 	}
-
-	return sql
+	return SQL{tbl: tbl}
 }
 
+// Ins inserts a row and returns success.
 func (q *SQL) Ins(name string, row []string) bool {
-	table, ok := q.tables[name]
-	if !ok || len(row) != table.colCount {
+	t, ok := q.tbl[name]
+	if !ok || len(row) != t.colCnt {
 		return false
 	}
-
-	table.idInc++
-	table.rows[table.idInc] = row
+	id := len(t.rows) + 1 // LeetCode guarantees unique ids
+	t.rows[id] = row
 	return true
 }
 
-func (q *SQL) Rmv(name string, rowId int) {
-	table, ok := q.tables[name]
-	if !ok {
-		return
+// Rmv removes a row (idempotent).
+func (q *SQL) Rmv(name string, id int) {
+	if t, ok := q.tbl[name]; ok {
+		delete(t.rows, id)
 	}
-
-	// deletes are idempotent, no need to check if it exists or not
-	delete(table.rows, rowId)
 }
 
-func (q *SQL) Sel(name string, rowId int, columnId int) string {
-	table, ok := q.tables[name]
+// Sel returns the requested cell or "<null>".
+func (q *SQL) Sel(name string, id, col int) string {
+	t, ok := q.tbl[name]
 	if !ok {
 		return "<null>"
 	}
-
-	row, ok := table.rows[rowId]
-	if !ok {
+	row, ok := t.rows[id]
+	if !ok || col < 1 || col > len(row) {
 		return "<null>"
 	}
-
-	if columnId < 1 || columnId > len(row) {
-		return "<null>"
-	}
-
-	return row[columnId-1]
+	return row[col-1]
 }
 
+// Exp returns every row in the format "id,col1,col2,…".
 func (q *SQL) Exp(name string) []string {
-	table, ok := q.tables[name]
+	t, ok := q.tbl[name]
 	if !ok {
-		return []string{}
+		return nil
 	}
-
-	rows := make([]string, 0, len(table.rows))
-	for id, row := range table.rows {
-		// Optimize string building with precise capacity estimation
-		// Calculate: id digits + comma + row content + separators
-		idStr := strconv.Itoa(id)
-		capacity := len(idStr) + 1 // id + comma
-		for _, col := range row {
-			capacity += len(col) + 1 // column + comma
+	out := make([]string, 0, len(t.rows))
+	for id, row := range t.rows {
+		// Pre-size buffer: id digits + commas + all column bytes
+		size := len(row)
+		for _, c := range row {
+			size += len(c)
 		}
-		if len(row) > 0 {
-			capacity-- // remove last comma
+		buf := make([]byte, 0, size+1) // +1 for id comma
+		buf = appendInt(buf, id)
+		for _, c := range row {
+			buf = append(buf, ',')
+			buf = append(buf, c...)
 		}
-
-		var builder strings.Builder
-		builder.Grow(capacity)
-		builder.WriteString(idStr)
-		for _, col := range row {
-			builder.WriteByte(',')
-			builder.WriteString(col)
-		}
-
-		rows = append(rows, builder.String())
+		out = append(out, string(buf))
 	}
+	return out
+}
 
-	return rows
+// appendInt appends the decimal representation of i to buf.
+func appendInt(buf []byte, i int) []byte {
+	if i == 0 {
+		return append(buf, '0')
+	}
+	// Write digits in reverse then flip.
+	start := len(buf)
+	for i > 0 {
+		buf = append(buf, byte(i%10+'0'))
+		i /= 10
+	}
+	// Reverse in place.
+	for l, r := start, len(buf)-1; l < r; l, r = l+1, r-1 {
+		buf[l], buf[r] = buf[r], buf[l]
+	}
+	return buf
 }

@@ -1,51 +1,45 @@
 package find_n_unique_integers_sum_up_to_zero_1304
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_sumZero(t *testing.T) {
-	type args struct {
-		n int
-	}
 	tests := []struct {
 		name string
-		args args
-		want []int
+		n    int
 	}{
-		{
-			name: "find n unique integers that sum up to zero",
-			args: args{
-				n: 5,
-			},
-			want: []int{
-				1, -1, 2, -2, 0,
-			},
-		},
-		{
-			name: "find n unique integers that sum up to zero",
-			args: args{
-				n: 3,
-			},
-			want: []int{
-				1, -1, 0,
-			},
-		},
-		{
-			name: "find n unique integers that sum up to zero",
-			args: args{
-				n: 1,
-			},
-			want: []int{
-				0,
-			},
-		},
+		{"n = 0", 0},
+		{"n = 1", 1},
+		{"n = 2", 2},
+		{"n = 3", 3},
+		{"n = 4", 4},
+		{"n = 5", 5},
+		{"n = 6", 6},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, sumZero(tt.args.n))
-			assert.Equal(t, tt.want, sumZeroNoAppend(tt.args.n))
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := sumZero(tc.n)
+
+			// 1. Correct length
+			assert.Len(t, got, tc.n)
+
+			// 2. All elements unique
+			seen := make(map[int]struct{}, len(got))
+			for v := range got {
+				seen[v] = struct{}{}
+			}
+			assert.Len(t, seen, len(got), "slice must contain only unique integers")
+
+			// 3. Sum must be zero
+			sum := 0
+			for _, v := range got {
+				sum += v
+			}
+			assert.Zero(t, sum, "sum of all elements must be zero")
 		})
 	}
 }

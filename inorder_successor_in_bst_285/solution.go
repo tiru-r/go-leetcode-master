@@ -1,41 +1,29 @@
 package inorder_successor_in_bst_285
 
-// Definition for a binary tree node.
+// TreeNode is the standard BST node.
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
 	Right *TreeNode
 }
 
-/**
- * Definition for a binary tree node.
- * type TreeNode struct {
- *     Val int
- *     Left *TreeNode
- *     Right *TreeNode
- * }
- */
-func inorderSuccessor(root *TreeNode, p *TreeNode) *TreeNode {
-	if root == nil {
+// inorderSuccessor returns the node with the smallest key strictly greater than p.Val.
+// Works in O(h) time and O(1) extra space.
+func inorderSuccessor(root, p *TreeNode) *TreeNode {
+	if root == nil || p == nil {
 		return nil
 	}
 
-	var successor *TreeNode
-	for root != nil {
-		if root.Val > p.Val {
-			// successor of a node p is the node with
-			// the smallest key greater than p.val.
-			if successor == nil || root.Val < successor.Val {
-				successor = root
-			}
-		}
-
-		if root.Val > p.Val {
-			root = root.Left
+	var succ *TreeNode
+	for cur := root; cur != nil; {
+		if cur.Val > p.Val {
+			// cur is a candidate; move left to find smaller candidates
+			succ = cur
+			cur = cur.Left
 		} else {
-			root = root.Right
+			// cur <= p.Val, successor must be in right subtree
+			cur = cur.Right
 		}
 	}
-
-	return successor
+	return succ
 }

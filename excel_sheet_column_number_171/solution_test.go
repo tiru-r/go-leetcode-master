@@ -6,54 +6,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_titleToNumber(t *testing.T) {
-	type args struct {
-		s string
-	}
+func TestTitleToNumber(t *testing.T) {
 	tests := []struct {
 		name string
-		args args
+		s    string
 		want int
 	}{
-		{
-			name: "excel sheet column number",
-			args: args{
-				s: "A",
-			},
-			want: 1,
-		},
-		{
-			name: "excel sheet column number",
-			args: args{
-				s: "AB",
-			},
-			want: 28,
-		},
-		{
-			name: "excel sheet column number",
-			args: args{
-				s: "ZY",
-			},
-			want: 701,
-		},
-		{
-			name: "excel sheet column number",
-			args: args{
-				s: "YB",
-			},
-			want: 652,
-		},
-		{
-			name: "excel sheet column number",
-			args: args{
-				s: "AAA",
-			},
-			want: 703,
-		},
+		{"single A", "A", 1},
+		{"two-letter AB", "AB", 28},
+		{"two-letter ZY", "ZY", 701},
+		{"two-letter YB", "YB", 652},
+		{"three-letter AAA", "AAA", 703},
+		{"edge Z", "Z", 26},
+		{"edge AZ", "AZ", 52},
+		{"edge BZ", "BZ", 78},
+		{"long AZY", "AZY", 1378},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, titleToNumber(tt.args.s))
+			assert.Equal(t, tt.want, titleToNumber(tt.s))
 		})
 	}
 }

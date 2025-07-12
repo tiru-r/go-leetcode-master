@@ -1,57 +1,10 @@
 package distribute_candies_575
 
 func distributeCandies(candies []int) int {
-	uniqueCandies := make(map[int]struct{})
-	for _, candy := range candies {
-		uniqueCandies[candy] = struct{}{}
-	}
-
-	// Key idea here is that the maximum number of candies to
-	// distribute to the sister is the minimum between half of
-	// all candies (even number of candies assumed) AND the number
-	// of unique candies available. She can have at most unique number
-	// of candies unless there are more unique number of candies than
-	// half of them.
-	return min(len(uniqueCandies), len(candies)/2)
-}
-
-/*
-// Note: old code
-func distributeCandies(candies []int) int {
-	cm := make(map[int]int)
+	// Fast uniqueness with a map[int]struct{}
+	unique := make(map[int]struct{}, len(candies))
 	for _, v := range candies {
-		_, ok := cm[v]
-		if ok {
-			cm[v]++
-		} else {
-			cm[v] = 1
-		}
+		unique[v] = struct{}{}
 	}
-
-	sisterMap := make(map[int]bool)
-	for i := 0; i < len(candies) / 2; i++ {
-		distributed := false
-		for k, v := range cm {
-			// No more of that candy left
-			if v == 0 {
-				continue
-			}
-
-			// Give sister a candy
-			cm[k] -= 1
-			sisterMap[k] = true
-
-			// If sister has taken half of all candies, she's done
-			if len(sisterMap) == len(candies) / 2 {
-				distributed = true
-				break
-			}
-		}
-		if distributed {
-			break
-		}
-	}
-
-	return len(sisterMap)
+	return min(len(unique), len(candies)/2)
 }
-*/

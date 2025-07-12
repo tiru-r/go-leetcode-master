@@ -1,68 +1,53 @@
 package critical_connections_in_a_network_1192
 
-// Modern solution using built-in min function (Go 1.21+)
-
-// Note: review this. Good graph algorithm.
-// Finding bridges in graph: https://www.youtube.com/watch?v=thLQYBlz2DM
-// A bridge is a connection that is critical in the context of this problem.
-// An articulation point is any node, which removed, would break connectivity.
-// See: https://courses.cs.washington.edu/courses/cse421/04su/slides/artic.pdf
-func criticalConnections(n int, connections [][]int) [][]int {
-	// build the adjacency list from connections
-	adjList := make(map[int][]int)
-	for _, conn := range connections {
-		adjList[conn[0]] = append(adjList[conn[0]], conn[1])
-		adjList[conn[1]] = append(adjList[conn[1]], conn[0])
+// CanFinish returns all critical connections (bridges) in the graph.
+// n   : number of vertices (0..n-1)
+// con : undirected edges [u,v]
+func CriticalConnections(n int, con [][]int) [][]int {
+	// 1. Build adjacency list (slice version, one allocation)
+	adj := make([][]int, n)
+	for _, e := range con {
+		u, v := e[0], e[1]
+		adj[u] = append(adj[u], v)
+		adj[v] = append(adj[v], u)
 	}
 
-	// discover indicates the time a node was visited
+	// 2. Tarjan arrays
 	disc := make([]int, n)
+	low := make([]int, n)
 	for i := range disc {
-		disc[i] = -1
+		disc[i], low[i] = -1, -1
 	}
 
-	// low value indicates whether there's some other
-	// early node (based on disc) that can
-	// be visited by the subtree rooted with that node
-	low := make([]int, n)
+	var bridges [][]int
+	time := 0
 
-	// track the parent of each node to prevent traversing back
-	parents := make([]int, n)
-
-	return dfs(connections[0][0], adjList, disc, low, parents, 0, make([][]int, 0))
-}
-
-func dfs(node int, adjList map[int][]int, disc, low, parents []int, currentTime int, critical [][]int) [][]int {
-	currentTime++
-	disc[node] = currentTime
-	low[node] = currentTime
-
-	// for every node in the adjacency list, dfs
-	for _, edge := range adjList[node] {
-		parents[edge] = node
-
-		// if we have not seen the node over the edge before
-		if disc[edge] == -1 {
-			critical = dfs(edge, adjList, disc, low, parents, currentTime, critical)
-
-			// compare the low values of both nodes to update the current
-			// nodes connectivity to the earliest node possible
-			low[node] = min(low[node], low[edge])
-
-			// the edge is a bridge if the low of the edge is
-			// greater than the discovery time of the node
-			if low[edge] > disc[node] {
-				critical = append(critical, []int{node, edge})
+	// 3. DFS bridge finder
+	var dfs func(int, int)
+	dfs = func(u, parent int) {
+		time++
+		disc[u], low[u] = time, time
+		for _, v := range adj[u] {
+			if v == parent { // skip immediate parent
+				continue
+			}
+			if disc[v] == -1 { // tree edge
+				dfs(v, u)
+				low[u] = min(low[u], low[v])
+				if low[v] > disc[u] { // bridge detected
+					bridges = append(bridges, []int{u, v})
+				}
+			} else { // back edge
+				low[u] = min(low[u], disc[v])
 			}
 		}
-
-		// if we have seen the node before and it's not the parent
-		if edge != parents[node] {
-			// check if node is connected to any earlier nodes
-			// if so, set the low for node to the edge discovered the earliest
-			low[node] = min(disc[edge], low[node])
-		}
 	}
 
-	return critical
+	// 4. Run DFS from every component (graph may be disconnected)
+	for i := 0; i < n; i++ {
+		if disc[i] == -1 {
+			dfs(i, -1)
+		}
+	}
+	return bridges
 }

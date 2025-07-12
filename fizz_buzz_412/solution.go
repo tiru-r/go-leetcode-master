@@ -4,7 +4,6 @@ import "strconv"
 
 func fizzBuzz(n int) []string {
 	result := make([]string, n)
-	
 	for i := 1; i <= n; i++ {
 		switch {
 		case i%15 == 0:
@@ -17,6 +16,5 @@ func fizzBuzz(n int) []string {
 			result[i-1] = strconv.Itoa(i)
 		}
 	}
-	
 	return result
 }

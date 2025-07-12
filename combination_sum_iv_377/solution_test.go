@@ -6,76 +6,48 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_combinationSum4(t *testing.T) {
-	type args struct {
+func TestCombinationSum4(t *testing.T) {
+	tests := []struct {
+		name   string
 		nums   []int
 		target int
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
+		want   int
 	}{
-		{
-			name: "standard case with multiple numbers",
-			args: args{
-				nums:   []int{1, 2, 3},
-				target: 4,
-			},
-			want: 7, // Combinations: [1,1,1,1], [1,1,2], [1,2,1], [2,1,1], [2,2], [1,3], [3,1]
-		},
-		{
-			name: "impossible sum with single number",
-			args: args{
-				nums:   []int{3},
-				target: 5,
-			},
-			want: 0, // No way to make 5 with only 3
-		},
-		{
-			name: "empty nums array",
-			args: args{
-				nums:   []int{},
-				target: 1,
-			},
-			want: 0, // Empty array cannot form any positive sum
-		},
-		{
-			name: "target zero",
-			args: args{
-				nums:   []int{1, 2, 3},
-				target: 0,
-			},
-			want: 1, // One way: empty combination
-		},
-		{
-			name: "single number equals target",
-			args: args{
-				nums:   []int{5},
-				target: 5,
-			},
-			want: 1, // Only one combination: [5]
-		},
-		{
-			name: "large target with multiple numbers",
-			args: args{
-				nums:   []int{1, 2},
-				target: 6,
-			},
-			want: 8, // Combinations: [1,1,1,1,1,1], [1,1,1,1,2], [1,1,1,2,1], [1,1,2,1,1], [1,2,1,1,1], [2,1,1,1,1], [1,2,2,1], [2,1,2,1]
-		},
-		{
-			name: "all numbers larger than target",
-			args: args{
-				nums:   []int{10, 20, 30},
-				target: 5,
-			},
-			want: 0, // No combinations possible
-		},
+		{"standard", []int{1, 2, 3}, 4, 7},
+		{"impossible", []int{3}, 5, 0},
+		{"empty nums", []int{}, 1, 0},
+		{"target zero", []int{1, 2, 3}, 0, 1},
+		{"single exact", []int{5}, 5, 1},
+		{"large target", []int{1, 2}, 6, 13}, // corrected canonical value
+		{"all too big", []int{10, 20}, 5, 0},
+		{"negative target", []int{1, 2}, -3, 0},
+		{"zero coins", []int{}, 0, 1},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, combinationSum4(tt.args.nums, tt.args.target))
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			// 1. Drop-in wrapper
+			assert.Equal(t, tc.want, CombinationSum(tc.nums, tc.target))
+
+			// 2. In-place version with fresh buffer
+			buf := make([]int, tc.target+1)
+			assert.Equal(t, tc.want, CombinationSumInPlace(tc.nums, tc.target, buf))
 		})
+	}
+}
+
+// Benchmark the wrapper (uses sync.Pool)
+func BenchmarkCombinationSum(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		CombinationSum([]int{1, 2, 3}, 32)
+	}
+}
+
+// Benchmark the in-place variant
+func BenchmarkCombinationSum4InPlace(b *testing.B) {
+	buf := make([]int, 33)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		CombinationSumInPlace([]int{1, 2, 3}, 32, buf)
 	}
 }

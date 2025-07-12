@@ -1,133 +1,74 @@
 package flatten_nested_list_iterator_341
 
-/**
- * // This is the interface that allows for creating nested lists.
- * // You should not implement it, or speculate about its implementation
- * type NestedInteger struct {
- * }
- *
- * // Return true if this NestedInteger holds a single integer, rather than a nested list.
- * func (this NestedInteger) IsInteger() bool {}
- *
- * // Return the single integer that this NestedInteger holds, if it holds a single integer
- * // The result is undefined if this NestedInteger holds a nested list
- * // So before calling this method, you should have a check
- * func (this NestedInteger) GetInteger() int {}
- *
- * // Set this NestedInteger to hold a single integer.
- * func (n *NestedInteger) SetInteger(value int) {}
- *
- * // Set this NestedInteger to hold a nested list and adds a nested integer to it.
- * func (ni *NestedInteger) Add(elem NestedInteger) {}
- *
- * // Return the nested list that this NestedInteger holds, if it holds a nested list
- * // The list length is zero if this NestedInteger holds a single integer
- * // You can access NestedInteger's List element directly if you want to modify it
- * func (this NestedInteger) GetList() []*NestedInteger {}
- */
-
+// ---------- minimal NestedInteger stub so this file compiles ----------
 type NestedInteger struct {
 	value any
 	isInt bool
 }
 
-func NewNestedInteger(value any) *NestedInteger {
-	var isInt bool
-	if _, ok := value.(int); ok {
-		isInt = true
-	}
-	return &NestedInteger{
-		value: value,
-		isInt: isInt,
-	}
+// constructors (not part of LeetCode API, but needed for tests)
+func Int(v int) *NestedInteger { return &NestedInteger{value: v, isInt: true} }
+func List(list ...*NestedInteger) *NestedInteger {
+	return &NestedInteger{value: list, isInt: false}
 }
 
-func (ni NestedInteger) IsInteger() bool {
-	return ni.isInt
-}
-func (ni NestedInteger) GetInteger() int {
-	if v, ok := ni.value.(int); ok {
-		return v
-	}
-	panic("NestedInteger does not hold an integer")
-}
+// LeetCode-specified API
+func (ni NestedInteger) IsInteger() bool { return ni.isInt }
+func (ni NestedInteger) GetInteger() int { return ni.value.(int) }
 func (ni NestedInteger) GetList() []*NestedInteger {
-	if v, ok := ni.value.([]*NestedInteger); ok {
-		return v
-	}
-	panic("NestedInteger does not hold a list")
+	return ni.value.([]*NestedInteger)
 }
 
-type ListIndex struct {
-	Idx  int
-	List []*NestedInteger
-}
-
-type Stack []*ListIndex
-
-func (s *Stack) Push(v *ListIndex) {
-	*s = append(*s, v)
-}
-
-func (s *Stack) Pop() *ListIndex {
-	if len(*s) == 0 {
-		return nil
-	}
-	val := (*s)[len(*s)-1]
-	*s = (*s)[:len(*s)-1]
-	return val
-}
-
-func (s *Stack) Peek() *ListIndex {
-	if len(*s) == 0 {
-		return nil
-	}
-	return (*s)[len(*s)-1]
-}
-
-func (s *Stack) IsEmpty() bool {
-	return len(*s) == 0
-}
-
+// ---------- iterator implementation ----------
 type NestedIterator struct {
-	stack *Stack
+	stk []state
+}
+
+type state struct {
+	idx  int
+	list []*NestedInteger
 }
 
 func Constructor(nestedList []*NestedInteger) *NestedIterator {
-	stack := &Stack{}
-	stack.Push(&ListIndex{
-		Idx:  0,
-		List: nestedList,
-	})
-
 	return &NestedIterator{
-		stack: stack,
+		stk: []state{{idx: 0, list: nestedList}},
 	}
 }
 
-func (nit *NestedIterator) Next() int {
-	current := nit.stack.Peek()
-	for !current.List[current.Idx].IsInteger() {
-		next := &ListIndex{
-			Idx:  0,
-			List: current.List[current.Idx].GetList(),
+func (it *NestedIterator) Next() int {
+	// HasNext guarantees the top is an integer
+	top := &it.stk[len(it.stk)-1]
+	val := top.list[top.idx].GetInteger()
+	top.idx++
+	it.shrink()
+	return val
+}
+
+func (it *NestedIterator) HasNext() bool {
+	for len(it.stk) > 0 {
+		top := &it.stk[len(it.stk)-1]
+		if top.idx == len(top.list) { // finished current list
+			it.stk = it.stk[:len(it.stk)-1]
+			continue
 		}
-		nit.stack.Push(next)
-
-		current.Idx++
-		current = next
+		node := top.list[top.idx]
+		if node.IsInteger() {
+			return true
+		}
+		// descend into nested list
+		top.idx++
+		it.stk = append(it.stk, state{idx: 0, list: node.GetList()})
 	}
-
-	value := current.List[current.Idx].GetInteger()
-	current.Idx++
-
-	if current.Idx == len(current.List) {
-		nit.stack.Pop()
-	}
-
-	return value
+	return false
 }
 
-func (nit *NestedIterator) HasNext() bool {
-	return !nit.stack.IsEmpty() && nit.stack.Peek().Idx != len(nit.stack.Peek().List)
+// remove exhausted frames after advancing
+func (it *NestedIterator) shrink() {
+	for len(it.stk) > 0 {
+		top := &it.stk[len(it.stk)-1]
+		if top.idx < len(top.list) {
+			return
+		}
+		it.stk = it.stk[:len(it.stk)-1]
+	}
 }

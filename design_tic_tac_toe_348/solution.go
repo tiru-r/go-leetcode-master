@@ -1,72 +1,47 @@
 package design_tic_tac_toe_348
 
-// Modern solution avoiding math.Abs for simple integer checks
-
 type TicTacToe struct {
-	rowCounts         []int
-	colCounts         []int
-	forwardDiagCount  int
-	backwardDiagCount int
+	row []int
+	col []int
+	d1  int // main diagonal (i == j)
+	d2  int // anti-diagonal (i+j == n-1)
+	n   int
 }
 
-/** Initialize your data structure here. */
 func Constructor(n int) TicTacToe {
 	return TicTacToe{
-		rowCounts: make([]int, n),
-		colCounts: make([]int, n),
+		row: make([]int, n),
+		col: make([]int, n),
+		n:   n,
 	}
 }
 
-/*
-  - Player {player} makes a move at ({row}, {col}).
-    @param row The row of the board.
-    @param col The column of the board.
-    @param player The player, can be either 1 or 2.
-    @return The current winning condition, can be either:
-    0: No one wins.
-    1: Player 1 wins.
-    2: Player 2 wins.
-*/
-func (t *TicTacToe) Move(row int, col int, player int) int {
-	// Note: intuition is that each row, col, and diagonal has a count.
-	// For a player to win, it's count must be equal to the row, col, or diagonal length.
-	// Let's choose +1 for player 1 and -1 from player 2. If the absolute value of the
-	// count for row, col, diagonals ever reaches the size of the grid, then the player
-	// has won. This behavior assumes each move is valid and into an empty block.
-
-	// the count for x (player 1) is 1
-	// the count for o (player 2) is -1
-	count := 1
+// Move returns the winner after the move (0, 1, 2).
+func (t *TicTacToe) Move(r, c, player int) int {
+	delta := 1
 	if player == 2 {
-		count = -1
+		delta = -1
 	}
 
-	// increase the counts for each row and column
-	t.rowCounts[row] += count
-	t.colCounts[col] += count
-
-	// increase backward slash diagonal count
-	if row == col {
-		t.backwardDiagCount += count
+	t.row[r] += delta
+	t.col[c] += delta
+	if r == c {
+		t.d1 += delta
+	}
+	if r+c == t.n-1 {
+		t.d2 += delta
 	}
 
-	// increase forward slash diagonal count
-	// tricky observation for the forward slash diagonal
-	// works for matching on columns as well
-	if row == len(t.rowCounts)-col-1 {
-		t.forwardDiagCount += count
+	abs := func(x int) int {
+		if x < 0 {
+			return -x
+		}
+		return x
 	}
-
-	// if the count at this move becomes boardSize or -boardSize, the current player
-	// just won the game. Use direct comparison instead of math.Abs
-	boardSize := len(t.rowCounts)
-	if t.rowCounts[row] == boardSize || t.rowCounts[row] == -boardSize ||
-		t.colCounts[col] == boardSize || t.colCounts[col] == -boardSize ||
-		t.forwardDiagCount == boardSize || t.forwardDiagCount == -boardSize ||
-		t.backwardDiagCount == boardSize || t.backwardDiagCount == -boardSize {
+	target := t.n
+	if abs(t.row[r]) == target || abs(t.col[c]) == target ||
+		abs(t.d1) == target || abs(t.d2) == target {
 		return player
 	}
-
-	// no-one won the game
 	return 0
 }

@@ -1,64 +1,53 @@
 package generate_parentheses_22
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
-)
+import "testing"
 
-func Test_generateParenthesis(t *testing.T) {
-	type args struct {
-		n int
-	}
+func TestGenerateParenthesis(t *testing.T) {
 	tests := []struct {
-		name string
-		args args
+		n    int
 		want []string
 	}{
-		{
-			name: "generate parentheses",
-			args: args{
-				n: 0,
-			},
-			want: []string{
-				"",
-			},
-		},
-		{
-			name: "generate parentheses",
-			args: args{
-				n: 1,
-			},
-			want: []string{
-				"()",
-			},
-		},
-		{
-			name: "generate parentheses",
-			args: args{
-				n: 2,
-			},
-			want: []string{
-				"(())",
-				"()()",
-			},
-		},
-		{
-			name: "generate parentheses",
-			args: args{
-				n: 3,
-			},
-			want: []string{
-				"((()))",
-				"(()())",
-				"(())()",
-				"()(())",
-				"()()()",
-			},
-		},
+		{0, []string{""}},
+		{1, []string{"()"}},
+		{2, []string{"()()", "(())"}},
+		{3, []string{"((()))", "(()())", "(())()", "()(())", "()()()"}},
+		{4, []string{"(((())))", "((()()))", "((())())", "((()))()", "(()(()))", "(()()())", "(()())()", "(())(())", "(())()()", "()((()))", "()(()())", "()(())()", "()()(())", "()()()()"}},
+		{5, []string{"((((()))))", "(((()())))", "(((())()))", "(((()))())", "(((())))()", "((()(())))", "((()()()))", "((()())())", "((()()))()", "((())(()))", "((())()())", "((())())()", "((()))(())", "((()))()()", "(()((())))", "(()(()()))", "(()(())())", "(()(()))()", "(()()(()))", "(()()()())", "(()()())()", "(()())(())", "(()())()()", "(())((()))", "(())(()())", "(())(())()", "(())()(())", "(())()()()", "()(((())))", "()((()()))", "()((())())", "()((()))()", "()(()(()))", "()(()()())", "()(()())()", "()(())(())", "()(())()()", "()()((()))", "()()(()())", "()()(())()", "()()()(())", "()()()()()"}},
+		{6, nil}, // too long to inline, checked by length
+		{7, nil},
+		{8, nil},
 	}
+
+	// helper to check length only for large n
+	catalan := []int{1, 1, 2, 5, 14, 42, 132, 429, 1430}
+
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, generateParenthesis(tt.args.n))
-		})
+		got := generateParenthesis(tt.n)
+		if tt.n >= 6 {
+			if len(got) != catalan[tt.n] {
+				t.Errorf("n=%d: got %d results, want %d", tt.n, len(got), catalan[tt.n])
+			}
+			continue
+		}
+		if !equal(got, tt.want) {
+			t.Errorf("n=%d: got %v, want %v", tt.n, got, tt.want)
+		}
 	}
+}
+
+func equal(a, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	m := make(map[string]int, len(a))
+	for _, s := range a {
+		m[s]++
+	}
+	for _, s := range b {
+		if m[s] == 0 {
+			return false
+		}
+		m[s]--
+	}
+	return true
 }

@@ -5,58 +5,58 @@ import (
 	"slices"
 )
 
-// Note: study again.
-func watchedVideosByFriends(watchedVideos [][]string, friends [][]int, id int, level int) []string {
-	seen := map[int]bool{id: true}
-	currentLevel := []int{id}
+func watchedVideosByFriends(
+	watchedVideos [][]string,
+	friends [][]int,
+	id int,
+	level int,
+) []string {
 
-	// BFS for level times
-	for level > 0 {
-		var nextLevel []int
-		for _, friendID := range currentLevel {
-			for _, edge := range friends[friendID] {
-				if !seen[edge] {
-					nextLevel = append(nextLevel, edge)
-					seen[edge] = true
+	seen := map[int]bool{id: true}
+	curr := []int{id}
+
+	// BFS exactly `level` steps
+	for level > 0 && len(curr) > 0 {
+		next := []int{}
+		for _, u := range curr {
+			for _, v := range friends[u] {
+				if !seen[v] {
+					seen[v] = true
+					next = append(next, v)
 				}
 			}
 		}
-		currentLevel = nextLevel
+		curr = next
 		level--
 	}
 
-	// Count video frequencies
-	freq := make(map[string]int)
-	for _, friendID := range currentLevel {
-		for _, video := range watchedVideos[friendID] {
-			freq[video]++
+	// frequency map
+	freq := map[string]int{}
+	for _, uid := range curr {
+		for _, vid := range watchedVideos[uid] {
+			freq[vid]++
 		}
 	}
 
-	// Convert to slice for sorting
-	type videoFreq struct {
+	// slice + stable sort (freq asc, then name asc)
+	type pair struct {
 		title string
-		freq  int
+		cnt   int
 	}
-
-	videos := make([]videoFreq, 0, len(freq))
-	for title, frequency := range freq {
-		videos = append(videos, videoFreq{title, frequency})
+	list := make([]pair, 0, len(freq))
+	for t, c := range freq {
+		list = append(list, pair{t, c})
 	}
-
-	// Sort by frequency, then alphabetically
-	slices.SortFunc(videos, func(a, b videoFreq) int {
-		if freqCmp := cmp.Compare(a.freq, b.freq); freqCmp != 0 {
-			return freqCmp
+	slices.SortFunc(list, func(a, b pair) int {
+		if c := cmp.Compare(a.cnt, b.cnt); c != 0 {
+			return c
 		}
 		return cmp.Compare(a.title, b.title)
 	})
 
-	// Extract titles
-	result := make([]string, len(videos))
-	for i, v := range videos {
-		result[i] = v.title
+	out := make([]string, len(list))
+	for i, p := range list {
+		out[i] = p.title
 	}
-
-	return result
+	return out
 }

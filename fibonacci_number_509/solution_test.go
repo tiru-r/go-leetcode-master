@@ -1,58 +1,29 @@
 package fibonacci_number_509
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_fib(t *testing.T) {
-	type args struct {
-		N int
-	}
+func TestFib(t *testing.T) {
 	tests := []struct {
 		name string
-		args args
+		n    int
 		want int
 	}{
-		{
-			name: "nth fibonacci number",
-			args: args{
-				N: 0,
-			},
-			want: 0,
-		},
-		{
-			name: "nth fibonacci number",
-			args: args{
-				N: 1,
-			},
-			want: 1,
-		},
-		{
-			name: "nth fibonacci number",
-			args: args{
-				N: 2,
-			},
-			want: 1,
-		},
-		{
-			name: "nth fibonacci number",
-			args: args{
-				N: 3,
-			},
-			want: 2,
-		},
-		{
-			name: "nth fibonacci number",
-			args: args{
-				N: 4,
-			},
-			want: 3,
-		},
+		{"fib 0", 0, 0},
+		{"fib 1", 1, 1},
+		{"fib 2", 2, 1},
+		{"fib 3", 3, 2},
+		{"fib 4", 4, 3},
+		{"fib 5", 5, 5},
+		{"fib 10", 10, 55},
+		{"fib negative", -1, -1}, // optional edge-case
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, fib(tt.args.N))
+			assert.Equal(t, tt.want, fib(tt.n))
 		})
 	}
 }

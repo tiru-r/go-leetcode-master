@@ -34,8 +34,8 @@ func getLiveNeighbors(board [][]int, r, c, rows, cols int) int {
 	// Direction array for all 8 neighbors - much more cache-friendly
 	directions := [][2]int{
 		{-1, -1}, {-1, 0}, {-1, 1},
-		{0, -1},           {0, 1},
-		{1, -1},  {1, 0},  {1, 1},
+		{0, -1}, {0, 1},
+		{1, -1}, {1, 0}, {1, 1},
 	}
 
 	cnt := 0

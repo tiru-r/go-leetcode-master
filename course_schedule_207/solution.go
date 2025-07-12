@@ -2,103 +2,44 @@ package course_schedule_207
 
 // Note: study again.
 
-// BFS cycle detection based on topological sorting (Kahn’s algorithm).
-// If we don't visit every vertex in the topological sort, then we've
-// ran into a cycle.
-func canFinishBFS(numCourses int, prerequisites [][]int) bool {
-	if len(prerequisites) == 0 {
-		return true
+// CanFinish reports whether all courses can be completed.
+// It uses an iterative BFS (Kahn) for clarity and speed.
+func CanFinish(numCourses int, prerequisites [][]int) bool {
+	if numCourses == 0 {
+		return false
 	}
 
-	// Pre-allocate adjacency list with better capacity
-	adjList := make(map[int][]int, numCourses)
-	for _, pre := range prerequisites {
-		adjList[pre[0]] = append(adjList[pre[0]], pre[1])
+	// 1. Build adjacency list and in-degree array.
+	adj := make([][]int, numCourses)
+	inDegree := make([]int, numCourses)
+	for _, p := range prerequisites {
+		from, to := p[1], p[0] // prerequisite -> course
+		adj[from] = append(adj[from], to)
+		inDegree[to]++
 	}
 
-	// calculate the in-degree for each vertex
-	inDegrees := make([]int, numCourses)
-	for _, prereq := range prerequisites {
-		inDegrees[prereq[1]]++
-	}
-
-	// enqueue all vertices with in-degree of 0 using optimized allocation
-	zeroInQueue := make([]int, 0, numCourses/4) // Better initial capacity
-	for course, inDegree := range inDegrees {
-		if inDegree == 0 {
-			zeroInQueue = append(zeroInQueue, course)
+	// 2. Seed queue with zero-in-degree courses.
+	q := make([]int, 0, numCourses)
+	for c, d := range inDegree {
+		if d == 0 {
+			q = append(q, c)
 		}
 	}
 
-	return !hasCycleBFS(adjList, zeroInQueue, inDegrees, numCourses)
-}
-
-func hasCycleBFS(adjList map[int][]int, zeroInQueue []int,
-	inDegrees []int, numVerticies int) bool {
-
+	// 3. Topological sort / cycle detection.
 	seen := 0
-	for len(zeroInQueue) != 0 {
-		// dequeue a zero in-degree vertex
-		v := zeroInQueue[0]
-		zeroInQueue = zeroInQueue[1:]
+	for len(q) > 0 {
+		v := q[0]
+		q = q[1:]
 		seen++
-
-		// for each prereq adjacent to v, decrement it's in-degree
-		// and enqueue it if it's in-degree became 0.
-		for _, prereq := range adjList[v] {
-			inDegrees[prereq]--
-			if inDegrees[prereq] == 0 {
-				zeroInQueue = append(zeroInQueue, prereq)
+		for _, nxt := range adj[v] {
+			inDegree[nxt]--
+			if inDegree[nxt] == 0 {
+				q = append(q, nxt)
 			}
 		}
 	}
 
-	// if we did not see each vertex along the topological sort
-	if seen != numVerticies {
-		return true
-	}
-
-	return false
-}
-
-// DFS cycle detection based on coloring the recursive path as "in progress"
-// or not. If we get back to an "in progress" vertex, it's a part of a cycle.
-func canFinishDFS(numCourses int, prerequisites [][]int) bool {
-	if len(prerequisites) == 0 {
-		return true
-	}
-
-	adjList := make(map[int][]int)
-	for _, pre := range prerequisites {
-		adjList[pre[0]] = append(adjList[pre[0]], pre[1])
-	}
-
-	// find if there is a cycle in the prerequisite dependency graph
-	for k := range adjList {
-		if hasCycleDFS(adjList, make([]int, numCourses), k) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func hasCycleDFS(adjList map[int][]int, colors []int, course int) bool {
-	// if this node is an ancestor of the DFS path taken, there is a cycle
-	if colors[course] == 1 {
-		return true
-	}
-
-	// mark the course as seen
-	colors[course] = 1
-
-	cycles := false
-	for _, prereq := range adjList[course] {
-		cycles = cycles || hasCycleDFS(adjList, colors, prereq)
-	}
-
-	// unmark the course as seen on way back up the call stack
-	colors[course] = 0
-
-	return cycles
+	// If we processed every vertex, no cycle.
+	return seen == numCourses
 }

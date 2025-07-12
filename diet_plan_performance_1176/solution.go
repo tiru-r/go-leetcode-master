@@ -1,35 +1,31 @@
 package diet_plan_performance_1176
 
-func dietPlanPerformance(calories []int, k int, lower int, upper int) int {
-	start := 0
-	end := k - 1
-	t := 0
-	for i := start; i <= end; i++ {
-		t += calories[i]
+func dietPlanPerformance(calories []int, k, lower, upper int) int {
+	if k <= 0 || k > len(calories) {
+		return 0
 	}
 
-	points := getPointsForT(t, lower, upper)
-
-	for end < len(calories)-1 {
-		t = t - calories[start]
-		start++
-		end++
-		t = t + calories[end]
-
-		points += getPointsForT(t, lower, upper)
+	// first window
+	sum := 0
+	for i := 0; i < k; i++ {
+		sum += calories[i]
 	}
 
+	points := 0
+	if sum < lower {
+		points--
+	} else if sum > upper {
+		points++
+	}
+
+	// sliding the window
+	for i := k; i < len(calories); i++ {
+		sum += calories[i] - calories[i-k]
+		if sum < lower {
+			points--
+		} else if sum > upper {
+			points++
+		}
+	}
 	return points
-}
-
-func getPointsForT(t, lower, upper int) int {
-	if t < lower {
-		return -1
-	}
-
-	if t > upper {
-		return 1
-	}
-
-	return 0
 }

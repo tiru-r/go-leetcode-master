@@ -1,8 +1,9 @@
 package kth_smallest_element_in_a_bst_230
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_kthSmallest(t *testing.T) {
@@ -16,7 +17,7 @@ func Test_kthSmallest(t *testing.T) {
 		want int
 	}{
 		{
-			name: "Kth Smallest Element in a BST",
+			name: "k=1 in small tree",
 			args: args{
 				root: &TreeNode{
 					Val: 3,
@@ -26,33 +27,68 @@ func Test_kthSmallest(t *testing.T) {
 							Val: 2,
 						},
 					},
-					Right: &TreeNode{
-						Val: 4,
-					},
+					Right: &TreeNode{Val: 4},
 				},
 				k: 1,
 			},
 			want: 1,
 		},
 		{
-			name: "Kth Smallest Element in a BST",
+			name: "k=3 in five-node tree",
 			args: args{
 				root: &TreeNode{
 					Val: 5,
 					Left: &TreeNode{
 						Val: 3,
-						Right: &TreeNode{
-							Val: 4,
-						},
 						Left: &TreeNode{
-							Val: 2,
-							Left: &TreeNode{
-								Val: 1,
-							},
+							Val:  2,
+							Left: &TreeNode{Val: 1},
 						},
+						Right: &TreeNode{Val: 4},
 					},
+					Right: &TreeNode{Val: 6},
+				},
+				k: 3,
+			},
+			want: 3,
+		},
+		{
+			name: "k=4 in five-node tree",
+			args: args{
+				root: &TreeNode{
+					Val: 5,
+					Left: &TreeNode{
+						Val: 3,
+						Left: &TreeNode{
+							Val:  2,
+							Left: &TreeNode{Val: 1},
+						},
+						Right: &TreeNode{Val: 4},
+					},
+					Right: &TreeNode{Val: 6},
+				},
+				k: 4,
+			},
+			want: 4,
+		},
+		{
+			name: "single node, k=1",
+			args: args{
+				root: &TreeNode{Val: 42},
+				k:    1,
+			},
+			want: 42,
+		},
+		{
+			name: "right-skewed tree",
+			args: args{
+				root: &TreeNode{
+					Val: 1,
 					Right: &TreeNode{
-						Val: 6,
+						Val: 2,
+						Right: &TreeNode{
+							Val: 3,
+						},
 					},
 				},
 				k: 3,
@@ -60,29 +96,20 @@ func Test_kthSmallest(t *testing.T) {
 			want: 3,
 		},
 		{
-			name: "Kth Smallest Element in a BST",
+			name: "k equals size",
 			args: args{
 				root: &TreeNode{
-					Val: 5,
+					Val: 2,
 					Left: &TreeNode{
-						Val: 3,
-						Right: &TreeNode{
-							Val: 4,
-						},
-						Left: &TreeNode{
-							Val: 2,
-							Left: &TreeNode{
-								Val: 1,
-							},
-						},
+						Val: 1,
 					},
 					Right: &TreeNode{
-						Val: 6,
+						Val: 3,
 					},
 				},
-				k: 4,
+				k: 3,
 			},
-			want: 4,
+			want: 3,
 		},
 	}
 	for _, tt := range tests {

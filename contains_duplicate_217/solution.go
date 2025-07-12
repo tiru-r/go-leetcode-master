@@ -1,21 +1,18 @@
 package contains_duplicate_217
 
-// ContainsDuplicate checks if any value appears at least twice in the given integer slice.
-// It uses a hash map to track encountered numbers, returning true if a duplicate is found.
+// ContainsDuplicate reports whether any integer appears at least twice.
 //
-// Time Complexity: O(n), where n is the length of the input slice.
-//   - Iterates through the slice once, with O(1) average-case map operations.
-//
-// Space Complexity: O(n), where n is the length of the input slice.
-//   - Stores up to n elements in the map in the worst case (all unique elements).
+//	Time:  O(n)
+//	Space: O(n)
+//	GC:    zero allocations after map growth (Go 1.21+)
 func containsDuplicate(nums []int) bool {
-	seen := make(map[int]struct{}, len(nums)) // Pre-allocate map with hint for capacity.
-
-	for _, num := range nums {
-		if _, exists := seen[num]; exists {
+	// Pre-size the map to avoid re-hashing; worst-case = all unique.
+	seen := make(map[int]struct{}, len(nums))
+	for _, v := range nums {
+		if _, ok := seen[v]; ok {
 			return true
 		}
-		seen[num] = struct{}{}
+		seen[v] = struct{}{}
 	}
 	return false
 }

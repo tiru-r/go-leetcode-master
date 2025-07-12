@@ -1,37 +1,24 @@
 package first_unique_character_in_a_string_387
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
-)
+import "testing"
 
 func Test_firstUniqChar(t *testing.T) {
-	type args struct {
-		s string
-	}
 	tests := []struct {
 		name string
-		args args
+		s    string
 		want int
 	}{
-		{
-			name: "first unique character in string",
-			args: args{
-				s: "leetcode",
-			},
-			want: 0,
-		},
-		{
-			name: "first unique character in string",
-			args: args{
-				s: "loveleetcode",
-			},
-			want: 2,
-		},
+		{"leetcode", "leetcode", 0},
+		{"loveleetcode", "loveleetcode", 2},
+		{"aabb", "aabb", -1},
+		{"single", "z", 0},
+		{"empty", "", -1},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, firstUniqChar(tt.args.s))
+			if got := firstUniqChar(tt.s); got != tt.want {
+				t.Errorf("firstUniqChar() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }

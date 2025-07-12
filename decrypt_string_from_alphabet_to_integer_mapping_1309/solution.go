@@ -1,34 +1,16 @@
 package decrypt_string_from_alphabet_to_integer_mapping_1309
 
-import (
-	"strconv"
-	"strings"
-)
-
-// Modern solution using strings.Builder for efficient string building
+// freqAlphabets decodes the 1–26 '#' string into a-z.
 func freqAlphabets(s string) string {
-	a := "abcdefghijklmnopqrstuvwxyz"
-	var builder strings.Builder
-	builder.Grow(len(s)) // Pre-allocate capacity
-
-	i := 0
-	for i < len(s) {
-		if i < len(s)-2 && s[i+2] == '#' {
-			alphaIdx, err := strconv.Atoi(s[i : i+2])
-			if err != nil || alphaIdx < 1 || alphaIdx > 26 {
-				break // Invalid input
-			}
-			builder.WriteByte(a[alphaIdx-1])
+	buf := make([]byte, 0, len(s)) // worst-case length
+	for i := 0; i < len(s); {
+		if i+2 < len(s) && s[i+2] == '#' { // "10#".."26#"
+			buf = append(buf, 'j'+byte(s[i]-'1')*10+byte(s[i+1]-'0')-10)
 			i += 3
-		} else {
-			alphaIdx := int(s[i] - '0')
-			if alphaIdx < 1 || alphaIdx > 9 {
-				break // Invalid input
-			}
-			builder.WriteByte(a[alphaIdx-1])
+		} else { // "1".."9"
+			buf = append(buf, 'a'+byte(s[i]-'1'))
 			i++
 		}
 	}
-
-	return builder.String()
+	return string(buf)
 }
