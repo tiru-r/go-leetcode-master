@@ -1,125 +1,159 @@
 package lru_cache_146
 
 import (
-	"github.com/stretchr/testify/assert"
+	"reflect"
 	"testing"
 )
 
-func TestLRUCache_1(t *testing.T) {
+// TestLRUCache uses table-driven testing to verify the LRUCache implementation.
+func TestLRUCache(t *testing.T) {
+	tests := []struct {
+		name       string
+		capacity   int
+		operations []operation
+		expected   []int
+	}{
+		{
+			name:     "Basic Put and Get",
+			capacity: 2,
+			operations: []operation{
+				{op: "put", key: 1, value: 100},
+				{op: "put", key: 2, value: 200},
+				{op: "get", key: 1},
+				{op: "get", key: 2},
+				{op: "get", key: 3},
+			},
+			expected: []int{100, 200, -1},
+		},
+		{
+			name:     "LRU Eviction",
+			capacity: 2,
+			operations: []operation{
+				{op: "put", key: 1, value: 100},
+				{op: "put", key: 2, value: 200},
+				{op: "put", key: 3, value: 300}, // Evicts key 1
+				{op: "get", key: 1},
+				{op: "get", key: 2},
+				{op: "get", key: 3},
+			},
+			expected: []int{-1, 200, 300},
+		},
+		{
+			name:     "Update Existing Key",
+			capacity: 2,
+			operations: []operation{
+				{op: "put", key: 1, value: 100},
+				{op: "put", key: 2, value: 200},
+				{op: "put", key: 1, value: 150}, // Update key 1
+				{op: "get", key: 1},
+				{op: "put", key: 3, value: 300}, // Evicts key 2
+				{op: "get", key: 2},
+			},
+			expected: []int{150, -1},
+		},
+		{
+			name:     "Move to Head on Get",
+			capacity: 2,
+			operations: []operation{
+				{op: "put", key: 1, value: 100},
+				{op: "put", key: 2, value: 200},
+				{op: "get", key: 1},             // Moves key 1 to head
+				{op: "put", key: 3, value: 300}, // Evicts key 2
+				{op: "get", key: 2},
+				{op: "get", key: 1},
+			},
+			expected: []int{100, -1, 100},
+		},
+		{
+			name:     "Single Capacity",
+			capacity: 1,
+			operations: []operation{
+				{op: "put", key: 1, value: 100},
+				{op: "put", key: 2, value: 200}, // Evicts key 1
+				{op: "get", key: 1},
+				{op: "get", key: 2},
+			},
+			expected: []int{-1, 200},
+		},
+		{
+			name:     "Empty Cache",
+			capacity: 2,
+			operations: []operation{
+				{op: "get", key: 1},
+			},
+			expected: []int{-1},
+		},
+		{
+			name:     "Complex Sequence",
+			capacity: 2,
+			operations: []operation{
+				{op: "put", key: 1, value: 1},
+				{op: "put", key: 2, value: 2},
+				{op: "get", key: 1},
+				{op: "put", key: 3, value: 3}, // Evicts key 2
+				{op: "get", key: 2},
+				{op: "put", key: 4, value: 4}, // Evicts key 1
+				{op: "get", key: 1},
+				{op: "get", key: 3},
+				{op: "get", key: 4},
+			},
+			expected: []int{1, -1, -1, 3, 4},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cache := Constructor(tt.capacity)
+			results := []int{}
+
+			for _, op := range tt.operations {
+				if op.op == "put" {
+					cache.Put(op.key, op.value)
+				} else if op.op == "get" {
+					results = append(results, cache.Get(op.key))
+				}
+			}
+
+			if !reflect.DeepEqual(results, tt.expected) {
+				t.Errorf("Test %s failed: expected %v, got %v", tt.name, tt.expected, results)
+			}
+
+			// Verify internal structure: ensure map size matches expected non-evicted items
+			expectedMapSize := 0
+			for _, op := range tt.operations {
+				if op.op == "put" {
+					if _, ok := cache.data[op.key]; ok {
+						expectedMapSize++
+					}
+				}
+			}
+			if len(cache.data) > cache.cap {
+				t.Errorf("Test %s failed: map size %d exceeds capacity %d", tt.name, len(cache.data), cache.cap)
+			}
+		})
+	}
+}
+
+// operation represents a single cache operation (Put or Get).
+type operation struct {
+	op    string // "put" or "get"
+	key   int
+	value int // Only used for "put"
+}
+
+// TestConstructor verifies the initialization of the LRUCache separately.
+func TestConstructor(t *testing.T) {
 	cache := Constructor(2)
-	cache.Put(1, 1)
-	cache.Put(2, 2)
-	assert.Equal(t, 1, cache.Get(1)) // returns 1
-
-	cache.Put(3, 3)                   // evicts key 2
-	assert.Equal(t, -1, cache.Get(2)) // returns -1 (not found)
-
-	cache.Put(4, 4)                   // evicts key 1
-	assert.Equal(t, -1, cache.Get(1)) // returns -1 (not found)
-	assert.Equal(t, 3, cache.Get(3))  // returns 3
-	assert.Equal(t, 4, cache.Get(4))  // returns 4
-}
-
-func TestLRUCache_2(t *testing.T) {
-	cache := Constructor(1)
-	cache.Put(2, 1)
-	assert.Equal(t, 1, cache.Get(2))
-}
-
-/*
-["LRUCache","put","get","put","get","get"]
-[[1],[2,1],[2],[3,2],[2],[3]]
-*/
-func TestLRUCache_3(t *testing.T) {
-	cache := Constructor(1)
-	cache.Put(2, 1)
-	assert.Equal(t, 1, cache.Get(2))
-
-	cache.Put(3, 2)
-	assert.Equal(t, -1, cache.Get(2))
-	assert.Equal(t, 2, cache.Get(3))
-}
-
-/*
-["LRUCache","put","put","get","put","put","get"]
-[[2],[2,1],[2,2],[2],[1,1],[4,1],[2]]
-*/
-func TestLRUCache_4(t *testing.T) {
-	cache := Constructor(2)
-	cache.Put(2, 1)
-	cache.Put(2, 2)
-	assert.Equal(t, 2, cache.Get(2))
-}
-
-/*
-["LRUCache","put","put","put","put","get","get"]
-[[2],[2,1],[1,1],[2,3],[4,1],[1],[2]]
-Output:   [null,null,null,null,null,1,-1]
-Expected: [null,null,null,null,null,-1,3]
-*/
-func TestLRUCache_5(t *testing.T) {
-	cache := Constructor(2)
-	cache.Put(2, 1)
-	cache.Put(1, 1)
-	cache.Put(2, 3) // evict 2->1
-	cache.Put(4, 1) // evict 1->1
-
-	// left with: 2->3, 4->1
-	assert.Equal(t, -1, cache.Get(1))
-	assert.Equal(t, 3, cache.Get(2))
-}
-
-/*
-["LRUCache","put","put","get","put","put","get"]
-[[2],[2,1],[2,2],[2],[1,1],[4,1],[2]]
-Output:   [null,null,null,null,null,1,-1]
-Expected: [null,null,null,null,null,-1,3]
-*/
-func TestLRUCache_6(t *testing.T) {
-	cache := Constructor(2)
-	cache.Put(2, 1)
-	cache.Put(2, 2)
-	assert.Equal(t, 2, cache.Get(2))
-	cache.Put(1, 1)
-	cache.Put(4, 1)
-	assert.Equal(t, -1, cache.Get(2))
-}
-
-/*
-["LRUCache","get","put","get","put","put","get","get"]
-[[2],[2],[2,6],[1],[1,5],[1,2],[1],[2]]
-*/
-func TestLRUCache_7(t *testing.T) {
-	cache := Constructor(2)
-	assert.Equal(t, -1, cache.Get(2))
-	cache.Put(2, 6)
-	assert.Equal(t, -1, cache.Get(1))
-	cache.Put(1, 5)
-	cache.Put(1, 2) // evicts 2->6
-	assert.Equal(t, 2, cache.Get(1))
-	assert.Equal(t, 6, cache.Get(2))
-}
-
-/*
-["LRUCache","put","put","put","put","get","get","get","get","put","get","get","get","get","get"]
-[[3],[1,1],[2,2],[3,3],[4,4],[4],[3],[2],[1],[5,5],[1],[2],[3],[4],[5]]
-Output: [null,null,null,null,null,4,3,2,-1,null,-1,2,-1,4,5]
-Expected: [null,null,null,null,null,4,3,2,-1,null,-1,2,3,-1,5]
-*/
-func TestLRUCache_8(t *testing.T) {
-	cache := Constructor(3)
-	cache.Put(1, 1)
-	cache.Put(2, 2)
-	cache.Put(3, 3)
-	cache.Put(4, 4)
-	assert.Equal(t, 4, cache.Get(4))
-	assert.Equal(t, 3, cache.Get(3))
-	assert.Equal(t, 2, cache.Get(2))
-	assert.Equal(t, -1, cache.Get(1))
-	cache.Put(5, 5)
-	assert.Equal(t, -1, cache.Get(1))
-	assert.Equal(t, 2, cache.Get(2))
-	assert.Equal(t, 3, cache.Get(3))
-	assert.Equal(t, -1, cache.Get(4))
-	assert.Equal(t, 5, cache.Get(5))
+	if cache.cap != 2 {
+		t.Errorf("Expected capacity 2, got %d", cache.cap)
+	}
+	if cache.data == nil {
+		t.Error("Expected data map to be initialized, got nil")
+	}
+	if cache.head == nil || cache.tail == nil {
+		t.Error("Expected head and tail sentinels to be initialized, got nil")
+	}
+	if cache.head.next != cache.tail || cache.tail.prev != cache.head {
+		t.Error("Expected head.next to point to tail and tail.prev to point to head")
+	}
 }

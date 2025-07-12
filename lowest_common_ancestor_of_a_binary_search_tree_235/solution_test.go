@@ -1,134 +1,78 @@
 package lowest_common_ancestor_of_a_binary_search_tree_235
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_lowestCommonAncestor(t *testing.T) {
-	type args struct {
-		root *TreeNode
-		p    int
-		q    int
+/* ---------- helpers only for tests ---------- */
+
+// build creates a BST from the given insertion order.
+func build(vals ...int) *TreeNode {
+	if len(vals) == 0 {
+		return nil
 	}
-	tests := []struct {
-		name string
-		args args
-		want int
-	}{
-		{
-			name: "lowest common ancestor",
-			args: args{
-				root: &TreeNode{
-					Val: 6,
-					Left: &TreeNode{
-						Val: 2,
-						Left: &TreeNode{
-							Val: 0,
-						},
-						Right: &TreeNode{
-							Val: 4,
-							Left: &TreeNode{
-								Val: 3,
-							},
-							Right: &TreeNode{
-								Val: 5,
-							},
-						},
-					},
-					Right: &TreeNode{
-						Val: 8,
-						Left: &TreeNode{
-							Val: 7,
-						},
-						Right: &TreeNode{
-							Val: 9,
-						},
-					},
-				},
-				p: 2,
-				q: 8,
-			},
-			want: 6,
-		},
-		{
-			name: "lowest common ancestor",
-			args: args{
-				root: &TreeNode{
-					Val: 6,
-					Left: &TreeNode{
-						Val: 2,
-						Left: &TreeNode{
-							Val: 0,
-						},
-						Right: &TreeNode{
-							Val: 4,
-							Left: &TreeNode{
-								Val: 3,
-							},
-							Right: &TreeNode{
-								Val: 5,
-							},
-						},
-					},
-					Right: &TreeNode{
-						Val: 8,
-						Left: &TreeNode{
-							Val: 7,
-						},
-						Right: &TreeNode{
-							Val: 9,
-						},
-					},
-				},
-				p: 2,
-				q: 4,
-			},
-			want: 2,
-		},
-		{
-			name: "lowest common ancestor",
-			args: args{
-				root: &TreeNode{
-					Val: 6,
-					Right: &TreeNode{
-						Val: 8,
-						Right: &TreeNode{
-							Val: 10,
-							Right: &TreeNode{
-								Val: 12,
-							},
-							Left: &TreeNode{
-								Val: 9,
-							},
-						},
-					},
-				},
-				p: 8,
-				q: 9,
-			},
-			want: 8,
-		},
+	root := &TreeNode{Val: vals[0]}
+	for _, v := range vals[1:] {
+		insert(root, v)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p := findNodeBST(tt.args.root, tt.args.p)
-			q := findNodeBST(tt.args.root, tt.args.q)
-			assert.Equal(t, tt.want, lowestCommonAncestor(tt.args.root, p, q).Val)
-		})
+	return root
+}
+
+// insert puts v into the BST rooted at root.
+func insert(root *TreeNode, v int) {
+	for {
+		if v < root.Val {
+			if root.Left == nil {
+				root.Left = &TreeNode{Val: v}
+				return
+			}
+			root = root.Left
+		} else {
+			if root.Right == nil {
+				root.Right = &TreeNode{Val: v}
+				return
+			}
+			root = root.Right
+		}
 	}
 }
 
-// Assumes the passed tree is a BST, has all unique values, and v is in the tree
-func findNodeBST(root *TreeNode, v int) *TreeNode {
-	curr := root
-	for curr.Val != v {
-		if v < curr.Val {
-			curr = curr.Left
+// find returns the node whose Val == v (assumes v exists).
+func find(root *TreeNode, v int) *TreeNode {
+	for root != nil && root.Val != v {
+		if v < root.Val {
+			root = root.Left
 		} else {
-			curr = curr.Right
+			root = root.Right
 		}
 	}
+	return root
+}
 
-	return curr
+/* ---------- test table ---------- */
+
+func Test_lowestCommonAncestor(t *testing.T) {
+	tests := []struct {
+		name string
+		vals []int // BST insertion order
+		p, q int
+		want int
+	}{
+		{"example 1", []int{6, 2, 8, 0, 4, 7, 9, 3, 5}, 2, 8, 6},
+		{"example 2", []int{6, 2, 8, 0, 4, 7, 9, 3, 5}, 2, 4, 2},
+		{"parent is LCA", []int{6, 8, 10, 9, 12}, 8, 9, 8},
+		{"root is LCA", []int{2, 1, 3}, 1, 3, 2},
+		{"single node", []int{1}, 1, 1, 1},
+		{"left chain", []int{5, 3, 1}, 3, 1, 3},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root := build(tt.vals...)
+			p := find(root, tt.p)
+			q := find(root, tt.q)
+			assert.Equal(t, tt.want, lowestCommonAncestor(root, p, q).Val)
+		})
+	}
 }

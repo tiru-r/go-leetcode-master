@@ -7,60 +7,28 @@ import (
 )
 
 func Test_longestPalindrome(t *testing.T) {
-	type args struct {
-		s string
-	}
 	tests := []struct {
 		name string
-		args args
+		s    string
 		want string
 	}{
-		{
-			name: "largest palindrome in string",
-			args: args{
-				s: "babad",
-			},
-			want: "bab",
-		},
-		{
-			name: "largest palindrome in string",
-			args: args{
-				s: "",
-			},
-			want: "",
-		},
-		{
-			name: "largest palindrome in string",
-			args: args{
-				s: "b",
-			},
-			want: "b",
-		},
-		{
-			name: "largest palindrome in string",
-			args: args{
-				s: "bb",
-			},
-			want: "bb",
-		},
-		{
-			name: "largest palindrome in string",
-			args: args{
-				s: "baaab",
-			},
-			want: "baaab",
-		},
-		{
-			name: "largest palindrome in string",
-			args: args{
-				s: "cbbd",
-			},
-			want: "bb",
-		},
+		{"empty", "", ""},
+		{"single char", "b", "b"},
+		{"odd palindrome", "babad", "bab"},
+		{"even palindrome", "cbbd", "bb"},
+		{"whole string palindrome", "baaab", "baaab"},
+		{"duplicates", "bb", "bb"},
+		{"no palindrome longer than 1", "abcdef", "a"},
+		{"mixed case", "abacdfgdcaba", "aba"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, longestPalindrome(tt.args.s))
+			// Any correct answer is accepted when multiple exist
+			got := longestPalindrome(tt.s)
+			assert.True(t,
+				got == tt.want || // exact match first
+					(tt.name == "odd palindrome" && (got == "bab" || got == "aba")),
+				"expected %q or equivalent palindrome, got %q", tt.want, got)
 		})
 	}
 }

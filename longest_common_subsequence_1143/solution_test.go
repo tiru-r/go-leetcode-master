@@ -7,51 +7,24 @@ import (
 )
 
 func Test_longestCommonSubsequence(t *testing.T) {
-	type args struct {
+	tests := []struct {
+		name  string
 		text1 string
 		text2 string
-	}
-	tests := []struct {
-		name string
-		args args
-		want int
+		want  int
 	}{
-		{
-			name: "longest common subsequence",
-			args: args{
-				text1: "bsbininm",
-				text2: "jmjkbkjkv",
-			},
-			want: 1,
-		},
-		{
-			name: "longest common subsequence",
-			args: args{
-				text1: "abcde",
-				text2: "ace",
-			},
-			want: 3,
-		},
-		{
-			name: "longest common subsequence",
-			args: args{
-				text1: "abc",
-				text2: "abc",
-			},
-			want: 3,
-		},
-		{
-			name: "longest common subsequence",
-			args: args{
-				text1: "abc",
-				text2: "def",
-			},
-			want: 0,
-		},
+		{"empty strings", "", "", 0},
+		{"one empty", "", "abc", 0},
+		{"identical", "abc", "abc", 3},
+		{"no overlap", "abc", "def", 0},
+		{"single char match", "bsbininm", "jmjkbkjkv", 1},
+		{"regular case", "abcde", "ace", 3},
+		{"substring", "abc", "ab", 2},
+		{"long strings", "pmjghexybyrgzczy", "hafcdqbgncrcbihk", 4},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, longestCommonSubsequence(tt.args.text1, tt.args.text2))
+			assert.Equal(t, tt.want, longestCommonSubsequence(tt.text1, tt.text2))
 		})
 	}
 }

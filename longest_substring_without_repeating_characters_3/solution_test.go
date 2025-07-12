@@ -1,51 +1,30 @@
 package longest_substring_without_repeating_characters_3
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_lengthOfLongestSubstring(t *testing.T) {
-	type args struct {
-		s string
-	}
 	tests := []struct {
 		name string
-		args args
+		s    string
 		want int
 	}{
-		{
-			name: "longest substring without repeating characters",
-			args: args{
-				s: "abcabcbb",
-			},
-			want: 3,
-		},
-		{
-			name: "longest substring without repeating characters",
-			args: args{
-				s: "bbbbb",
-			},
-			want: 1,
-		},
-		{
-			name: "longest substring without repeating characters",
-			args: args{
-				s: "pwwkew",
-			},
-			want: 3,
-		},
-		{
-			name: "longest substring without repeating characters",
-			args: args{
-				s: "adcab",
-			},
-			want: 4,
-		},
+		{"empty string", "", 0},
+		{"single char", "a", 1},
+		{"all unique", "abcdef", 6},
+		{"all same", "bbbbb", 1},
+		{"example 1", "abcabcbb", 3},
+		{"example 2", "pwwkew", 3},
+		{"mixed", "adcab", 4},
+		{"with spaces", "a b c a b", 5},
+		{"unicode safe", "üöäüö", 3},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, lengthOfLongestSubstring(tt.args.s))
+			assert.Equal(t, tt.want, lengthOfLongestSubstring(tt.s))
 		})
 	}
 }

@@ -5,37 +5,24 @@ func longestConsecutive(nums []int) int {
 		return 0
 	}
 
-	// Build disjoint set
-	djs := make(map[int]int)
-	for _, n := range nums {
-		djs[n] = n
+	// Build a set for O(1) existence checks
+	set := make(map[int]bool, len(nums))
+	for _, v := range nums {
+		set[v] = true
 	}
 
-	// For each kv pair in disjoint set, point it to it's parent if parent exists
-	// Parent means it's value plus one
-	for k := range djs {
-		_, ok := djs[k+1]
-		if ok {
-			djs[k] = k + 1
+	longest := 0
+	for v := range set {
+		// only start counting if v-1 is NOT in the set
+		if !set[v-1] {
+			length := 1
+			for cur := v + 1; set[cur]; cur++ {
+				length++
+			}
+			if length > longest {
+				longest = length
+			}
 		}
 	}
-
-	// Traverse disjoint set up-links and count longest seen
-	longest := 1
-	for k, v := range djs {
-		kk := k
-		vv := v
-		cnt := 1
-		for kk != vv {
-			cnt++
-			kk = vv
-			vv = djs[kk]
-		}
-
-		if cnt > longest {
-			longest = cnt
-		}
-	}
-
 	return longest
 }

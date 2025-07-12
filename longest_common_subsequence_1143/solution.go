@@ -1,25 +1,25 @@
 package longest_common_subsequence_1143
 
-// Note: study again.
-// DP bottoms-up solution. Builds on same idea of recursive solution but
-// starts from adding to subsequences from front-to-back. Starting at front
-// allows to use previous solutions to build the next solution.
-func longestCommonSubsequence(text1 string, text2 string) int {
-	dp := make([][]int, len(text2)+1)
-	for i := range dp {
-		dp[i] = make([]int, len(text1)+1)
+func longestCommonSubsequence(text1, text2 string) int {
+	n, m := len(text1), len(text2)
+	if n == 0 || m == 0 {
+		return 0
 	}
 
-	for m := 1; m < len(dp); m++ {
-		for n := 1; n < len(dp[m]); n++ {
-			if text1[n-1] == text2[m-1] {
-				dp[m][n] = 1 + dp[m-1][n-1]
-			} else { // text1[n - 1] != text2[m - 1]
-				dp[m][n] = max(dp[m][n-1], dp[m-1][n])
+	// dp[i][j] = LCS of text1[:i] and text2[:j]
+	dp := make([][]int, n+1)
+	for i := range dp {
+		dp[i] = make([]int, m+1)
+	}
+
+	for i := 1; i <= n; i++ {
+		for j := 1; j <= m; j++ {
+			if text1[i-1] == text2[j-1] {
+				dp[i][j] = 1 + dp[i-1][j-1]
+			} else {
+				dp[i][j] = max(dp[i-1][j], dp[i][j-1])
 			}
 		}
 	}
-
-	return dp[len(text2)][len(text1)]
+	return dp[n][m]
 }
-

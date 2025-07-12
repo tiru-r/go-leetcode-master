@@ -1,51 +1,35 @@
 package linked_list_cycle_141
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func Test_hasCycle1(t *testing.T) {
-	four := &ListNode{
-		Val:  -4,
-		Next: nil,
-	}
-	two := &ListNode{
-		Val: 2,
-		Next: &ListNode{
-			Val:  0,
-			Next: four,
-		},
-	}
-	four.Next = two
+func Test_hasCycle(t *testing.T) {
+	t.Run("cycle at tail", func(t *testing.T) {
+		four := &ListNode{Val: -4}
+		two := &ListNode{
+			Val:  2,
+			Next: &ListNode{Val: 0, Next: four},
+		}
+		four.Next = two
+		head := &ListNode{Val: 3, Next: two}
+		assert.True(t, hasCycle(head))
+	})
 
-	head := &ListNode{
-		Val:  3,
-		Next: two,
-	}
+	t.Run("two-node cycle", func(t *testing.T) {
+		one := &ListNode{Val: 1}
+		two := &ListNode{Val: 2, Next: one}
+		one.Next = two
+		assert.True(t, hasCycle(one))
+	})
 
-	assert.Equal(t, true, hasCycle(head))
-}
+	t.Run("single node, no cycle", func(t *testing.T) {
+		assert.False(t, hasCycle(&ListNode{Val: 1}))
+	})
 
-func Test_hasCycle2(t *testing.T) {
-	one := &ListNode{
-		Val:  1,
-		Next: nil,
-	}
-	two := &ListNode{
-		Val:  2,
-		Next: one,
-	}
-	one.Next = two
-
-	assert.Equal(t, true, hasCycle(one))
-}
-
-func Test_hasCycl32(t *testing.T) {
-	one := &ListNode{
-		Val:  1,
-		Next: nil,
-	}
-
-	assert.Equal(t, false, hasCycle(one))
+	t.Run("empty list", func(t *testing.T) {
+		assert.False(t, hasCycle(nil))
+	})
 }

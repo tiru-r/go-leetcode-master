@@ -1,56 +1,31 @@
 package longest_repeating_character_replacement_424
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_characterReplacement(t *testing.T) {
-	type args struct {
-		s string
-		k int
-	}
 	tests := []struct {
 		name string
-		args args
+		s    string
+		k    int
 		want int
 	}{
-		{
-			name: "longest repeating character replacement",
-			args: args{
-				s: "AABABBA",
-				k: 1,
-			},
-			want: 4,
-		},
-		{
-			name: "longest repeating character replacement",
-			args: args{
-				s: "BAAAB",
-				k: 2,
-			},
-			want: 5,
-		},
-		{
-			name: "longest repeating character replacement",
-			args: args{
-				s: "ABBB",
-				k: 2,
-			},
-			want: 4,
-		},
-		{
-			name: "longest repeating character replacement",
-			args: args{
-				s: "ABAB",
-				k: 2,
-			},
-			want: 4,
-		},
+		{"empty string", "", 0, 0},
+		{"single char", "A", 0, 1},
+		{"single char with replacements", "A", 1, 1},
+		{"all same chars", "AAAAA", 0, 5},
+		{"example 1", "AABABBA", 1, 4},
+		{"full replacement", "BAAAB", 2, 5},
+		{"replace all but one", "ABBB", 2, 4},
+		{"alternating", "ABAB", 2, 4},
+		{"longer sequence", "KRSCDCSONAJNHLBMDQGCJ", 4, 7},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, characterReplacement(tt.args.s, tt.args.k))
+			assert.Equal(t, tt.want, characterReplacement(tt.s, tt.k))
 		})
 	}
 }

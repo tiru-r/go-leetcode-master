@@ -1,73 +1,29 @@
 package longest_common_prefix_14
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_longestCommonPrefix(t *testing.T) {
-	type args struct {
-		strs []string
-	}
 	tests := []struct {
 		name string
-		args args
+		strs []string
 		want string
 	}{
-		{
-			name: "longest common prefix",
-			args: args{
-				strs: []string{
-					"flower",
-					"flow",
-					"flight",
-				},
-			},
-			want: "fl",
-		},
-		{
-			name: "longest common prefix",
-			args: args{
-				strs: []string{
-					"dog",
-					"racecar",
-					"car",
-				},
-			},
-			want: "",
-		},
-		{
-			name: "longest common prefix",
-			args: args{
-				strs: []string{
-					"flower",
-				},
-			},
-			want: "flower",
-		},
-		{
-			name: "longest common prefix",
-			args: args{
-				strs: []string{
-					"abcd",
-					"abcd",
-				},
-			},
-			want: "abcd",
-		},
-		{
-			name: "longest common prefix",
-			args: args{
-				strs: []string{
-					"a",
-				},
-			},
-			want: "a",
-		},
+		{"three strings with common prefix", []string{"flower", "flow", "flight"}, "fl"},
+		{"no common prefix", []string{"dog", "racecar", "car"}, ""},
+		{"single string", []string{"flower"}, "flower"},
+		{"identical strings", []string{"abcd", "abcd"}, "abcd"},
+		{"single character", []string{"a"}, "a"},
+		{"empty slice", []string{}, ""},
+		{"empty strings", []string{"", "b"}, ""},
+		{"prefix is whole shortest", []string{"abc", "abcd", "abcde"}, "abc"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, longestCommonPrefix(tt.args.strs))
+			assert.Equal(t, tt.want, longestCommonPrefix(tt.strs))
 		})
 	}
 }

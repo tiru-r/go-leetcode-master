@@ -1,48 +1,26 @@
 package letter_combinations_of_a_phone_number_17
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_letterCombinations(t *testing.T) {
-	type args struct {
-		digits string
-	}
 	tests := []struct {
-		name string
-		args args
-		want []string
+		name   string
+		digits string
+		want   []string
 	}{
-		{
-			name: "letter combinations of a phone number",
-			args: args{
-				digits: "23",
-			},
-			want: []string{
-				"ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf",
-			},
-		},
-		{
-			name: "letter combinations of a phone number",
-			args: args{
-				digits: "4",
-			},
-			want: []string{
-				"g", "h", "i",
-			},
-		},
-		{
-			name: "letter combinations of a phone number",
-			args: args{
-				digits: "",
-			},
-			want: []string{},
-		},
+		{"empty", "", nil},
+		{"single digit 4", "4", []string{"g", "h", "i"}},
+		{"two digits 23", "23", []string{"ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"}},
+		{"invalid digit", "12", nil},
+		{"max depth 9", "9", []string{"w", "x", "y", "z"}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, letterCombinations(tt.args.digits))
+			assert.Equal(t, tt.want, letterCombinations(tt.digits))
 		})
 	}
 }
