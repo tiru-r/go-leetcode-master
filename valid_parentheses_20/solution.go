@@ -12,17 +12,18 @@ func isValid(s string) bool {
 		return false
 	}
 
-	// Use slice as stack - more efficient and idiomatic in Go 1.24
-	var stack []byte
+	// Pre-allocate stack with capacity to avoid reallocations
+	stack := make([]byte, 0, len(s)/2)
 	matches := map[byte]byte{')': '(', '}': '{', ']': '['}
 
-	for i := 0; i < len(s); i++ {
+	for i := range len(s) {
 		c := s[i]
 
-		if c == '(' || c == '{' || c == '[' {
+		switch c {
+		case '(', '{', '[':
 			// Push: append to slice
 			stack = append(stack, c)
-		} else {
+		case ')', '}', ']':
 			if len(stack) == 0 {
 				return false
 			}

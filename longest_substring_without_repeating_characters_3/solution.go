@@ -1,23 +1,25 @@
 package longest_substring_without_repeating_characters_3
 
 func lengthOfLongestSubstring(s string) int {
-	front, rear := 0, 0
-	longest := 0
-	set := make(map[byte]struct{})
-	for front < len(s) {
-		if _, exists := set[s[front]]; exists {
-			for s[rear] != s[front] {
-				delete(set, s[rear])
-				rear++
-			}
-			rear++
-		} else {
-			set[s[front]] = struct{}{}
-			longest = max(longest, front-rear+1)
-		}
-
-		front++
+	if len(s) == 0 {
+		return 0
 	}
-
-	return longest
+	
+	var charIndex [256]int // ASCII character set
+	for i := range charIndex {
+		charIndex[i] = -1
+	}
+	
+	left, maxLen := 0, 0
+	
+	for right := range len(s) {
+		char := s[right]
+		if charIndex[char] >= left {
+			left = charIndex[char] + 1
+		}
+		charIndex[char] = right
+		maxLen = max(maxLen, right-left+1)
+	}
+	
+	return maxLen
 }

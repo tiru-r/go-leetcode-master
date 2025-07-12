@@ -13,25 +13,16 @@ func hasCycle(head *ListNode) bool {
 		return false
 	}
 
-	// use the rabbit and turtle analogy
-	// if there as a cycle, eventually the rabbit will meet back up with the turtle
+	// Standard Floyd's cycle detection: optimized rabbit and turtle
 	turtle := head
-	rabbit := head.Next
-	for rabbit != nil && turtle != nil {
+	rabbit := head
+	
+	for rabbit != nil && rabbit.Next != nil {
+		turtle = turtle.Next
+		rabbit = rabbit.Next.Next
+		
 		if turtle == rabbit {
 			return true
-		}
-
-		if rabbit.Next == nil {
-			rabbit = nil
-		} else {
-			rabbit = rabbit.Next.Next
-		}
-
-		if turtle.Next == nil {
-			turtle = nil
-		} else {
-			turtle = turtle.Next
 		}
 	}
 

@@ -46,12 +46,16 @@ func (ni NestedInteger) IsInteger() bool {
 	return ni.isInt
 }
 func (ni NestedInteger) GetInteger() int {
-	v := ni.value.(int)
-	return v
+	if v, ok := ni.value.(int); ok {
+		return v
+	}
+	panic("NestedInteger does not hold an integer")
 }
 func (ni NestedInteger) GetList() []*NestedInteger {
-	v := ni.value.([]*NestedInteger)
-	return v
+	if v, ok := ni.value.([]*NestedInteger); ok {
+		return v
+	}
+	panic("NestedInteger does not hold a list")
 }
 
 type ListIndex struct {
@@ -59,34 +63,30 @@ type ListIndex struct {
 	List []*NestedInteger
 }
 
-type Stack struct {
-	items []*ListIndex
-}
+type Stack []*ListIndex
 
 func (s *Stack) Push(v *ListIndex) {
-	s.items = append(s.items, v)
+	*s = append(*s, v)
 }
 
 func (s *Stack) Pop() *ListIndex {
-	if len(s.items) <= 0 {
+	if len(*s) == 0 {
 		return nil
 	}
-
-	val := s.items[len(s.items)-1]
-	s.items = s.items[:len(s.items)-1]
+	val := (*s)[len(*s)-1]
+	*s = (*s)[:len(*s)-1]
 	return val
 }
 
 func (s *Stack) Peek() *ListIndex {
-	if len(s.items) <= 0 {
+	if len(*s) == 0 {
 		return nil
 	}
-
-	return s.items[len(s.items)-1]
+	return (*s)[len(*s)-1]
 }
 
 func (s *Stack) IsEmpty() bool {
-	return len(s.items) == 0
+	return len(*s) == 0
 }
 
 type NestedIterator struct {
@@ -94,7 +94,7 @@ type NestedIterator struct {
 }
 
 func Constructor(nestedList []*NestedInteger) *NestedIterator {
-	stack := new(Stack)
+	stack := &Stack{}
 	stack.Push(&ListIndex{
 		Idx:  0,
 		List: nestedList,

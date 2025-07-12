@@ -29,21 +29,3 @@ func merge(intervals [][]int) [][]int {
 	return merged
 }
 
-// First solution
-func merge0(intervals [][]int) [][]int {
-	// Use cmp.Compare for type-safe comparison
-	slices.SortFunc(intervals, func(a, b []int) int {
-		return cmp.Compare(a[0], b[0])
-	})
-
-	var merged [][]int
-	for _, interval := range intervals {
-		if len(merged) == 0 || interval[0] > merged[len(merged)-1][1] {
-			merged = append(merged, interval)
-		} else {
-			merged[len(merged)-1][1] = max(merged[len(merged)-1][1], interval[1])
-		}
-	}
-
-	return merged
-}

@@ -16,28 +16,3 @@ func moveZeroes(nums []int) {
 	}
 }
 
-// Alternative implementation preserving order efficiently
-func moveZeroes2(nums []int) {
-	left := 0
-	for right := 0; right < len(nums); right++ {
-		if nums[right] != 0 {
-			if left != right {
-				nums[left], nums[right] = nums[right], nums[left]
-			}
-			left++
-		}
-	}
-}
-
-// Original implementation (kept for comparison)
-func moveZeroesOriginal(nums []int) {
-	placement := 0
-	for i := 0; i < len(nums); i++ {
-		if nums[i] != 0 {
-			hold := nums[i]
-			nums[i] = nums[placement]
-			nums[placement] = hold
-			placement++
-		}
-	}
-}

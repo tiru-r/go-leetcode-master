@@ -1,7 +1,5 @@
 package majority_element_ii_229
 
-import "slices"
-
 // Note: study again
 func majorityElement(nums []int) []int {
 	if len(nums) == 0 {
@@ -52,8 +50,7 @@ func majorityElement(nums []int) []int {
 	}
 
 	// if counts for candidate1 and candidate2 are larger than len(nums)/3, return them
-	maj := make([]int, 0)
-	maj = slices.Grow(maj, 2)
+	maj := make([]int, 0, 2)
 	if count1 > len(nums)/3 {
 		maj = append(maj, candidate1)
 	}

@@ -19,18 +19,19 @@ func LevelOrder(root *TreeNode) [][]int {
 		return [][]int{}
 	}
 
-	result := make([][]int, 0)        // Store the final result
+	result := [][]int{}               // Store the final result
 	queue := make([]*TreeNode, 0, 10) // Initialize queue with pre-allocated capacity
 	queue = append(queue, root)       // Start with the root node
 
-	for len(queue) > 0 {
-		levelSize := len(queue)
+	head := 0
+	for head < len(queue) {
+		levelSize := len(queue) - head
 		currentLevel := make([]int, 0, levelSize) // Pre-allocate capacity for current level
 
 		// Process all nodes at the current level
 		for i := 0; i < levelSize; i++ {
-			node := queue[0]
-			queue = queue[1:] // Dequeue by re-slicing
+			node := queue[head]
+			head++
 
 			currentLevel = append(currentLevel, node.Val)
 
@@ -49,44 +50,3 @@ func LevelOrder(root *TreeNode) [][]int {
 	return result
 }
 
-// levelOrder0 performs a level-order traversal of a binary tree.
-// Returns a slice of slices where each inner slice contains node values at a given level.
-func levelOrder0(root *TreeNode) [][]int {
-	// Base case: if the root is nil, return an empty slice of slices.
-	if root == nil {
-		return [][]int{}
-	}
-
-	// Initialize result to store all levels and currentLevel with the root node.
-	var levels [][]int
-	currentLevel := []*TreeNode{root}
-
-	// Continue processing while there are nodes in the current level.
-	for len(currentLevel) > 0 {
-		// Initialize a slice for the next level's nodes and one for current level's values.
-		var nextLevel []*TreeNode
-		level := make([]int, 0, len(currentLevel)) // Pre-allocate capacity for efficiency.
-
-		// Process each node in the current level.
-		for _, node := range currentLevel {
-			// Add the current node's value to the level's value slice.
-			level = append(level, node.Val)
-
-			// Add non-nil children to the next level.
-			if node.Left != nil {
-				nextLevel = append(nextLevel, node.Left)
-			}
-			if node.Right != nil {
-				nextLevel = append(nextLevel, node.Right)
-			}
-		}
-
-		// Add the current level's values to the result.
-		levels = append(levels, level)
-		// Move to the next level by updating currentLevel.
-		currentLevel = nextLevel
-	}
-
-	// Return the collected levels.
-	return levels
-}

@@ -5,7 +5,7 @@ package compare_strings_by_frequency_of_the_smallest_character_1170
 // A good problem for runtime optimization and memory trade-offs.
 // By taking memory, we can speed up runtime of the algorithm.
 func numSmallerByFrequency(queries []string, words []string) []int {
-	ans := make([]int, 0)
+	ans := []int{}
 	queriesFreq := make([]int, len(queries))
 	wordsFreq := make([]int, len(words))
 
@@ -53,7 +53,7 @@ func frequencyOfSmallestChar(s string) int {
 /*
 // Note: started here with computing frequency every iteration of the loop
 func numSmallerByFrequency(queries []string, words []string) []int {
-	ans := make([]int, 0)
+	ans := []int{}
 
 	for _, q := range queries {
 		total := 0

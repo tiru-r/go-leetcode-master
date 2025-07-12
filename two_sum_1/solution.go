@@ -3,10 +3,10 @@ package two_sum_1
 // twoSum does not assume that nums is sorted.
 func twoSum(nums []int, target int) []int {
 	if len(nums) < 2 {
-		return make([]int, 0, 2)
+		return []int{}
 	}
 
-	numToIndex := make(map[int]int)
+	numToIndex := make(map[int]int, len(nums))
 	for idx, num := range nums {
 		if mIdx, ok := numToIndex[target-num]; ok {
 			return []int{mIdx, idx}
@@ -14,13 +14,13 @@ func twoSum(nums []int, target int) []int {
 		numToIndex[num] = idx
 	}
 
-	return make([]int, 0, 2)
+	return []int{}
 }
 
 // twoSumSortedInput assumes that nums is sorted.
 func twoSumSortedInput(nums []int, target int) []int {
 	if len(nums) < 2 {
-		return make([]int, 0, 2)
+		return []int{}
 	}
 
 	front, rear := 0, len(nums)-1
@@ -36,5 +36,5 @@ func twoSumSortedInput(nums []int, target int) []int {
 		}
 	}
 
-	return make([]int, 0, 2)
+	return []int{}
 }

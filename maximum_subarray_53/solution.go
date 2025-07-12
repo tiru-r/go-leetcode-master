@@ -16,14 +16,3 @@ func maxSubArray(nums []int) int {
 	return maxSum
 }
 
-// Solved for the 2nd time
-func maxSubArray2(nums []int) int {
-	maxG := nums[0]
-	maxL := nums[0]
-	for i := 1; i < len(nums); i++ {
-		maxL = max(nums[i], maxL+nums[i])
-		maxG = max(maxG, maxL)
-	}
-
-	return maxG
-}

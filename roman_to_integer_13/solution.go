@@ -1,57 +1,27 @@
 package roman_to_integer_13
 
-// Modern solution using byte operations instead of string conversions
 func romanToInt(s string) int {
-	out := 0
-	// Use byte-based map for better performance
-	numMap := map[byte]int{
-		'I': 1,
-		'V': 5,
-		'X': 10,
-		'L': 50,
-		'C': 100,
-		'D': 500,
-		'M': 1000,
+	var values [256]int
+	values['I'] = 1
+	values['V'] = 5
+	values['X'] = 10
+	values['L'] = 50
+	values['C'] = 100
+	values['D'] = 500
+	values['M'] = 1000
+	
+	total := 0
+	prev := 0
+	
+	for i := len(s) - 1; i >= 0; i-- {
+		curr := values[s[i]]
+		if curr < prev {
+			total -= curr
+		} else {
+			total += curr
+		}
+		prev = curr
 	}
-
-	cIdx := 0
-	for cIdx < len(s) {
-		// Work directly with bytes instead of string conversions
-		c := s[cIdx]
-		if c == 'I' {
-			if cIdx < len(s)-1 {
-				next := s[cIdx+1]
-				if next == 'V' || next == 'X' {
-					out += numMap[next] - numMap[c]
-					cIdx += 2
-					continue
-				}
-			}
-		}
-		if c == 'X' {
-			if cIdx < len(s)-1 {
-				next := s[cIdx+1]
-				if next == 'L' || next == 'C' {
-					out += numMap[next] - numMap[c]
-					cIdx += 2
-					continue
-				}
-			}
-		}
-		if c == 'C' {
-			if cIdx < len(s)-1 {
-				next := s[cIdx+1]
-				if next == 'D' || next == 'M' {
-					out += numMap[next] - numMap[c]
-					cIdx += 2
-					continue
-				}
-			}
-		}
-
-		out += numMap[c]
-		cIdx++
-	}
-
-	return out
+	
+	return total
 }

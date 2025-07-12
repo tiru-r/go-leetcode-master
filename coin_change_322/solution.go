@@ -36,23 +36,14 @@ func coinChange(coins []int, amount int) int {
 		return -1
 	}
 
-	// Create a copy of coins to avoid modifying the input slice.
-	// This is good practice to maintain function purity.
-	coinsCopy := make([]int, len(coins))
-	copy(coinsCopy, coins)
-
-	// Sort coins in ascending order. While descending also works,
-	// ascending is often more conventional for DP problems building up from smaller values.
-	slices.Sort(coinsCopy)
-
-	// Prune coins larger than the target amount. This is an effective optimization
-	// to reduce iterations in the inner DP loop.
-	validCoins := coinsCopy[:0] // Re-slice to create a zero-length slice backed by coinsCopy
-	for _, coin := range coinsCopy {
+	// Sort coins and filter valid ones in a single pass
+	validCoins := make([]int, 0, len(coins))
+	for _, coin := range coins {
 		if coin <= amount {
 			validCoins = append(validCoins, coin)
 		}
 	}
+	slices.Sort(validCoins)
 
 	// If after pruning, no valid coins remain (e.g., all coins are larger than the amount),
 	// then the amount cannot be made.

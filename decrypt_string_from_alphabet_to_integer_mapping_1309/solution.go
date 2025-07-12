@@ -21,12 +21,12 @@ func freqAlphabets(s string) string {
 			builder.WriteByte(a[alphaIdx-1])
 			i += 3
 		} else {
-			alphaIdx, err := strconv.Atoi(string(s[i]))
-			if err != nil || alphaIdx < 1 || alphaIdx > 9 {
+			alphaIdx := int(s[i] - '0')
+			if alphaIdx < 1 || alphaIdx > 9 {
 				break // Invalid input
 			}
 			builder.WriteByte(a[alphaIdx-1])
-			i += 1
+			i++
 		}
 	}
 

@@ -15,19 +15,18 @@ func search(nums []int, target int) int {
 	// binary search for the inflection point
 	start := 0
 	end := len(nums) - 1
-	var mid int
 	for start < end {
-		mid = start + ((end - start) / 2)
+		mid := start + ((end - start) / 2)
 
 		// if mid is smallest at inflection
-		if mid-1 > -1 && nums[mid] < nums[mid-1] {
+		if mid > 0 && nums[mid] < nums[mid-1] {
 			// bring mid back to largest
 			mid--
 			break
 		}
 
 		// if mid is largest at inflection
-		if mid+1 < len(nums) && nums[mid] > nums[mid+1] {
+		if mid < len(nums)-1 && nums[mid] > nums[mid+1] {
 			break
 		}
 
@@ -73,80 +72,3 @@ func binarySearch(nums []int, target, start, end int) int {
 	return -1
 }
 
-// Note: Study again
-func search0(nums []int, target int) int {
-	if len(nums) == 0 {
-		return -1
-	}
-	if len(nums) == 1 {
-		if nums[0] == target {
-			return 0
-		} else {
-			return -1
-		}
-	}
-
-	pivot := findPivot(nums)
-	if pivot == 0 {
-		return binarySearch(nums, 0, len(nums)-1, target)
-	}
-
-	// If target less than nums[0], it's in nums[pivot:]
-	// Ex: 4 5 6 7 |0 1 2|
-	if target < nums[0] {
-		return binarySearch(nums, pivot, len(nums)-1, target)
-	}
-
-	// If target greater than nums[0], it's in nums[:pivot]
-	// Ex: |4 5 6 7| 0 1 2
-	if target > nums[len(nums)-1] {
-		return binarySearch(nums, 0, pivot-1, target)
-	}
-
-	return -1
-}
-
-func findPivot(nums []int) int {
-	left := 0
-	right := len(nums) - 1
-
-	// no pivot and rotation happened
-	if nums[left] < nums[right] {
-		return 0
-	}
-
-	for left <= right {
-		pivot := (left + right) / 2
-
-		// found the pivot
-		if nums[pivot] > nums[pivot+1] {
-			return pivot + 1
-		}
-
-		// less than or equal
-		if nums[pivot] >= nums[left] {
-			left = pivot + 1
-		} else { // nums[pivot] < nums[left]
-			right = pivot - 1
-		}
-	}
-
-	return 0
-}
-
-func binarySearch0(nums []int, left, right, target int) int {
-	for left <= right {
-		middle := (left + right) / 2
-		if nums[middle] == target {
-			return middle
-		}
-
-		if target > nums[middle] {
-			left = middle + 1
-		} else { // target < nums[middle]
-			right = middle - 1
-		}
-	}
-
-	return -1
-}

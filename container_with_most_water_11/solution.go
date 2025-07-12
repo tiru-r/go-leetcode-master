@@ -5,12 +5,13 @@ func maxArea(height []int) int {
 	maxArea := 0
 
 	for left < right {
-		currentArea := (right - left) * min(height[left], height[right])
-		maxArea = max(maxArea, currentArea)
-
+		width := right - left
+		
 		if height[left] < height[right] {
+			maxArea = max(maxArea, width*height[left])
 			left++
 		} else {
+			maxArea = max(maxArea, width*height[right])
 			right--
 		}
 	}

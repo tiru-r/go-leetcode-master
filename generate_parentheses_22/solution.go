@@ -29,36 +29,3 @@ func backtrack(result *[]string, current []byte, open, close, n int) {
 	}
 }
 
-// Alternative O(n²) brute force approach (kept for comparison - DO NOT USE)
-func generateParenthesisBruteForce(n int) []string {
-	result := []string{}
-	var backtrackBrute func(current string)
-	backtrackBrute = func(current string) {
-		if len(current) == n*2 {
-			if validParens(current) {
-				result = append(result, current)
-			}
-			return
-		}
-		backtrackBrute(current + "(")
-		backtrackBrute(current + ")")
-	}
-	backtrackBrute("")
-	return result
-}
-
-func validParens(s string) bool {
-	balance := 0
-	// Modern range-over-int with O(1) space validation
-	for i := range len(s) {
-		if s[i] == '(' {
-			balance++
-		} else if s[i] == ')' {
-			balance--
-			if balance < 0 {
-				return false
-			}
-		}
-	}
-	return balance == 0
-}

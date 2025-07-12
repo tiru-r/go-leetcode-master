@@ -35,8 +35,7 @@ func reverseWordsBuilder(s string) string {
 func reverseWordsArrayReversal(s string) string {
 	s = strings.TrimSpace(s) // Use TrimSpace instead of Trim with " "
 
-	tokens := make([]string, 0)
-	tokens = slices.Grow(tokens, 16)
+	tokens := make([]string, 0, 16)
 	start := 0
 
 	for finish := 0; finish < len(s); finish++ {

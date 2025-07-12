@@ -7,7 +7,8 @@ func spiralOrder(matrix [][]int) []int {
 	}
 
 	m, n := len(matrix), len(matrix[0])
-	result := make([]int, 0, m*n) // Pre-allocate exact capacity
+	totalElements := m * n
+	result := make([]int, 0, totalElements) // Pre-allocate exact capacity
 
 	// Boundary variables - much more efficient than tracking visited cells
 	top, bottom := 0, m-1
@@ -46,28 +47,3 @@ func spiralOrder(matrix [][]int) []int {
 	return result
 }
 
-// Old inefficient O(m*n) space solution - DO NOT USE (kept for comparison)
-func spiralOrderInefficient(matrix [][]int) []int {
-	if len(matrix) == 0 || len(matrix[0]) == 0 {
-		return []int{}
-	}
-	
-	const maxDimension = 10000 // Wastes memory with large maps
-	seen := make(map[int]struct{})
-	var spiral []int
-	seenStep := false
-	var r, c int
-	
-	for !seenStep && !isOutOfBoundsOld(matrix, r, c) {
-		seen[r*maxDimension+c] = struct{}{}
-		spiral = append(spiral, matrix[r][c])
-		// Inefficient direction-based traversal omitted for brevity
-		break // Prevent infinite loop in this stub
-	}
-	return spiral
-}
-
-func isOutOfBoundsOld(m [][]int, r, c int) bool {
-	return r < 0 || r >= len(m) ||
-		c < 0 || (r >= 0 && r < len(m) && c >= len(m[r]))
-}

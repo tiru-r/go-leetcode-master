@@ -1,29 +1,22 @@
 package fizz_buzz_412
 
-import (
-	"strconv"
-	"strings"
-)
+import "strconv"
 
 func fizzBuzz(n int) []string {
-	a := make([]string, n)
+	result := make([]string, n)
+	
 	for i := 1; i <= n; i++ {
-		var builder strings.Builder
-
-		if i%3 == 0 {
-			builder.WriteString("Fizz")
-		}
-
-		if i%5 == 0 {
-			builder.WriteString("Buzz")
-		}
-
-		if builder.Len() == 0 {
-			a[i-1] = strconv.Itoa(i)
-		} else {
-			a[i-1] = builder.String()
+		switch {
+		case i%15 == 0:
+			result[i-1] = "FizzBuzz"
+		case i%3 == 0:
+			result[i-1] = "Fizz"
+		case i%5 == 0:
+			result[i-1] = "Buzz"
+		default:
+			result[i-1] = strconv.Itoa(i)
 		}
 	}
-
-	return a
+	
+	return result
 }
