@@ -6,35 +6,40 @@ import (
 )
 
 // alienOrder returns the lexicographical order of an alien alphabet
-// given a slice of words that are already sorted by that alphabet.
-// It returns "" if no valid order exists.
-//
-// Improvements applied:
-//   - sparse adjacency list (map instead of fixed [26][26]bool)
-//   - early-cycle check removed (redundant)
-//   - prefix check uses strings.HasPrefix
-//   - clearer empty-word error handling
+// given a slice of words sorted by that alphabet.
+// Returns "" if no valid order exists.
 func alienOrder(words []string) string {
 	if len(words) == 0 {
 		return ""
 	}
 
-	// ---------- 1. Collect unique characters ----------
-	adj := map[byte]map[byte]struct{}{} // sparse adjacency list
-	inDegree := map[byte]int{}          // in-degree for Kahn
-	exists := map[byte]bool{}
-
-	for _, word := range words {
+	// Handle single-word case
+	if len(words) == 1 {
+		word := words[0]
 		if word == "" {
-			// Empty string inside the list is explicitly invalid input.
 			return ""
 		}
 		for _, r := range word {
 			if r < 'a' || r > 'z' {
-				return "" // invalid character
+				return ""
 			}
-			c := byte(r)
-			exists[c] = true
+		}
+		return word
+	}
+
+	// ---------- 1. Collect characters and initialize in-degree ----------
+	adj := map[byte]map[byte]struct{}{} // sparse adjacency list
+	inDegree := map[byte]int{}          // in-degree for Kahn's algorithm
+
+	for _, word := range words {
+		if word == "" {
+			return ""
+		}
+		for _, r := range word {
+			if r < 'a' || r > 'z' {
+				return ""
+			}
+			inDegree[byte(r)] += 0 // Ensure character is tracked
 		}
 	}
 
@@ -42,41 +47,40 @@ func alienOrder(words []string) string {
 	for i := 0; i < len(words)-1; i++ {
 		curr, next := words[i], words[i+1]
 
-		// Invalid case: "abc" comes before "ab"
+		// Invalid case: longer word is prefix of shorter word
 		if len(curr) > len(next) && strings.HasPrefix(curr, next) {
 			return ""
 		}
 
-		// Find the first differing character pair
+		// Find first differing character pair
 		minLen := min(len(curr), len(next))
 		for j := 0; j < minLen; j++ {
 			u, v := curr[j], next[j]
 			if u == v {
 				continue
 			}
-
 			if _, ok := adj[u]; !ok {
-				adj[u] = map[byte]struct{}{}
+				adj[u] = make(map[byte]struct{}, 25)
 			}
 			if _, ok := adj[u][v]; !ok {
 				adj[u][v] = struct{}{}
 				inDegree[v]++
 			}
-			break // only the first mismatch matters
+			break // Only first mismatch matters
 		}
 	}
 
-	// ---------- 3. Topological sort (Kahn) ----------
-	zeros := make([]byte, 0, len(exists))
-	for c := range exists {
+	// ---------- 3. Topological sort (Kahn's algorithm) ----------
+	zeros := make([]byte, 0, len(inDegree))
+	for c := range inDegree {
 		if inDegree[c] == 0 {
 			zeros = append(zeros, c)
 		}
 	}
-	slices.Sort(zeros) // deterministic tie-break for tests
+	slices.Sort(zeros) // Ensure lexicographical order for ties
 
 	order := strings.Builder{}
-	order.Grow(len(exists))
+	order.Grow(len(inDegree))
 
 	for len(zeros) > 0 {
 		u := zeros[0]
@@ -92,7 +96,7 @@ func alienOrder(words []string) string {
 	}
 
 	// ---------- 4. Cycle detection ----------
-	if order.Len() != len(exists) {
+	if order.Len() != len(inDegree) {
 		return ""
 	}
 	return order.String()
