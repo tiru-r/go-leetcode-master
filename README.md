@@ -217,10 +217,8 @@ Beyond the Top 75 LeetCode Problems, this repository includes solutions to 63 ad
 - [X] Partition to K Equal Sum Subsets - [https://leetcode.com/problems/partition-to-k-equal-sum-subsets/](https://leetcode.com/problems/partition-to-k-equal-sum-subsets/)
 - [X] Reorder Data in Log Files - [https://leetcode.com/problems/reorder-data-in-log-files/](https://leetcode.com/problems/reorder-data-in-log-files/)
 - [X] Time Based Key-Value Store - [https://leetcode.com/problems/time-based-key-value-store/](https://leetcode.com/problems/time-based-key-value-store/)
-- [X] Building H2O - [https://leetcode.com/problems/building-h2o/](https://leetcode.com/problems/building-h2o/)
 - [X] Compare Strings by Frequency of the Smallest Character - [https://leetcode.com/problems/compare-strings-by-frequency-of-the-smallest-character/](https://leetcode.com/problems/compare-strings-by-frequency-of-the-smallest-character/)
 - [X] Diet Plan Performance - [https://leetcode.com/problems/diet-plan-performance/](https://leetcode.com/problems/diet-plan-performance/)
-- [X] Dining Philosophers - [https://leetcode.com/problems/dining-philosophers/](https://leetcode.com/problems/dining-philosophers/)
 - [X] Maximum Length of a Concatenated String with Unique Characters - [https://leetcode.com/problems/maximum-length-of-a-concatenated-string-with-unique-characters/](https://leetcode.com/problems/maximum-length-of-a-concatenated-string-with-unique-characters/)
 - [X] XOR Queries of a Subarray - [https://leetcode.com/problems/xor-queries-of-a-subarray/](https://leetcode.com/problems/xor-queries-of-a-subarray/)
 - [X] Get Watched Videos by Your Friends - [https://leetcode.com/problems/get-watched-videos-by-your-friends/](https://leetcode.com/problems/get-watched-videos-by-your-friends/)
@@ -232,6 +230,11 @@ Beyond the Top 75 LeetCode Problems, this repository includes solutions to 63 ad
 - [X] Sudoku Solver - [https://leetcode.com/problems/sudoku-solver/](https://leetcode.com/problems/sudoku-solver/)
 - [X] Valid Number - [https://leetcode.com/problems/valid-number/](https://leetcode.com/problems/valid-number/)
 - [X] Design SQL - [https://leetcode.com/problems/design-sql/](https://leetcode.com/problems/design-sql/)
+
+### Concurrency Problems
+
+- [X] Building H2O - [https://leetcode.com/problems/building-h2o/](https://leetcode.com/problems/building-h2o/)
+- [X] Dining Philosophers - [https://leetcode.com/problems/dining-philosophers/](https://leetcode.com/problems/dining-philosophers/)
 
 ### Additional Notes
 
@@ -249,7 +252,8 @@ Beyond the Top 75 LeetCode Problems, this repository includes solutions to 63 ad
 - **Top 75 Problems Completed**: 67/75 (89.3%)
 - **Additional Problems**: 63
 - **Easy Problems**: 35
-- **Medium Problems**: 23  
+- **Medium Problems**: 21
+- **Concurrency Problems**: 2  
 - **Hard Problems**: 5
 - **Uncategorized/Custom**: 1
 
@@ -264,7 +268,8 @@ Beyond the Top 75 LeetCode Problems, this repository includes solutions to 63 ad
 - **Data Structures**: Arrays, Linked Lists, Trees, Graphs, Heaps
 - **Algorithms**: Sorting, Searching, Dynamic Programming, Greedy
 - **Techniques**: Two Pointers, Sliding Window, Backtracking, DFS/BFS
-- **System Design**: Caching, Data Streams, Concurrent Programming
+- **System Design**: Caching, Data Streams
+- **Concurrency**: Threading, Synchronization, Producer-Consumer
 - **String Processing**: Pattern Matching, Parsing, Manipulation
 
 ### Getting Started
