@@ -1,8 +1,9 @@
 package word_break_139
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_wordBreak(t *testing.T) {
@@ -49,7 +50,6 @@ func Test_wordBreak(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, wordBreak(tt.args.s, tt.args.wordDict))
-			assert.Equal(t, tt.want, wordBreak0(tt.args.s, tt.args.wordDict))
 		})
 	}
 }

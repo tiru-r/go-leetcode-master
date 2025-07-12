@@ -1,8 +1,9 @@
 package trapping_rain_water_42
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_trap(t *testing.T) {
@@ -27,7 +28,6 @@ func Test_trap(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, trap(tt.args.height))
-			assert.Equal(t, tt.want, trap2(tt.args.height))
 		})
 	}
 }

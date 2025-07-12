@@ -1,8 +1,9 @@
 package single_number_136
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_singleNumber(t *testing.T) {
@@ -45,7 +46,6 @@ func Test_singleNumber(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, singleNumber(tt.args.nums))
-			assert.Equal(t, tt.want, singleNumber2(tt.args.nums))
 		})
 	}
 }

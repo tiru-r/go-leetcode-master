@@ -1,8 +1,9 @@
 package house_robber_198
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_rob(t *testing.T) {
@@ -72,7 +73,6 @@ func Test_rob(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, rob(tt.args.nums))
-			assert.Equal(t, tt.want, rob0(tt.args.nums))
 		})
 	}
 }

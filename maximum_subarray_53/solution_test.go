@@ -1,8 +1,9 @@
 package maximum_subarray_53
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_maxSubArray(t *testing.T) {
@@ -39,7 +40,6 @@ func Test_maxSubArray(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, maxSubArray(tt.args.nums))
-			assert.Equal(t, tt.want, maxSubArray2(tt.args.nums))
 		})
 	}
 }

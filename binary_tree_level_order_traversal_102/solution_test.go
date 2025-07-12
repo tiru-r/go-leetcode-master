@@ -75,7 +75,7 @@ func Test_levelOrder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, levelOrder0(tt.args.root))
+			assert.Equal(t, tt.want, LevelOrder(tt.args.root))
 		})
 	}
 }

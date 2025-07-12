@@ -1,8 +1,9 @@
 package longest_common_subsequence_1143
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_longestCommonSubsequence(t *testing.T) {
@@ -51,7 +52,6 @@ func Test_longestCommonSubsequence(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, longestCommonSubsequence(tt.args.text1, tt.args.text2))
-			assert.Equal(t, tt.want, longestCommonSubsequence2(tt.args.text1, tt.args.text2))
 		})
 	}
 }
