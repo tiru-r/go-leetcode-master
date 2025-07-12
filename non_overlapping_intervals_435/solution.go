@@ -40,4 +40,3 @@ func eraseOverlapIntervals(intervals [][]int) int {
 	// the min we can erase
 	return len(intervals) - dp[len(dp)-1]
 }
-

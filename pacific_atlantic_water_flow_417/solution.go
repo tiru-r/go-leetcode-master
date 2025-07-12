@@ -1,13 +1,16 @@
 package pacific_atlantic_water_flow_417
 
-// pacificAtlantic returns all coordinates [r,c] from which water can reach
-// both the Pacific and Atlantic oceans.
+// pacificAtlantic returns all coordinates [r, c] that can flow to both oceans.
+// Water flows from a cell to an adjacent cell if the adjacent cell's height
+// is less than or equal to the current cell's height.
 func pacificAtlantic(heights [][]int) [][]int {
 	if len(heights) == 0 || len(heights[0]) == 0 {
 		return nil
 	}
 
 	m, n := len(heights), len(heights[0])
+
+	// reachable flags for Pacific and Atlantic
 	pacific := make([][]bool, m)
 	atlantic := make([][]bool, m)
 	for i := range pacific {
@@ -15,43 +18,44 @@ func pacificAtlantic(heights [][]int) [][]int {
 		atlantic[i] = make([]bool, n)
 	}
 
-	// DFS helper
-	var dfs func(visited [][]bool, r, c, prev int)
-	dfs = func(visited [][]bool, r, c, prev int) {
-		if r < 0 || r >= m || c < 0 || c >= n || visited[r][c] || heights[r][c] < prev {
+	// DFS from the four borders
+	var dfs func(r, c int, prevHeight int, ocean [][]bool)
+	dfs = func(r, c int, prevHeight int, ocean [][]bool) {
+		if r < 0 || r >= m || c < 0 || c >= n ||
+			ocean[r][c] || heights[r][c] < prevHeight {
 			return
 		}
-		visited[r][c] = true
-		dfs(visited, r-1, c, heights[r][c])
-		dfs(visited, r+1, c, heights[r][c])
-		dfs(visited, r, c-1, heights[r][c])
-		dfs(visited, r, c+1, heights[r][c])
+		ocean[r][c] = true
+		// 4-directional neighbors
+		for _, d := range [][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}} {
+			dfs(r+d[0], c+d[1], heights[r][c], ocean)
+		}
 	}
 
-	// Start DFS from Pacific borders (top & left)
-	for r := 0; r < m; r++ {
-		dfs(pacific, r, 0, heights[r][0])
+	// Pacific borders: top row and left column
+	for i := 0; i < m; i++ {
+		dfs(i, 0, heights[i][0], pacific)
 	}
-	for c := 0; c < n; c++ {
-		dfs(pacific, 0, c, heights[0][c])
-	}
-
-	// Start DFS from Atlantic borders (bottom & right)
-	for r := 0; r < m; r++ {
-		dfs(atlantic, r, n-1, heights[r][n-1])
-	}
-	for c := 0; c < n; c++ {
-		dfs(atlantic, m-1, c, heights[m-1][c])
+	for j := 0; j < n; j++ {
+		dfs(0, j, heights[0][j], pacific)
 	}
 
-	// Collect cells reachable from both oceans
-	var res [][]int
+	// Atlantic borders: bottom row and right column
+	for i := 0; i < m; i++ {
+		dfs(i, n-1, heights[i][n-1], atlantic)
+	}
+	for j := 0; j < n; j++ {
+		dfs(m-1, j, heights[m-1][j], atlantic)
+	}
+
+	// Collect results
+	var result [][]int
 	for r := 0; r < m; r++ {
 		for c := 0; c < n; c++ {
 			if pacific[r][c] && atlantic[r][c] {
-				res = append(res, []int{r, c})
+				result = append(result, []int{r, c})
 			}
 		}
 	}
-	return res
+	return result
 }
