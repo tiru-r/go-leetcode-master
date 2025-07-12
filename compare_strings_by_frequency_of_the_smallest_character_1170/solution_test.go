@@ -1,8 +1,9 @@
 package compare_strings_by_frequency_of_the_smallest_character_1170
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_numSmallerByFrequency(t *testing.T) {
@@ -16,7 +17,7 @@ func Test_numSmallerByFrequency(t *testing.T) {
 		want []int
 	}{
 		{
-			name: "compare strings by frequency of the smallest character",
+			name: "Test Case 1: Basic example",
 			args: args{
 				queries: []string{
 					"cbd",
@@ -30,7 +31,7 @@ func Test_numSmallerByFrequency(t *testing.T) {
 			},
 		},
 		{
-			name: "compare strings by frequency of the smallest character",
+			name: "Test Case 2: Multiple queries and words",
 			args: args{
 				queries: []string{
 					"bbb", "cc",
@@ -41,6 +42,60 @@ func Test_numSmallerByFrequency(t *testing.T) {
 			},
 			want: []int{
 				1, 2,
+			},
+		},
+		{
+			name: "Test Case 3: No words with greater frequency",
+			args: args{
+				queries: []string{
+					"g", "h",
+				},
+				words: []string{
+					"a", "b", "c",
+				},
+			},
+			want: []int{
+				0, 0,
+			},
+		},
+		{
+			name: "Test Case 4: All words with greater frequency",
+			args: args{
+				queries: []string{
+					"z",
+				},
+				words: []string{
+					"a", "b", "c", "d",
+				},
+			},
+			want: []int{
+				4,
+			},
+		},
+		{
+			name: "Test Case 5: Empty queries or words",
+			args: args{
+				queries: []string{
+					"a",
+				},
+				words: []string{},
+			},
+			want: []int{
+				0,
+			},
+		},
+		{
+			name: "Test Case 6: Queries with same frequency as words",
+			args: args{
+				queries: []string{
+					"a", "aa",
+				},
+				words: []string{
+					"b", "bb", "bbb",
+				},
+			},
+			want: []int{
+				3, 2,
 			},
 		},
 	}

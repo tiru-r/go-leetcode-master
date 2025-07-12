@@ -1,16 +1,21 @@
 package contains_duplicate_217
 
-// Original optimized solution using map for O(n) time complexity
+// ContainsDuplicate checks if any value appears at least twice in the given integer slice.
+// It uses a hash map to track encountered numbers, returning true if a duplicate is found.
+//
+// Time Complexity: O(n), where n is the length of the input slice.
+//   - Iterates through the slice once, with O(1) average-case map operations.
+//
+// Space Complexity: O(n), where n is the length of the input slice.
+//   - Stores up to n elements in the map in the worst case (all unique elements).
 func containsDuplicate(nums []int) bool {
-	m := make(map[int]struct{})
-	for _, n := range nums {
-		if _, exists := m[n]; exists {
+	seen := make(map[int]struct{}, len(nums)) // Pre-allocate map with hint for capacity.
+
+	for _, num := range nums {
+		if _, exists := seen[num]; exists {
 			return true
 		}
-
-		m[n] = struct{}{}
+		seen[num] = struct{}{}
 	}
-
 	return false
 }
-

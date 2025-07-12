@@ -1,88 +1,49 @@
 package construct_binary_tree_from_preorder_and_inorder_traversal_105
 
-import (
-	"slices"
-)
-
-// Definition for a binary tree node.
+// TreeNode represents a binary tree node.
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
 	Right *TreeNode
 }
 
-func buildTree(preorder []int, inorder []int) *TreeNode {
-	if len(preorder) == 0 {
-		return nil
-	}
-
-	root := &TreeNode{Val: preorder[0]}
-
-	// middle splits the inorder array into left and right subtrees of root
-	middle := findIndex(inorder, root.Val)
-	root.Left = buildTree(preorder[1:middle+1], inorder[:middle])
-	root.Right = buildTree(preorder[middle+1:], inorder[middle+1:])
-	return root
-}
-
-func findIndex(inorder []int, val int) int {
-	return slices.Index(inorder, val)
-}
-
-// First attempt, getting closer, but still didn't see key to unlock solving the problem.
-func buildTree1(preorder []int, inorder []int) *TreeNode {
+// buildTree constructs a binary tree from preorder and inorder traversal slices.
+func buildTree(preorder, inorder []int) *TreeNode {
 	if len(preorder) == 0 || len(inorder) == 0 {
 		return nil
 	}
 
-	return bt(preorder, inorder)
-}
-
-func bt(preorder []int, inorder []int) *TreeNode {
-	if preorder[0] == inorder[0] {
-		return &TreeNode{Val: preorder[0]}
+	// Build a map of inorder values to their indices for O(1) lookups.
+	inorderMap := make(map[int]int, len(inorder))
+	for i, val := range inorder {
+		inorderMap[val] = i
 	}
 
-	curr := &TreeNode{}
-	preorder = preorder[1:]
-	curr.Left = bt(preorder, inorder)
-
-	curr.Val = preorder[0]
-	preorder = preorder[2:]
-	inorder = inorder[2:]
-
-	curr.Right = bt(preorder, inorder)
-
-	return curr
-}
-
-// Initial solution, which was off. Mostly prototyping around incomplete idea.
-func buildTree0(preorder []int, inorder []int) *TreeNode {
-	if len(preorder) == 0 || len(inorder) == 0 {
-		return nil
-	}
-
-	root := &TreeNode{Val: preorder[0]}
-	curr := root
-	p := 1
-	i := 0
-	left := true
-	for p < len(preorder) {
-		if left {
-			curr.Left = &TreeNode{Val: preorder[p]}
-			curr = curr.Left
-		} else {
-			curr.Right = &TreeNode{Val: preorder[p]}
-			curr = curr.Right
+	// Helper function to avoid passing map repeatedly.
+	var build func(preStart, preEnd, inStart, inEnd int) *TreeNode
+	build = func(preStart, preEnd, inStart, inEnd int) *TreeNode {
+		if preStart > preEnd || inStart > inEnd {
+			return nil
 		}
 
-		if preorder[p] != inorder[i] {
-			p++
-		} else {
-			left = !left
-			i += 2
+		// Create root from preorder's first element.
+		root := &TreeNode{Val: preorder[preStart]}
+
+		// Find root's index in inorder.
+		rootIdx, exists := inorderMap[root.Val]
+		if !exists {
+			return nil // Invalid input.
 		}
+
+		// Calculate size of left subtree.
+		leftSize := rootIdx - inStart
+
+		// Recursively build left and right subtrees.
+		root.Left = build(preStart+1, preStart+leftSize, inStart, rootIdx-1)
+		root.Right = build(preStart+leftSize+1, preEnd, rootIdx+1, inEnd)
+
+		return root
 	}
 
-	return root
+	return build(0, len(preorder)-1, 0, len(inorder)-1)
 }
