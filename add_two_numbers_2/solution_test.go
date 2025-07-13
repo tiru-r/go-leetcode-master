@@ -1,21 +1,16 @@
 package add_two_numbers_2
 
-import (
-	"testing"
+import "testing"
 
-	"github.com/stretchr/testify/assert"
-)
-
-// createNinesList is a helper function to create a linked list of 'n' nines.
 func createNinesList(n int) *ListNode {
 	arr := make([]int, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		arr[i] = 9
 	}
 	return createList(arr)
 }
 
-func Test_addTwoNumbers(t *testing.T) {
+func TestAddTwoNumbers(t *testing.T) {
 	type args struct {
 		l1 *ListNode
 		l2 *ListNode
@@ -102,9 +97,20 @@ func Test_addTwoNumbers(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Compare the result linked list with the expected linked list using listToArray
-			got := addTwoNumbers(tt.args.l1, tt.args.l2)
-			assert.Equal(t, listToArray(tt.want), listToArray(got), "Linked lists should match")
+			got := AddTwoNumbers(tt.args.l1, tt.args.l2)
+			want := listToArray(tt.want)
+			result := listToArray(got)
+			
+			if len(want) != len(result) {
+				t.Errorf("Length mismatch: want %d, got %d", len(want), len(result))
+				return
+			}
+			
+			for i := range want {
+				if want[i] != result[i] {
+					t.Errorf("Value mismatch at index %d: want %d, got %d", i, want[i], result[i])
+				}
+			}
 		})
 	}
 }
