@@ -1,6 +1,6 @@
 # go-leetcode
 
-A comprehensive collection of 140 [LeetCode](https://leetcode.com/) problems solved in [Go](https://golang.org/), including the complete Top 75 curated list plus 65 additional problems across all difficulty levels.
+A comprehensive collection of 145 [LeetCode](https://leetcode.com/) problems solved in [Go](https://golang.org/), including the complete Top 75 curated list plus 70 additional problems across all difficulty levels.
 
 Each directory includes a:
 - Description with link to LeetCode problem
@@ -18,7 +18,7 @@ anything that is not insightful.
 
 This repository contains solutions to a wide variety of popular LeetCode problems. The core foundation includes the highly recommended, curated [Top 75 LeetCode Problems](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-100-LeetCode-Questions-to-Save-Your-Time-OaM1orEU) list, which provides comprehensive coverage across different categories and difficulty levels.
 
-Beyond the Top 75, this repository includes 65 additional problems ranging from easy fundamentals to hard algorithmic challenges, providing extensive practice across:
+Beyond the Top 75, this repository includes 70 additional problems ranging from easy fundamentals to hard algorithmic challenges, providing extensive practice across:
 - **Array & String manipulation**
 - **Dynamic Programming variations**
 - **Graph algorithms & traversals**
@@ -159,7 +159,7 @@ The checklist below tracks progress through the curated Top 75 list:
 
 ## Additional Problems Solved
 
-Beyond the Top 75 LeetCode Problems, this repository includes solutions to 65 additional problems across various categories and difficulty levels:
+Beyond the Top 75 LeetCode Problems, this repository includes solutions to 70 additional problems across various categories and difficulty levels:
 
 ### Easy Problems
 
@@ -230,6 +230,15 @@ Beyond the Top 75 LeetCode Problems, this repository includes solutions to 65 ad
 - [X] Sudoku Solver - [https://leetcode.com/problems/sudoku-solver/](https://leetcode.com/problems/sudoku-solver/)
 - [X] Valid Number - [https://leetcode.com/problems/valid-number/](https://leetcode.com/problems/valid-number/)
 - [X] Design SQL - [https://leetcode.com/problems/design-sql/](https://leetcode.com/problems/design-sql/)
+- [X] Dungeon Game - [https://leetcode.com/problems/dungeon-game/](https://leetcode.com/problems/dungeon-game/)
+- [X] Wildcard Matching - [https://leetcode.com/problems/wildcard-matching/](https://leetcode.com/problems/wildcard-matching/)
+- [X] Self Crossing - [https://leetcode.com/problems/self-crossing/](https://leetcode.com/problems/self-crossing/)
+- [X] Number of Digit One - [https://leetcode.com/problems/number-of-digit-one/](https://leetcode.com/problems/number-of-digit-one/)
+- [X] Russian Doll Envelopes - [https://leetcode.com/problems/russian-doll-envelopes/](https://leetcode.com/problems/russian-doll-envelopes/)
+- [X] Fancy Sequence - [https://leetcode.com/problems/fancy-sequence/](https://leetcode.com/problems/fancy-sequence/)
+- [X] Shortest Path Visiting All Nodes - [https://leetcode.com/problems/shortest-path-visiting-all-nodes/](https://leetcode.com/problems/shortest-path-visiting-all-nodes/)
+- [X] Number of Great Partitions - [https://leetcode.com/problems/number-of-great-partitions/](https://leetcode.com/problems/number-of-great-partitions/)
+- [X] Maximum Number of Darts Inside Circular Dartboard - [https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/](https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/)
 
 ### Concurrency Problems
 
@@ -248,13 +257,13 @@ Beyond the Top 75 LeetCode Problems, this repository includes solutions to 65 ad
 ## Repository Summary
 
 ### Problem Statistics
-- **Total Problems Solved**: 140
+- **Total Problems Solved**: 145
 - **Top 75 Problems Completed**: 67/75 (89.3%)
-- **Additional Problems**: 65
+- **Additional Problems**: 70
 - **Easy Problems**: 35
 - **Medium Problems**: 21
 - **Concurrency Problems**: 2  
-- **Hard Problems**: 5
+- **Hard Problems**: 14
 - **Uncategorized/Custom**: 1
 
 ### Key Features
