@@ -7,63 +7,25 @@ import (
 )
 
 func Test_countAndSay(t *testing.T) {
-	type args struct {
-		n int
-	}
 	tests := []struct {
 		name string
-		args args
+		n    int
 		want string
 	}{
-		{
-			name: "n=1 returns initial term",
-			args: args{n: 1},
-			want: "1",
-		},
-		{
-			name: "n=2 returns one 1",
-			args: args{n: 2},
-			want: "11",
-		},
-		{
-			name: "n=3 returns two 1s",
-			args: args{n: 3},
-			want: "21",
-		},
-		{
-			name: "n=4 returns one 2 one 1",
-			args: args{n: 4},
-			want: "1211",
-		},
-		{
-			name: "n=5 returns one 1 one 2 two 1s",
-			args: args{n: 5},
-			want: "111221",
-		},
-		{
-			name: "n=6 returns complex sequence",
-			args: args{n: 6},
-			want: "312211",
-		},
-		{
-			name: "n=0 returns empty string",
-			args: args{n: 0},
-			want: "",
-		},
-		{
-			name: "n=-1 returns empty string",
-			args: args{n: -1},
-			want: "",
-		},
-		{
-			name: "n=31 exceeds constraint returns empty string",
-			args: args{n: 31},
-			want: "",
-		},
+		{"n=1 returns initial term", 1, "1"},
+		{"n=2 returns one 1", 2, "11"},
+		{"n=3 returns two 1s", 3, "21"},
+		{"n=4 returns one 2 one 1", 4, "1211"},
+		{"n=5 returns one 1 one 2 two 1s", 5, "111221"},
+		{"n=6 returns complex sequence", 6, "312211"},
+		{"n=0 returns empty string", 0, ""},
+		{"n=-1 returns empty string", -1, ""},
+		{"n=31 exceeds constraint returns empty string", 31, ""},
 	}
+	
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, countAndSay(tt.args.n))
+			assert.Equal(t, tt.want, countAndSay(tt.n))
 		})
 	}
 }

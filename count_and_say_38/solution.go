@@ -4,27 +4,34 @@ func countAndSay(n int) string {
 	if n < 1 || n > 30 {
 		return ""
 	}
-
-	// Two alternating buffers (max length < 1e5 for n ≤ 30).
-	var cur, next []byte
-	cur = []byte("1")
-
-	for k := 2; k <= n; k++ {
-		// Estimate max possible length: len(cur)*2 is always enough.
-		next = make([]byte, 0, len(cur)*2)
-
-		i := 0
-		for i < len(cur) {
-			c := cur[i]
-			cnt := 1
-			for i+1 < len(cur) && cur[i+1] == c {
-				i++
-				cnt++
-			}
-			next = append(next, byte(cnt+'0'), c)
-			i++
-		}
-		cur = next
+	
+	result := "1"
+	
+	for range n - 1 {
+		result = say(result)
 	}
-	return string(cur)
+	
+	return result
+}
+
+func say(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	
+	var result []byte
+	
+	for i := 0; i < len(s); {
+		char := s[i]
+		count := 1
+		
+		for i+count < len(s) && s[i+count] == char {
+			count++
+		}
+		
+		result = append(result, byte(count+'0'), char)
+		i += count
+	}
+	
+	return string(result)
 }
