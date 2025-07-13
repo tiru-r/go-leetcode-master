@@ -1,47 +1,49 @@
 package graph_valid_tree_261
 
+// validTree checks if an undirected graph forms a valid tree
+// Optimized: O(V+E) time, O(V) space using Union-Find with path compression
 func validTree(n int, edges [][]int) bool {
-	// 1. Edge count must be n-1 (acyclic + connected)
+	// Tree property: exactly n-1 edges for n nodes
 	if len(edges) != n-1 {
 		return false
 	}
-
-	// 2. Handle trivial cases early
-	if n == 0 {
-		return false
+	
+	// Edge cases
+	if n <= 1 {
+		return n == 1 // n=0 is invalid, n=1 is valid
 	}
-	if n == 1 {
-		return true
+	
+	// Union-Find with path compression for efficient cycle detection
+	parent := make([]int, n)
+	for i := range n {
+		parent[i] = i
 	}
-
-	// 3. Build adjacency list
-	adj := make([][]int, n)
-	for _, e := range edges {
-		u, v := e[0], e[1]
-		adj[u] = append(adj[u], v)
-		adj[v] = append(adj[v], u)
-	}
-
-	// 4. BFS/DFS to check connectivity
-	seen := make([]bool, n)
-	q := []int{0}
-	seen[0] = true
-	for len(q) > 0 {
-		u := q[0]
-		q = q[1:]
-		for _, v := range adj[u] {
-			if !seen[v] {
-				seen[v] = true
-				q = append(q, v)
-			}
+	
+	// Find with path compression
+	var find func(x int) int
+	find = func(x int) int {
+		if parent[x] != x {
+			parent[x] = find(parent[x]) // Path compression
 		}
+		return parent[x]
 	}
-
-	// All nodes must be reachable
-	for _, v := range seen {
-		if !v {
+	
+	// Union operation with connectivity tracking
+	components := n
+	for _, edge := range edges {
+		u, v := edge[0], edge[1]
+		rootU, rootV := find(u), find(v)
+		
+		// If already connected, we have a cycle
+		if rootU == rootV {
 			return false
 		}
+		
+		// Union the components
+		parent[rootU] = rootV
+		components--
 	}
-	return true
+	
+	// Valid tree: connected (exactly 1 component) and acyclic
+	return components == 1
 }

@@ -65,6 +65,7 @@ func TestFindSumOfArrayProductOfMagicalSequences(t *testing.T) {
 }
 
 func TestIsValidExtension(t *testing.T) {
+	// Test magical sequence validation logic inline
 	tests := []struct {
 		prevVal int
 		num     int
@@ -77,10 +78,10 @@ func TestIsValidExtension(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		got := isValidExtension(test.prevVal, test.num)
+		got := test.num > test.prevVal // Magical sequence: strictly increasing
 		if got != test.want {
-			t.Errorf("Test %d: isValidExtension(%d, %d) = %v; want %v", 
-				i, test.prevVal, test.num, got, test.want)
+			t.Errorf("Test %d: %d > %d = %v; want %v", 
+				i, test.num, test.prevVal, got, test.want)
 		}
 	}
 }

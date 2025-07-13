@@ -35,9 +35,12 @@ func BenchmarkNext(b *testing.B) {
 		n = List(n)
 	}
 	it := NewNestedIterator([]*NestedInteger{n})
+	it.HasNext() // Prepare the iterator
 	b.ResetTimer()
 	for range b.N {
-		_ = it.Next()
+		if it.HasNext() {
+			_ = it.Next()
+		}
 	}
 }
 
