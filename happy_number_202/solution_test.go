@@ -28,13 +28,13 @@ func TestIsHappy(t *testing.T) {
 		{"58", 58, false},
 
 		// 4. Happy numbers in different ranges
-		{"145", 145, true},
+		{"145", 145, false},
 		{"1000", 1000, true},
 		{"1000000", 1000000, true},
 		{"2147483647", 2147483647, false}, // max int32 boundary
 
 		// 5. Large happy (performance smoke)
-		{"999999999", 999999999, true},
+		{"999999999", 999999999, false},
 
 		// 6. Numbers ending in 4 (cycle trigger)
 		{"104", 104, false},

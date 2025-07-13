@@ -1,30 +1,33 @@
 package group_anagrams_49
 
-// GroupAnagrams groups all anagrams together and returns them in any order.
-// Time: O(N·L)  (N = #strings, L = average length)
-// Space: O(N)   (plus pooled 26-int arrays)
+import (
+	"maps"
+	"slices"
+)
+
+// GroupAnagrams groups all anagrams together using optimized Go 1.24 features
+// Optimized: O(N·L) time, O(N) space with character frequency grouping
 func GroupAnagrams(strs []string) [][]string {
 	if len(strs) == 0 {
-		return nil
+		return [][]string{}
 	}
 
-	// Key → list of original strings
-	groups := make(map[[26]byte][]string, len(strs)/2+1)
+	// Use character frequency array as map key for O(L) grouping per string
+	groups := make(map[[26]byte][]string, len(strs)>>1+1)
 
-	// Re-usable 26-byte key; avoid sync.Pool for simplicity & zero-copy
+	// Reusable frequency key to avoid allocations
 	var key [26]byte
 	for _, s := range strs {
-		clear(key[:]) // zero the array
-		for i := 0; i < len(s); i++ {
-			key[s[i]-'a']++
+		clear(key[:])
+		
+		// Count character frequencies using range over string (Go 1.24)
+		for _, char := range []byte(s) {
+			key[char-'a']++
 		}
+		
 		groups[key] = append(groups[key], s)
 	}
 
-	// Convert map → slice
-	out := make([][]string, 0, len(groups))
-	for _, g := range groups {
-		out = append(out, g)
-	}
-	return out
+	// Extract groups using modern Go 1.24 slices.Collect with maps.Values
+	return slices.Collect(maps.Values(groups))
 }
