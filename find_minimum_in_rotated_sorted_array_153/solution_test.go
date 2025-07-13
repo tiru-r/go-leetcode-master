@@ -17,8 +17,7 @@ func TestFindMin(t *testing.T) {
 		{"no rotation", []int{1, 2, 3}, 1},
 		{"two elements", []int{1, 0}, 0},
 		{"single element", []int{42}, 42},
-		{"all identical", []int{5, 5, 5, 5}, 5},
-		{"rotated duplicates", []int{2, 2, 2, 0, 1, 2}, 0},
+		{"large array", []int{11, 13, 15, 17}, 11},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

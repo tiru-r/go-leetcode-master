@@ -29,7 +29,7 @@ func Test_sumZero(t *testing.T) {
 
 			// 2. All elements unique
 			seen := make(map[int]struct{}, len(got))
-			for v := range got {
+			for _, v := range got {
 				seen[v] = struct{}{}
 			}
 			assert.Len(t, seen, len(got), "slice must contain only unique integers")
