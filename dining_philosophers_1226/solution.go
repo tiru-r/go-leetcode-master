@@ -4,12 +4,12 @@ import "sync"
 
 type DiningPhilosophers struct {
 	forks [5]sync.Mutex
-	seats chan struct{}
+	sem   chan struct{}
 }
 
 func NewDiningPhilosophers() *DiningPhilosophers {
 	return &DiningPhilosophers{
-		seats: make(chan struct{}, 4), // Allow at most 4 philosophers at table
+		sem: make(chan struct{}, 4),
 	}
 }
 
@@ -17,30 +17,23 @@ func (dp *DiningPhilosophers) WantsToEat(
 	philosopher int,
 	pickLeft, pickRight, eat, putLeft, putRight func(),
 ) {
-	// Acquire seat at table (deadlock prevention: limit concurrent access)
-	dp.seats <- struct{}{}
-	defer func() { <-dp.seats }()
-
-	leftFork := philosopher
-	rightFork := (philosopher + 1) % 5
-
-	// Deadlock prevention: always acquire lower-numbered fork first
-	if leftFork > rightFork {
-		leftFork, rightFork = rightFork, leftFork
+	dp.sem <- struct{}{}
+	
+	left, right := philosopher, (philosopher+1)%5
+	if left > right {
+		left, right = right, left
 	}
-
-	// Acquire both forks atomically
-	dp.forks[leftFork].Lock()
-	dp.forks[rightFork].Lock()
-
-	// Perform eating sequence
+	
+	dp.forks[left].Lock()
+	dp.forks[right].Lock()
+	
 	pickLeft()
 	pickRight()
 	eat()
 	putLeft()
 	putRight()
-
-	// Release forks in reverse order
-	dp.forks[rightFork].Unlock()
-	dp.forks[leftFork].Unlock()
+	
+	dp.forks[right].Unlock()
+	dp.forks[left].Unlock()
+	<-dp.sem
 }
