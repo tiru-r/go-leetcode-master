@@ -1,11 +1,8 @@
 package alien_dictionary_269
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
-)
+import "testing"
 
-func Test_alienOrder(t *testing.T) {
+func TestAlienOrder(t *testing.T) {
 	type args struct {
 		words []string
 	}
@@ -63,7 +60,10 @@ func Test_alienOrder(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, alienOrder(tt.args.words))
+			got := AlienOrder(tt.args.words)
+			if got != tt.want {
+				t.Errorf("AlienOrder() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
