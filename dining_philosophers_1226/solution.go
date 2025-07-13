@@ -4,12 +4,12 @@ import "sync"
 
 type DiningPhilosophers struct {
 	forks [5]sync.Mutex
-	sem   chan struct{}
+	seats chan struct{}
 }
 
 func NewDiningPhilosophers() *DiningPhilosophers {
 	return &DiningPhilosophers{
-		sem: make(chan struct{}, 4),
+		seats: make(chan struct{}, 4),
 	}
 }
 
@@ -17,23 +17,25 @@ func (dp *DiningPhilosophers) WantsToEat(
 	philosopher int,
 	pickLeft, pickRight, eat, putLeft, putRight func(),
 ) {
-	dp.sem <- struct{}{}
-	
-	left, right := philosopher, (philosopher+1)%5
-	if left > right {
-		left, right = right, left
+	dp.seats <- struct{}{}
+	defer func() { <-dp.seats }()
+
+	leftFork := philosopher
+	rightFork := (philosopher + 1) % 5
+
+	if leftFork > rightFork {
+		leftFork, rightFork = rightFork, leftFork
 	}
-	
-	dp.forks[left].Lock()
-	dp.forks[right].Lock()
-	
+
+	dp.forks[leftFork].Lock()
+	dp.forks[rightFork].Lock()
+
 	pickLeft()
 	pickRight()
 	eat()
 	putLeft()
 	putRight()
-	
-	dp.forks[right].Unlock()
-	dp.forks[left].Unlock()
-	<-dp.sem
+
+	dp.forks[rightFork].Unlock()
+	dp.forks[leftFork].Unlock()
 }

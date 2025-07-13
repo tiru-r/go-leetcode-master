@@ -1,13 +1,17 @@
 package dungeon_game_174
 
 func CalculateMinimumHP(dungeon [][]int) int {
+	if len(dungeon) == 0 || len(dungeon[0]) == 0 {
+		return 1
+	}
+	
 	m, n := len(dungeon), len(dungeon[0])
 	dp := make([]int, n+1)
 	
 	for i := range dp {
 		dp[i] = 1 << 30
 	}
-	dp[n-1] = 1
+	dp[n] = 1
 	
 	for i := m - 1; i >= 0; i-- {
 		for j := n - 1; j >= 0; j-- {
