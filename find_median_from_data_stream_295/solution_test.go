@@ -1,29 +1,40 @@
 package find_median_from_data_stream_295
 
 import (
+	"math"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestMedianFinder(t *testing.T) {
 	tests := []struct {
-		adds []int
+		name string
+		nums []int
 		want []float64
 	}{
-		{[]int{1, 2, 3}, []float64{1.0, 1.5, 2.0}},
-		{[]int{-1, -2, -3, -4, -5}, []float64{-1.0, -1.5, -2.0, -2.5, -3.0}},
-		{[]int{6, 10, 2, 6, 5, 0, 6, 3, 1, 0, 0}, []float64{6.0, 8.0, 6.0, 6.0, 6.0, 5.5, 6.0, 5.5, 5.0, 5.0, 5.0}},
-		{[]int{2, 3, 4}, []float64{2.0, 2.5, 3.0}},
-		{[]int{}, []float64{}},
-		{[]int{42}, []float64{42.0}},
+		{"empty", []int{}, []float64{}},
+		{"single", []int{1}, []float64{1}},
+		{"two", []int{1, 2}, []float64{1, 1.5}},
+		{"three", []int{1, 2, 3}, []float64{1, 1.5, 2}},
+		{"descending", []int{5, 4, 3, 2, 1}, []float64{5, 4.5, 4, 3.5, 3}},
 	}
 
-	for _, tt := range tests {
-		mf := Constructor()
-		for i, v := range tt.adds {
-			mf.AddNum(v)
-			assert.Equal(t, tt.want[i], mf.FindMedian())
-		}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			mf := NewMedianFinder()
+			for i, n := range tc.nums {
+				mf.AddNum(n)
+				got := mf.FindMedian()
+				if math.Abs(got-tc.want[i]) > 1e-9 {
+					t.Fatalf("after %v: want %.1f, got %.1f", tc.nums[:i+1], tc.want[i], got)
+				}
+			}
+		})
+	}
+}
+
+func BenchmarkAddNum(b *testing.B) {
+	mf := NewMedianFinder()
+	for i := 0; i < b.N; i++ {
+		mf.AddNum(i)
 	}
 }

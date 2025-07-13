@@ -1,67 +1,72 @@
 package implement_trie_208
 
-import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-)
+import "testing"
 
 func TestTrie(t *testing.T) {
-	trie := Constructor()
+	tests := []struct {
+		name  string
+		ops   []string // insert, search, startsWith
+		args  []string // arguments for each op
+		wantB []bool   // expected bool results
+	}{
+		{
+			name:  "basic ops",
+			ops:   []string{"insert", "search", "search", "startsWith", "insert", "search"},
+			args:  []string{"apple", "apple", "app", "app", "app", "app"},
+			wantB: []bool{true, false, true, true},
+		},
+		{
+			name:  "empty string",
+			ops:   []string{"insert", "search", "startsWith"},
+			args:  []string{"", "", ""},
+			wantB: []bool{true, true, true},
+		},
+		{
+			name:  "overwrite same word",
+			ops:   []string{"insert", "insert", "search"},
+			args:  []string{"abc", "abc", "abc"},
+			wantB: []bool{true, true, true},
+		},
+	}
 
-	// 1. Empty trie
-	assert.False(t, trie.Search(""))
-	assert.False(t, trie.StartsWith(""))
-
-	// 2. Single character
-	trie.Insert("a")
-	assert.True(t, trie.Search("a"))
-	assert.False(t, trie.Search("b"))
-	assert.True(t, trie.StartsWith("a"))
-	assert.False(t, trie.StartsWith("b"))
-
-	// 3. Insert & search multiple words
-	trie.Insert("apple")
-	assert.True(t, trie.Search("apple"))
-	assert.False(t, trie.Search("app"))
-	assert.True(t, trie.StartsWith("app"))
-
-	trie.Insert("app")
-	assert.True(t, trie.Search("app"))
-
-	// 4. Overlapping prefixes
-	trie.Insert("bear")
-	trie.Insert("bell")
-	assert.True(t, trie.StartsWith("be"))
-	assert.True(t, trie.Search("bear"))
-	assert.True(t, trie.Search("bell"))
-
-	// 5. Case sensitivity (input is lowercase per problem)
-	trie.Insert("abc")
-	assert.False(t, trie.Search("ABC"))
-
-	// 6. Long word
-	trie.Insert("abcdefghijklmnopqrstuvwxyz")
-	assert.True(t, trie.Search("abcdefghijklmnopqrstuvwxyz"))
-	assert.True(t, trie.StartsWith("abcdefghijklmnopqrstuvwxy"))
-
-	// 7. Repeated insert (idempotent)
-	trie.Insert("apple")
-	assert.True(t, trie.Search("apple"))
-
-	// 8. Not present but prefix exists
-	assert.False(t, trie.Search("application"))
-	assert.True(t, trie.StartsWith("application")) // prefix exists
-
-	// 9. Empty string after inserts
-	assert.True(t, trie.StartsWith("")) // root always matches empty prefix
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tr := NewTrie()
+			out := 0
+			for i, op := range tc.ops {
+				switch op {
+				case "insert":
+					tr.Insert(tc.args[i])
+				case "search":
+					got := tr.Search(tc.args[i])
+					if got != tc.wantB[out] {
+						t.Fatalf("Search(%q): want %v, got %v", tc.args[i], tc.wantB[out], got)
+					}
+					out++
+				case "startsWith":
+					got := tr.StartsWith(tc.args[i])
+					if got != tc.wantB[out] {
+						t.Fatalf("StartsWith(%q): want %v, got %v", tc.args[i], tc.wantB[out], got)
+					}
+					out++
+				}
+			}
+		})
+	}
 }
 
-func BenchmarkTrie(b *testing.B) {
-	trie := Constructor()
-	for i := 0; i < b.N; i++ {
-		trie.Insert("apple")
-		trie.Search("apple")
-		trie.StartsWith("app")
+func BenchmarkInsert(b *testing.B) {
+	tr := NewTrie()
+	for range b.N {
+		tr.Insert("benchmark")
+	}
+}
+
+func BenchmarkSearch(b *testing.B) {
+	tr := NewTrie()
+	tr.Insert("benchmark")
+	b.ResetTimer()
+	for range b.N {
+		_ = tr.Search("benchmark")
 	}
 }

@@ -1,53 +1,56 @@
 package critical_connections_in_a_network_1192
 
-// CanFinish returns all critical connections (bridges) in the graph.
-// n   : number of vertices (0..n-1)
-// con : undirected edges [u,v]
-func CriticalConnections(n int, con [][]int) [][]int {
-	// 1. Build adjacency list (slice version, one allocation)
+func criticalConnections(n int, connections [][]int) [][]int {
 	adj := make([][]int, n)
-	for _, e := range con {
-		u, v := e[0], e[1]
+	for _, conn := range connections {
+		u, v := conn[0], conn[1]
 		adj[u] = append(adj[u], v)
 		adj[v] = append(adj[v], u)
 	}
-
-	// 2. Tarjan arrays
+	
 	disc := make([]int, n)
 	low := make([]int, n)
 	for i := range disc {
-		disc[i], low[i] = -1, -1
+		disc[i] = -1
+		low[i] = -1
 	}
-
+	
 	var bridges [][]int
 	time := 0
-
-	// 3. DFS bridge finder
-	var dfs func(int, int)
+	
+	var dfs func(u, parent int)
 	dfs = func(u, parent int) {
 		time++
-		disc[u], low[u] = time, time
+		disc[u] = time
+		low[u] = time
+		
 		for _, v := range adj[u] {
-			if v == parent { // skip immediate parent
+			if v == parent {
 				continue
 			}
-			if disc[v] == -1 { // tree edge
+			
+			if disc[v] == -1 {
 				dfs(v, u)
 				low[u] = min(low[u], low[v])
-				if low[v] > disc[u] { // bridge detected
+				if low[v] > disc[u] {
 					bridges = append(bridges, []int{u, v})
 				}
-			} else { // back edge
+			} else {
 				low[u] = min(low[u], disc[v])
 			}
 		}
 	}
-
-	// 4. Run DFS from every component (graph may be disconnected)
-	for i := 0; i < n; i++ {
+	
+	for i := range n {
 		if disc[i] == -1 {
 			dfs(i, -1)
 		}
 	}
+	
 	return bridges
+}
+
+// CriticalConnections is the original function name for backward compatibility
+func CriticalConnections(n int, connections [][]int) [][]int {
+	return criticalConnections(n, connections)
 }

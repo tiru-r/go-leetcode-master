@@ -1,44 +1,40 @@
 package implement_trie_208
 
-// Trie is exported for LeetCode tests.
-type Trie struct{ root *node }
-
-type node struct {
-	end      bool
-	children [26]*node
+type Trie struct {
+	root *trieNode
 }
 
-// Constructor returns an empty Trie.
-func Constructor() Trie { return Trie{root: &node{}} }
+type trieNode struct {
+	isEnd    bool
+	children [26]*trieNode
+}
 
-// Insert adds word to the trie.
+func NewTrie() *Trie { return &Trie{root: &trieNode{}} }
+
 func (t *Trie) Insert(word string) {
-	curr := t.root
-	for _, ch := range word {
-		idx := ch - 'a'
-		if curr.children[idx] == nil {
-			curr.children[idx] = &node{}
+	current := t.root
+	for _, char := range word {
+		index := char - 'a'
+		if current.children[index] == nil {
+			current.children[index] = &trieNode{}
 		}
-		curr = curr.children[idx]
+		current = current.children[index]
 	}
-	curr.end = true
+	current.isEnd = true
 }
 
-// Search returns true if word is stored in the trie.
-func (t *Trie) Search(word string) bool { return t.walk(word, true) }
+func (t *Trie) Search(word string) bool { return t.traverse(word, true) }
 
-// StartsWith returns true if any stored word starts with prefix.
-func (t *Trie) StartsWith(prefix string) bool { return t.walk(prefix, false) }
+func (t *Trie) StartsWith(prefix string) bool { return t.traverse(prefix, false) }
 
-// walk performs common traversal logic.
-func (t *Trie) walk(s string, needEnd bool) bool {
-	curr := t.root
-	for _, ch := range s {
-		idx := ch - 'a'
-		if curr.children[idx] == nil {
+func (t *Trie) traverse(s string, requireEnd bool) bool {
+	current := t.root
+	for _, char := range s {
+		index := char - 'a'
+		if current.children[index] == nil {
 			return false
 		}
-		curr = curr.children[idx]
+		current = current.children[index]
 	}
-	return !needEnd || curr.end
+	return !requireEnd || current.isEnd
 }

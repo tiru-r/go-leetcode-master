@@ -12,34 +12,34 @@ func (h *minHeap) Push(x any)        { *h = append(*h, x.(int)) }
 func (h *minHeap) Pop() any          { old := *h; n := len(old); x := old[n-1]; *h = old[:n-1]; return x }
 
 func (h maxHeap) Len() int           { return len(h) }
-func (h maxHeap) Less(i, j int) bool { return h[i] > h[j] } // max-heap
+func (h maxHeap) Less(i, j int) bool { return h[i] > h[j] }
 func (h maxHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
 func (h *maxHeap) Push(x any)        { *h = append(*h, x.(int)) }
 func (h *maxHeap) Pop() any          { old := *h; n := len(old); x := old[n-1]; *h = old[:n-1]; return x }
 
 type MedianFinder struct {
-	lo *maxHeap // larger half of the smaller numbers
-	hi *minHeap // smaller half of the larger numbers
+	lower *maxHeap
+	upper *minHeap
 }
 
-func Constructor() MedianFinder {
-	lo, hi := new(maxHeap), new(minHeap)
-	heap.Init(lo)
-	heap.Init(hi)
-	return MedianFinder{lo: lo, hi: hi}
+func NewMedianFinder() *MedianFinder {
+	lower, upper := new(maxHeap), new(minHeap)
+	heap.Init(lower)
+	heap.Init(upper)
+	return &MedianFinder{lower: lower, upper: upper}
 }
 
 func (mf *MedianFinder) AddNum(num int) {
-	heap.Push(mf.lo, num)
-	heap.Push(mf.hi, heap.Pop(mf.lo).(int))
-	if mf.hi.Len() > mf.lo.Len() {
-		heap.Push(mf.lo, heap.Pop(mf.hi).(int))
+	heap.Push(mf.lower, num)
+	heap.Push(mf.upper, heap.Pop(mf.lower).(int))
+	if mf.upper.Len() > mf.lower.Len() {
+		heap.Push(mf.lower, heap.Pop(mf.upper).(int))
 	}
 }
 
 func (mf *MedianFinder) FindMedian() float64 {
-	if mf.lo.Len() > mf.hi.Len() {
-		return float64((*mf.lo)[0])
+	if mf.lower.Len() > mf.upper.Len() {
+		return float64((*mf.lower)[0])
 	}
-	return (float64((*mf.lo)[0]) + float64((*mf.hi)[0])) / 2
+	return (float64((*mf.lower)[0]) + float64((*mf.upper)[0])) / 2.0
 }

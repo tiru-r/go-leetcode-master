@@ -1,72 +1,70 @@
 package lru_cache_146
 
-/* ---------- exported LeetCode interface ---------- */
-
 type LRUCache struct {
-	cap  int
-	data map[int]*node
-	head *node // MRU sentinel
-	tail *node // LRU sentinel
+	capacity int
+	cache    map[int]*cacheNode
+	head     *cacheNode
+	tail     *cacheNode
 }
 
-type node struct {
-	prev, next *node
-	key, val   int
+type cacheNode struct {
+	prev  *cacheNode
+	next  *cacheNode
+	key   int
+	value int
 }
 
-func Constructor(capacity int) LRUCache {
-	head, tail := &node{}, &node{} // sentinels
+func NewLRUCache(capacity int) *LRUCache {
+	head, tail := &cacheNode{}, &cacheNode{}
 	head.next, tail.prev = tail, head
 
-	return LRUCache{
-		cap:  capacity,
-		data: make(map[int]*node, capacity),
-		head: head,
-		tail: tail,
+	return &LRUCache{
+		capacity: capacity,
+		cache:    make(map[int]*cacheNode, capacity),
+		head:     head,
+		tail:     tail,
 	}
 }
 
 func (c *LRUCache) Get(key int) int {
-	if n, ok := c.data[key]; ok {
-		c.moveToHead(n)
-		return n.val
+	if node := c.cache[key]; node != nil {
+		c.moveToHead(node)
+		return node.value
 	}
 	return -1
 }
 
 func (c *LRUCache) Put(key, value int) {
-	if n, ok := c.data[key]; ok {
-		n.val = value
-		c.moveToHead(n)
+	if node := c.cache[key]; node != nil {
+		node.value = value
+		c.moveToHead(node)
 		return
 	}
 
-	if len(c.data) == c.cap {
+	if len(c.cache) == c.capacity {
 		lru := c.tail.prev
-		delete(c.data, lru.key)
-		c.remove(lru)
+		delete(c.cache, lru.key)
+		c.unlink(lru)
 	}
 
-	n := &node{key: key, val: value}
-	c.data[key] = n
-	c.addToHead(n)
+	node := &cacheNode{key: key, value: value}
+	c.cache[key] = node
+	c.linkHead(node)
 }
 
-/* ---------- internal helpers ---------- */
-
-func (c *LRUCache) moveToHead(n *node) {
-	c.remove(n)
-	c.addToHead(n)
+func (c *LRUCache) moveToHead(node *cacheNode) {
+	c.unlink(node)
+	c.linkHead(node)
 }
 
-func (c *LRUCache) addToHead(n *node) {
-	n.prev = c.head
-	n.next = c.head.next
-	c.head.next.prev = n
-	c.head.next = n
+func (c *LRUCache) linkHead(node *cacheNode) {
+	node.prev = c.head
+	node.next = c.head.next
+	c.head.next.prev = node
+	c.head.next = node
 }
 
-func (c *LRUCache) remove(n *node) {
-	n.prev.next = n.next
-	n.next.prev = n.prev
+func (c *LRUCache) unlink(node *cacheNode) {
+	node.prev.next = node.next
+	node.next.prev = node.prev
 }

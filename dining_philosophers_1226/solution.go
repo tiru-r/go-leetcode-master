@@ -4,38 +4,43 @@ import "sync"
 
 type DiningPhilosophers struct {
 	forks [5]sync.Mutex
-	slot  chan struct{}
+	seats chan struct{}
 }
 
-func Constructor() DiningPhilosophers {
-	return DiningPhilosophers{
-		slot: make(chan struct{}, 4), // at most 4 eaters
+func NewDiningPhilosophers() *DiningPhilosophers {
+	return &DiningPhilosophers{
+		seats: make(chan struct{}, 4), // Allow at most 4 philosophers at table
 	}
 }
 
-// WantsToEat handles the whole life-cycle.
-func (d *DiningPhilosophers) WantsToEat(
-	phil int,
+func (dp *DiningPhilosophers) WantsToEat(
+	philosopher int,
 	pickLeft, pickRight, eat, putLeft, putRight func(),
 ) {
-	d.slot <- struct{}{}        // acquire global seat
-	defer func() { <-d.slot }() // release seat
+	// Acquire seat at table (deadlock prevention: limit concurrent access)
+	dp.seats <- struct{}{}
+	defer func() { <-dp.seats }()
 
-	left, right := phil, (phil+1)%5
-	// always lock lower-number fork first to avoid deadlock
-	if left > right {
-		left, right = right, left
+	leftFork := philosopher
+	rightFork := (philosopher + 1) % 5
+
+	// Deadlock prevention: always acquire lower-numbered fork first
+	if leftFork > rightFork {
+		leftFork, rightFork = rightFork, leftFork
 	}
 
-	d.forks[left].Lock()
-	d.forks[right].Lock()
+	// Acquire both forks atomically
+	dp.forks[leftFork].Lock()
+	dp.forks[rightFork].Lock()
 
+	// Perform eating sequence
 	pickLeft()
 	pickRight()
 	eat()
-	putRight()
 	putLeft()
+	putRight()
 
-	d.forks[right].Unlock()
-	d.forks[left].Unlock()
+	// Release forks in reverse order
+	dp.forks[rightFork].Unlock()
+	dp.forks[leftFork].Unlock()
 }

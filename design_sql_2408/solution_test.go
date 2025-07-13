@@ -1,51 +1,95 @@
 package design_sql_2408
 
 import (
+	"reflect"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
 )
 
-func TestDesignSQL(t *testing.T) {
-	t.Run("basic flow", func(t *testing.T) {
-		sql := Constructor(
-			[]string{"users", "orders"},
-			[]int{3, 2},
-		)
+func TestSQL(t *testing.T) {
+	type step struct {
+		op    string // "ins", "sel", "rmv", "exp"
+		table string
+		row   []string
+		id    int
+		col   int
+		want  interface{} // expected result (bool, string, []string)
+	}
 
-		assert.True(t, sql.Ins("users", []string{"alice", "25", "NY"}))
-		assert.True(t, sql.Ins("users", []string{"bob", "30", "CA"}))
-		assert.True(t, sql.Ins("orders", []string{"100", "2025-07-12"}))
+	tests := []struct {
+		name  string
+		names []string
+		cols  []int
+		steps []step
+	}{
+		{
+			name:  "happy path insert/select/export/delete",
+			names: []string{"Users"},
+			cols:  []int{2},
+			steps: []step{
+				{op: "ins", table: "Users", row: []string{"Alice", "25"}, want: true},
+				{op: "sel", table: "Users", id: 1, col: 1, want: "Alice"},
+				{op: "sel", table: "Users", id: 1, col: 2, want: "25"},
+				{op: "exp", table: "Users", want: []string{"1,Alice,25"}},
+				{op: "rmv", table: "Users", id: 1},
+				{op: "sel", table: "Users", id: 1, col: 1, want: "<null>"},
+				{op: "exp", table: "Users", want: []string{}},
+			},
+		},
+		{
+			name:  "wrong column count",
+			names: []string{"A"},
+			cols:  []int{3},
+			steps: []step{
+				{op: "ins", table: "A", row: []string{"a", "b"}, want: false},
+			},
+		},
+		{
+			name:  "non-existent table",
+			names: []string{"T"},
+			cols:  []int{1},
+			steps: []step{
+				{op: "ins", table: "X", row: []string{"x"}, want: false},
+				{op: "sel", table: "X", id: 1, col: 1, want: "<null>"},
+				{op: "exp", table: "X", want: ([]string)(nil)},
+			},
+		},
+		{
+			name:  "multi-row export ordering",
+			names: []string{"Nums"},
+			cols:  []int{1},
+			steps: []step{
+				{op: "ins", table: "Nums", row: []string{"C"}, want: true},
+				{op: "ins", table: "Nums", row: []string{"A"}, want: true},
+				{op: "ins", table: "Nums", row: []string{"B"}, want: true},
+				{op: "exp", table: "Nums", want: []string{"1,C", "2,A", "3,B"}},
+			},
+		},
+	}
 
-		// select existing data
-		assert.Equal(t, "alice", sql.Sel("users", 1, 1))
-		assert.Equal(t, "30", sql.Sel("users", 2, 2))
-		assert.Equal(t, "2025-07-12", sql.Sel("orders", 1, 2))
-
-		// invalid selects
-		assert.Equal(t, "<null>", sql.Sel("users", 99, 1))
-		assert.Equal(t, "<null>", sql.Sel("users", 1, 0))
-		assert.Equal(t, "<null>", sql.Sel("unknown", 1, 1))
-
-		// export
-		exp := sql.Exp("users")
-		assert.Len(t, exp, 2)
-		assert.Contains(t, exp, "1,alice,25,NY")
-		assert.Contains(t, exp, "2,bob,30,CA")
-
-		// remove & verify gone
-		sql.Rmv("users", 1)
-		assert.Equal(t, "<null>", sql.Sel("users", 1, 1))
-		assert.Len(t, sql.Exp("users"), 1)
-	})
-
-	t.Run("edge cases", func(t *testing.T) {
-		sql := Constructor([]string{"t"}, []int{1})
-
-		// bad insert (wrong column count)
-		assert.False(t, sql.Ins("t", []string{}))
-
-		// empty export
-		assert.Empty(t, sql.Exp("t"))
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db := NewSQL(tt.names, tt.cols)
+			for i, s := range tt.steps {
+				switch s.op {
+				case "ins":
+					got := db.Insert(s.table, s.row)
+					if got != s.want.(bool) {
+						t.Fatalf("step %d: Insert returned %v, want %v", i, got, s.want)
+					}
+				case "sel":
+					got := db.Select(s.table, s.id, s.col)
+					if got != s.want.(string) {
+						t.Fatalf("step %d: Select returned %q, want %q", i, got, s.want)
+					}
+				case "rmv":
+					db.Delete(s.table, s.id)
+				case "exp":
+					got := db.Export(s.table)
+					if !reflect.DeepEqual(got, s.want) {
+						t.Fatalf("step %d: Export returned %v, want %v", i, got, s.want)
+					}
+				}
+			}
+		})
+	}
 }

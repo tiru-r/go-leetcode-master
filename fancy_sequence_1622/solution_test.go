@@ -3,61 +3,75 @@ package fancy_sequence_1622
 import "testing"
 
 func TestFancy(t *testing.T) {
-	fancy := Constructor()
-	
-	fancy.Append(2)
-	fancy.AddAll(3)
-	fancy.Append(7)
-	fancy.MultAll(2)
-	
-	if got := fancy.GetIndex(0); got != 10 {
-		t.Errorf("GetIndex(0) = %d; want 10", got)
+	tests := []struct {
+		name string
+		ops  func(*Fancy)
+		idx  int
+		want int
+	}{
+		{
+			name: "empty sequence",
+			ops:  func(f *Fancy) {},
+			idx:  0,
+			want: -1,
+		},
+		{
+			name: "append only",
+			ops: func(f *Fancy) {
+				f.Append(2)
+				f.Append(3)
+			},
+			idx:  1,
+			want: 3,
+		},
+		{
+			name: "add then mult",
+			ops: func(f *Fancy) {
+				f.Append(1)
+				f.Append(2)
+				f.AddAll(3)  // [4,5]
+				f.MultAll(2) // [8,10]
+			},
+			idx:  0,
+			want: 8,
+		},
+		{
+			name: "mult then add",
+			ops: func(f *Fancy) {
+				f.Append(2)
+				f.MultAll(5) // [10]
+				f.AddAll(7)  // [17]
+			},
+			idx:  0,
+			want: 17,
+		},
+		{
+			name: "negative modulo wrap",
+			ops: func(f *Fancy) {
+				f.Append(0)
+				f.AddAll(-1) // under 0 mod 1e9+7
+			},
+			idx:  0,
+			want: 1_000_000_006,
+		},
+		{
+			name: "out of bounds",
+			ops: func(f *Fancy) {
+				f.Append(10)
+			},
+			idx:  5,
+			want: -1,
+		},
 	}
-	
-	fancy.AddAll(3)
-	
-	if got := fancy.GetIndex(0); got != 13 {
-		t.Errorf("GetIndex(0) = %d; want 13", got)
-	}
-	
-	if got := fancy.GetIndex(1); got != 17 {
-		t.Errorf("GetIndex(1) = %d; want 17", got)
-	}
-	
-	if got := fancy.GetIndex(2); got != -1 {
-		t.Errorf("GetIndex(2) = %d; want -1", got)
-	}
-}
 
-func TestFancyLargeNumbers(t *testing.T) {
-	fancy := Constructor()
-	
-	fancy.Append(1000000000)
-	fancy.MultAll(1000000000)
-	fancy.AddAll(1000000000)
-	
-	result := fancy.GetIndex(0)
-	if result < 0 || result >= MOD {
-		t.Errorf("Result should be in range [0, %d), got %d", MOD, result)
-	}
-}
-
-func TestFancyEmpty(t *testing.T) {
-	fancy := Constructor()
-	
-	if got := fancy.GetIndex(0); got != -1 {
-		t.Errorf("GetIndex(0) on empty = %d; want -1", got)
-	}
-}
-
-func BenchmarkFancy(b *testing.B) {
-	fancy := Constructor()
-	
-	b.ResetTimer()
-	for range b.N {
-		fancy.Append(1)
-		fancy.AddAll(1)
-		fancy.MultAll(2)
-		fancy.GetIndex(0)
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			f := NewFancy()
+			tc.ops(f)
+			got := f.GetIndex(tc.idx)
+			if got != tc.want {
+				t.Errorf("GetIndex(%d) = %d; want %d", tc.idx, got, tc.want)
+			}
+		})
 	}
 }

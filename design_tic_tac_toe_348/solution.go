@@ -1,47 +1,49 @@
 package design_tic_tac_toe_348
 
 type TicTacToe struct {
-	row []int
-	col []int
-	d1  int // main diagonal (i == j)
-	d2  int // anti-diagonal (i+j == n-1)
-	n   int
+	rows         []int
+	cols         []int
+	mainDiag     int
+	antiDiag     int
+	size         int
 }
 
-func Constructor(n int) TicTacToe {
-	return TicTacToe{
-		row: make([]int, n),
-		col: make([]int, n),
-		n:   n,
+func NewTicTacToe(n int) *TicTacToe {
+	return &TicTacToe{
+		rows: make([]int, n),
+		cols: make([]int, n),
+		size: n,
 	}
 }
 
-// Move returns the winner after the move (0, 1, 2).
-func (t *TicTacToe) Move(r, c, player int) int {
+func (t *TicTacToe) Move(row, col, player int) int {
 	delta := 1
 	if player == 2 {
 		delta = -1
 	}
-
-	t.row[r] += delta
-	t.col[c] += delta
-	if r == c {
-		t.d1 += delta
+	
+	t.rows[row] += delta
+	t.cols[col] += delta
+	
+	if row == col {
+		t.mainDiag += delta
 	}
-	if r+c == t.n-1 {
-		t.d2 += delta
+	if row+col == t.size-1 {
+		t.antiDiag += delta
 	}
-
-	abs := func(x int) int {
-		if x < 0 {
-			return -x
-		}
-		return x
-	}
-	target := t.n
-	if abs(t.row[r]) == target || abs(t.col[c]) == target ||
-		abs(t.d1) == target || abs(t.d2) == target {
+	
+	target := t.size
+	if abs(t.rows[row]) == target || abs(t.cols[col]) == target ||
+		abs(t.mainDiag) == target || abs(t.antiDiag) == target {
 		return player
 	}
+	
 	return 0
+}
+
+func abs(x int) int {
+	if x < 0 {
+		return -x
+	}
+	return x
 }

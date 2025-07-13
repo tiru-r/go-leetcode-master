@@ -1,47 +1,70 @@
 package dining_philosophers_1226
 
 import (
+	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
-
-	"github.com/stretchr/testify/assert"
 )
 
-// fake actions that just record calls
-type trace struct{ calls []string }
-
-func (t *trace) pickLeft()  { t.calls = append(t.calls, "pickL") }
-func (t *trace) pickRight() { t.calls = append(t.calls, "pickR") }
-func (t *trace) eat()       { t.calls = append(t.calls, "eat") }
-func (t *trace) putLeft()   { t.calls = append(t.calls, "putL") }
-func (t *trace) putRight()  { t.calls = append(t.calls, "putR") }
-
 func TestDiningPhilosophers(t *testing.T) {
-	dp := Constructor()
-	tr := &trace{}
+	const (
+		philosophers = 5
+		eatRounds    = 100
+	)
 
-	// single philosopher must complete the whole sequence
-	dp.WantsToEat(0, tr.pickLeft, tr.pickRight, tr.eat, tr.putLeft, tr.putRight)
-	expected := []string{"pickL", "pickR", "eat", "putR", "putL"}
-	assert.Equal(t, expected, tr.calls)
+	dp := NewDiningPhilosophers()
 
-	// concurrent test: 5 goroutines, each runs once; no deadlock within 1 s
-	done := make(chan bool, 5)
-	for i := 0; i < 5; i++ {
-		go func(id int) {
-			dp.WantsToEat(id,
-				func() {}, func() {}, func() {}, func() {}, func() {},
-			)
-			done <- true
-		}(i)
+	var (
+		wg              sync.WaitGroup
+		meals           [philosophers]int64
+		neighbourEating [philosophers]int64
+	)
+
+	other := func(p, fork int) *int64 {
+		if fork == p {
+			return &neighbourEating[(p+4)%philosophers]
+		}
+		return &neighbourEating[(p+1)%philosophers]
 	}
 
-	timeout := time.After(time.Second)
-	for i := 0; i < 5; i++ {
-		select {
-		case <-done:
-		case <-timeout:
-			t.Fatal("deadlock or timeout")
+	for p := 0; p < philosophers; p++ {
+		p := p
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for round := 0; round < eatRounds; round++ {
+				dp.WantsToEat(p,
+					func() {
+						left := p
+						if atomic.LoadInt64(other(p, left)) == 1 {
+							t.Errorf("philosopher %d: left fork already taken", p)
+						}
+						atomic.StoreInt64(&neighbourEating[left], 1)
+					},
+					func() {
+						right := (p + 1) % philosophers
+						if atomic.LoadInt64(other(p, right)) == 1 {
+							t.Errorf("philosopher %d: right fork already taken", p)
+						}
+						atomic.StoreInt64(&neighbourEating[right], 1)
+					},
+					func() {
+						atomic.AddInt64(&meals[p], 1)
+						time.Sleep(1 * time.Microsecond)
+					},
+					func() { atomic.StoreInt64(&neighbourEating[p], 0) },
+					func() { atomic.StoreInt64(&neighbourEating[(p+1)%philosophers], 0) },
+				)
+			}
+		}()
+	}
+
+	wg.Wait()
+
+	for p := 0; p < philosophers; p++ {
+		if got := atomic.LoadInt64(&meals[p]); got != eatRounds {
+			t.Errorf("philosopher %d ate %d times, want %d", p, got, eatRounds)
 		}
 	}
 }

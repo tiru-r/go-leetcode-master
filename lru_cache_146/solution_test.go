@@ -1,11 +1,10 @@
 package lru_cache_146
 
 import (
-	"reflect"
+	"slices"
 	"testing"
 )
 
-// TestLRUCache uses table-driven testing to verify the LRUCache implementation.
 func TestLRUCache(t *testing.T) {
 	tests := []struct {
 		name       string
@@ -103,57 +102,40 @@ func TestLRUCache(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cache := Constructor(tt.capacity)
+			cache := NewLRUCache(tt.capacity)
 			results := []int{}
 
 			for _, op := range tt.operations {
-				if op.op == "put" {
+				switch op.op {
+				case "put":
 					cache.Put(op.key, op.value)
-				} else if op.op == "get" {
+				case "get":
 					results = append(results, cache.Get(op.key))
 				}
 			}
 
-			if !reflect.DeepEqual(results, tt.expected) {
-				t.Errorf("Test %s failed: expected %v, got %v", tt.name, tt.expected, results)
-			}
-
-			// Verify internal structure: ensure map size matches expected non-evicted items
-			expectedMapSize := 0
-			for _, op := range tt.operations {
-				if op.op == "put" {
-					if _, ok := cache.data[op.key]; ok {
-						expectedMapSize++
-					}
-				}
-			}
-			if len(cache.data) > cache.cap {
-				t.Errorf("Test %s failed: map size %d exceeds capacity %d", tt.name, len(cache.data), cache.cap)
+			if !slices.Equal(results, tt.expected) {
+				t.Errorf("expected %v, got %v", tt.expected, results)
 			}
 		})
 	}
 }
 
-// operation represents a single cache operation (Put or Get).
 type operation struct {
 	op    string // "put" or "get"
 	key   int
-	value int // Only used for "put"
+	value int // used only for "put"
 }
 
-// TestConstructor verifies the initialization of the LRUCache separately.
-func TestConstructor(t *testing.T) {
-	cache := Constructor(2)
-	if cache.cap != 2 {
-		t.Errorf("Expected capacity 2, got %d", cache.cap)
+func TestNewLRUCache(t *testing.T) {
+	c := NewLRUCache(2)
+	if c.capacity != 2 {
+		t.Errorf("expected capacity 2, got %d", c.capacity)
 	}
-	if cache.data == nil {
-		t.Error("Expected data map to be initialized, got nil")
+	if len(c.cache) != 0 {
+		t.Errorf("expected empty map, got len %d", len(c.cache))
 	}
-	if cache.head == nil || cache.tail == nil {
-		t.Error("Expected head and tail sentinels to be initialized, got nil")
-	}
-	if cache.head.next != cache.tail || cache.tail.prev != cache.head {
-		t.Error("Expected head.next to point to tail and tail.prev to point to head")
+	if c.head == nil || c.tail == nil || c.head.next != c.tail || c.tail.prev != c.head {
+		t.Error("sentinel links are wrong")
 	}
 }

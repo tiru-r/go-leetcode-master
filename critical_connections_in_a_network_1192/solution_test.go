@@ -26,10 +26,10 @@ func normalize(edges [][]int) [][]int {
 
 func TestCriticalConnections(t *testing.T) {
 	tests := []struct {
-		name string
-		n    int
-		cons [][]int
-		want [][]int
+		name        string
+		n           int
+		connections [][]int
+		want        [][]int
 	}{
 		{"case 1", 4, [][]int{{0, 1}, {1, 2}, {2, 0}, {1, 3}}, [][]int{{1, 3}}},
 		{"case 2", 6, [][]int{{0, 1}, {1, 2}, {2, 0}, {1, 3}, {3, 4}, {4, 5}, {5, 3}}, [][]int{{1, 3}}},
@@ -41,9 +41,12 @@ func TestCriticalConnections(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := normalize(CriticalConnections(tt.n, tt.cons))
+			got1 := normalize(criticalConnections(tt.n, tt.connections))
+			got2 := normalize(CriticalConnections(tt.n, tt.connections))
 			exp := normalize(tt.want)
-			assert.Equal(t, exp, got)
+			
+			assert.Equal(t, exp, got1)
+			assert.Equal(t, exp, got2)
 		})
 	}
 }
