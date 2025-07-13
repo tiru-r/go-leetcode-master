@@ -1,6 +1,6 @@
 # go-leetcode
 
-A comprehensive collection of 131 [LeetCode](https://leetcode.com/) problems solved in [Go](https://golang.org/), including the complete Top 75 curated list plus 63 additional problems across all difficulty levels.
+A comprehensive collection of 140 [LeetCode](https://leetcode.com/) problems solved in [Go](https://golang.org/), including the complete Top 75 curated list plus 65 additional problems across all difficulty levels.
 
 Each directory includes a:
 - Description with link to LeetCode problem
@@ -18,7 +18,7 @@ anything that is not insightful.
 
 This repository contains solutions to a wide variety of popular LeetCode problems. The core foundation includes the highly recommended, curated [Top 75 LeetCode Problems](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-100-LeetCode-Questions-to-Save-Your-Time-OaM1orEU) list, which provides comprehensive coverage across different categories and difficulty levels.
 
-Beyond the Top 75, this repository includes 63 additional problems ranging from easy fundamentals to hard algorithmic challenges, providing extensive practice across:
+Beyond the Top 75, this repository includes 65 additional problems ranging from easy fundamentals to hard algorithmic challenges, providing extensive practice across:
 - **Array & String manipulation**
 - **Dynamic Programming variations**
 - **Graph algorithms & traversals**
@@ -159,7 +159,7 @@ The checklist below tracks progress through the curated Top 75 list:
 
 ## Additional Problems Solved
 
-Beyond the Top 75 LeetCode Problems, this repository includes solutions to 63 additional problems across various categories and difficulty levels:
+Beyond the Top 75 LeetCode Problems, this repository includes solutions to 65 additional problems across various categories and difficulty levels:
 
 ### Easy Problems
 
@@ -248,9 +248,9 @@ Beyond the Top 75 LeetCode Problems, this repository includes solutions to 63 ad
 ## Repository Summary
 
 ### Problem Statistics
-- **Total Problems Solved**: 131
+- **Total Problems Solved**: 140
 - **Top 75 Problems Completed**: 67/75 (89.3%)
-- **Additional Problems**: 63
+- **Additional Problems**: 65
 - **Easy Problems**: 35
 - **Medium Problems**: 21
 - **Concurrency Problems**: 2  
