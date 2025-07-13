@@ -1,24 +1,50 @@
-package convert_integer_to_the_sum_of_two_no_zero_integers
+package convert_integer_to_the_sum_of_two_no_zero_integers_1317
 
 import (
 	"testing"
 )
 
+func TestGetNoZeroIntegers(t *testing.T) {
+	tests := []struct {
+		name string
+		n    int
+		want []int
+	}{
+		{"n=2", 2, []int{1, 1}},
+		{"n=11", 11, []int{1, 10}},
+		{"n=100", 100, []int{1, 99}},
+		{"n=69", 69, []int{1, 68}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := getNoZeroIntegers(tt.n)
+			if len(got) != 2 {
+				t.Fatalf("getNoZeroIntegers(%d) returned %v, want length 2", tt.n, got)
+			}
+			if got[0]+got[1] != tt.n {
+				t.Errorf("getNoZeroIntegers(%d) = %v, sum = %d, want %d", tt.n, got, got[0]+got[1], tt.n)
+			}
+			if hasZero(got[0]) || hasZero(got[1]) {
+				t.Errorf("getNoZeroIntegers(%d) = %v, contains zero digit", tt.n, got)
+			}
+		})
+	}
+}
+
 func TestSplit(t *testing.T) {
 	tests := []struct {
 		name    string
 		input   int
-		wantA   int
-		wantB   int
 		wantErr bool
 	}{
-		{"n=2", 2, 1, 1, false},
-		{"n=11", 11, 2, 9, false},
-		{"n=100", 100, 1, 99, false},
-		{"n=69", 69, 9, 60, false},
-		{"n=1", 1, 0, 0, true},
-		{"n=0", 0, 0, 0, true},
-		{"n=-5", -5, 0, 0, true},
+		{"n=2", 2, false},
+		{"n=11", 11, false},
+		{"n=100", 100, false},
+		{"n=69", 69, false},
+		{"n=1", 1, true},
+		{"n=0", 0, true},
+		{"n=-5", -5, true},
 	}
 
 	for _, tt := range tests {
