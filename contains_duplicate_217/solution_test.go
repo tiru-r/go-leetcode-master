@@ -8,9 +8,9 @@ import (
 
 func TestContainsDuplicate(t *testing.T) {
 	tests := []struct {
-		name     string
-		input    []int
-		expected bool
+		name string
+		nums []int
+		want bool
 	}{
 		{"DuplicatesMidSlice", []int{1, 2, 3, 1}, true},
 		{"DuplicatesNonAdjacent", []int{0, 4, 5, 0, 3, 6}, true},
@@ -26,7 +26,7 @@ func TestContainsDuplicate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, containsDuplicate(tt.input))
+			assert.Equal(t, tt.want, containsDuplicate(tt.nums))
 		})
 	}
 }
