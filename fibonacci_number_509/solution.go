@@ -5,8 +5,8 @@ func fib(n int) int {
 		return n
 	}
 	a, b := 0, 1
-	for range n - 1 {
+	for range n {
 		a, b = b, a+b
 	}
-	return b
+	return a
 }

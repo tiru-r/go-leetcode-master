@@ -20,7 +20,7 @@ func TestTitleToNumber(t *testing.T) {
 		{"edge Z", "Z", 26},
 		{"edge AZ", "AZ", 52},
 		{"edge BZ", "BZ", 78},
-		{"long AZY", "AZY", 1378},
+		{"long AZY", "AZY", 1377},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
