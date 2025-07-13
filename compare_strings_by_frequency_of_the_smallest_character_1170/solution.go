@@ -1,54 +1,50 @@
 package compare_strings_by_frequency_of_the_smallest_character_1170
 
-// Note: study again.
-//
-// A good problem for runtime optimization and memory trade-offs.
-// By taking memory, we can speed up runtime of the algorithm.
-
-func numSmallerByFrequency(queries, words []string) []int {
-	const maxF = 10        // problem guarantees length ≤ 10
-	cnt := [maxF + 2]int{} // indices 0..10 + sentinel
-
-	// 1. one-pass frequency histogram for words
-	for _, w := range words {
-		minC := byte('z' + 1)
-		count := 0
-		for i := 0; i < len(w); i++ {
-			c := w[i]
-			switch {
-			case c < minC:
-				minC, count = c, 1
-			case c == minC:
-				count++
-			}
-		}
-		if count > 0 { // empty string already skipped by problem
-			cnt[count]++
-		}
+// f returns the frequency of the lexicographically smallest character in s.
+func f(s string) int {
+	if len(s) == 0 {
+		return 0
 	}
 
-	// 2. suffix sum (prefix of suffix) – O(11)
-	for i := maxF; i >= 0; i-- {
+	minChar := s[0]
+	count := 1
+	for i := 1; i < len(s); i++ {
+		switch c := s[i]; {
+		case c < minChar:
+			minChar, count = c, 1
+		case c == minChar:
+			count++
+		}
+	}
+	return count
+}
+
+// numSmallerByFrequency returns, for every query string q, how many words w
+// satisfy f(q) < f(w).
+//
+//   - Time   : O(|queries| + |words|)
+//   - Memory : O(1)
+func numSmallerByFrequency(queries []string, words []string) []int {
+	const maxF = 10 // max possible value of f for any string with len <= 10
+
+	// cnt[i] = #words whose f equals i
+	cnt := [maxF + 1]int{}
+	for _, w := range words {
+		cnt[f(w)]++
+	}
+
+	// cnt[i] = #words whose f is >= i
+	for i := maxF - 1; i >= 0; i-- {
 		cnt[i] += cnt[i+1]
 	}
 
-	// 3. answer queries – O(M)
-	ans := make([]int, len(queries))
+	res := make([]int, len(queries))
 	for i, q := range queries {
-		minC := byte('z' + 1)
-		count := 0
-		for j := 0; j < len(q); j++ {
-			c := q[j]
-			switch {
-			case c < minC:
-				minC, count = c, 1
-			case c == minC:
-				count++
-			}
+		fq := f(q)
+		if fq < maxF {
+			res[i] = cnt[fq+1]
 		}
-		if count <= maxF {
-			ans[i] = cnt[count+1]
-		}
+		// if fq == maxF, no word can have a larger f, so res[i] remains 0.
 	}
-	return ans
+	return res
 }

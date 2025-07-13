@@ -65,7 +65,7 @@ func Test_numSmallerByFrequency(t *testing.T) {
 					"z",
 				},
 				words: []string{
-					"a", "b", "c", "d",
+					"aa", "bb", "cc", "dd",
 				},
 			},
 			want: []int{
@@ -95,7 +95,7 @@ func Test_numSmallerByFrequency(t *testing.T) {
 				},
 			},
 			want: []int{
-				3, 2,
+				2, 1,
 			},
 		},
 	}
