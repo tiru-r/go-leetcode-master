@@ -1,12 +1,8 @@
 package best_time_to_buy_and_sell_stock_121
 
-import (
-	"testing"
+import "testing"
 
-	"github.com/stretchr/testify/assert"
-)
-
-func Test_maxProfit(t *testing.T) {
+func TestMaxProfit(t *testing.T) {
 	type args struct {
 		prices []int
 	}
@@ -15,28 +11,19 @@ func Test_maxProfit(t *testing.T) {
 		args args
 		want int
 	}{
-		{
-			name: "best time to buy and sell stock",
-			args: args{
-				prices: []int{
-					7, 1, 5, 3, 6, 4,
-				},
-			},
-			want: 5,
-		},
-		{
-			name: "best time to buy and sell stock",
-			args: args{
-				prices: []int{
-					7, 6, 4, 3, 1,
-				},
-			},
-			want: 0,
-		},
+		{"Basic case", args{[]int{7, 1, 5, 3, 6, 4}}, 5},
+		{"Decreasing prices", args{[]int{7, 6, 4, 3, 1}}, 0},
+		{"Single price", args{[]int{5}}, 0},
+		{"Empty array", args{[]int{}}, 0},
+		{"Two prices ascending", args{[]int{1, 5}}, 4},
+		{"Two prices descending", args{[]int{5, 1}}, 0},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, maxProfit(tt.args.prices))
+			got := MaxProfit(tt.args.prices)
+			if got != tt.want {
+				t.Errorf("MaxProfit() = %v, want %v", got, tt.want)
+			}
 		})
 	}
 }
