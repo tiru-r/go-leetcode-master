@@ -1,77 +1,48 @@
 package erect_the_fence_587
 
-import (
-	"slices"
-)
+import "slices"
 
-// Point represents a 2D point
-type Point [2]int
-
-// OuterTrees finds all points on the convex hull boundary (fence)
-// Uses Andrew's monotone chain algorithm - more robust than Graham scan
-// Time: O(n log n), Space: O(n)
 func OuterTrees(trees [][]int) [][]int {
 	n := len(trees)
-	if n <= 1 {
+	if n <= 3 {
 		return trees
 	}
 	
-	// Convert to Point slice for easier handling
-	points := make([]Point, n)
-	for i, tree := range trees {
-		points[i] = Point{tree[0], tree[1]}
-	}
-	
-	// Sort points lexicographically (x, then y)
-	slices.SortFunc(points, func(a, b Point) int {
+	slices.SortFunc(trees, func(a, b []int) int {
 		if a[0] != b[0] {
 			return a[0] - b[0]
 		}
 		return a[1] - b[1]
 	})
 	
-	// Build lower hull
-	lower := buildHull(points, false)
+	hull := convexHull(trees)
+	seen := make(map[[2]int]struct{}, len(hull))
 	
-	// Build upper hull
-	upper := buildHull(points, true)
-	
-	// Combine hulls and remove duplicates
-	hullSet := make(map[Point]bool)
-	
-	// Add lower hull points
-	for _, p := range lower {
-		hullSet[p] = true
+	for _, p := range hull {
+		seen[[2]int{p[0], p[1]}] = struct{}{}
 	}
 	
-	// Add upper hull points
-	for _, p := range upper {
-		hullSet[p] = true
-	}
-	
-	// Convert back to result format
-	result := make([][]int, 0, len(hullSet))
-	for p := range hullSet {
+	result := make([][]int, 0, len(seen))
+	for p := range seen {
 		result = append(result, []int{p[0], p[1]})
 	}
 	
 	return result
 }
 
-// buildHull constructs half of the convex hull
-func buildHull(points []Point, reverse bool) []Point {
-	pts := points
-	if reverse {
-		pts = make([]Point, len(points))
-		copy(pts, points)
-		slices.Reverse(pts)
-	}
+func convexHull(points [][]int) [][]int {
+	lower := monotoneChain(points)
+	slices.Reverse(points)
+	upper := monotoneChain(points)
 	
-	hull := make([]Point, 0, len(pts))
+	return append(lower, upper...)
+}
+
+func monotoneChain(points [][]int) [][]int {
+	hull := make([][]int, 0, len(points))
 	
-	for _, p := range pts {
-		// Remove points that create right turn (concave)
-		for len(hull) >= 2 && crossProduct(hull[len(hull)-2], hull[len(hull)-1], p) < 0 {
+	for _, p := range points {
+		for len(hull) >= 2 && cross(hull[len(hull)-2], hull[len(hull)-1], p) < 0 {
 			hull = hull[:len(hull)-1]
 		}
 		hull = append(hull, p)
@@ -80,8 +51,6 @@ func buildHull(points []Point, reverse bool) []Point {
 	return hull
 }
 
-// crossProduct calculates cross product of vectors (p1->p2) and (p1->p3)
-// Returns positive for counter-clockwise turn, negative for clockwise
-func crossProduct(p1, p2, p3 Point) int {
-	return (p2[0]-p1[0])*(p3[1]-p1[1]) - (p2[1]-p1[1])*(p3[0]-p1[0])
+func cross(o, a, b []int) int {
+	return (a[0]-o[0])*(b[1]-o[1]) - (a[1]-o[1])*(b[0]-o[0])
 }

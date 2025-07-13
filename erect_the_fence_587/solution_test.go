@@ -74,20 +74,20 @@ func isValidConvexHull(got, want [][]int) bool {
 	return true
 }
 
-func TestCrossProduct(t *testing.T) {
+func TestCross(t *testing.T) {
 	tests := []struct {
-		p1, p2, p3 Point
+		p1, p2, p3 []int
 		want       int
 	}{
-		{Point{0, 0}, Point{1, 0}, Point{1, 1}, 1},   // Counter-clockwise
-		{Point{0, 0}, Point{1, 0}, Point{1, -1}, -1}, // Clockwise
-		{Point{0, 0}, Point{1, 0}, Point{2, 0}, 0},   // Collinear
+		{[]int{0, 0}, []int{1, 0}, []int{1, 1}, 1},   // Counter-clockwise
+		{[]int{0, 0}, []int{1, 0}, []int{1, -1}, -1}, // Clockwise
+		{[]int{0, 0}, []int{1, 0}, []int{2, 0}, 0},   // Collinear
 	}
 
 	for i, test := range tests {
-		got := crossProduct(test.p1, test.p2, test.p3)
+		got := cross(test.p1, test.p2, test.p3)
 		if got != test.want {
-			t.Errorf("Test %d: crossProduct(%v, %v, %v) = %d; want %d", 
+			t.Errorf("Test %d: cross(%v, %v, %v) = %d; want %d", 
 				i, test.p1, test.p2, test.p3, got, test.want)
 		}
 	}

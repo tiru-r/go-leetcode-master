@@ -8,6 +8,12 @@ import (
 type Codec struct{}
 
 func (c *Codec) Encode(strs []string) string {
+	if strs == nil {
+		return "nil"
+	}
+	if len(strs) == 0 {
+		return "empty"
+	}
 	var buf strings.Builder
 	for _, s := range strs {
 		buf.WriteString(strconv.Itoa(len(s)))
@@ -18,8 +24,11 @@ func (c *Codec) Encode(strs []string) string {
 }
 
 func (c *Codec) Decode(s string) []string {
-	if s == "" {
+	if s == "nil" {
 		return nil
+	}
+	if s == "empty" {
+		return []string{}
 	}
 	
 	var res []string

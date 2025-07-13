@@ -20,7 +20,7 @@ func TestDietPlanPerformance(t *testing.T) {
 		{"k larger than slice", []int{1, 2}, 5, 0, 10, 0},
 		{"all below lower", []int{1, 1, 1}, 3, 4, 6, -1},
 		{"all above upper", []int{10, 10}, 2, 0, 5, 1},
-		{"mixed points", []int{1, 2, 3, 4, 5}, 3, 5, 7, 0},
+		{"mixed points", []int{1, 2, 3, 4, 5}, 3, 5, 7, 2},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

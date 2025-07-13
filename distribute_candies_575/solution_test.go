@@ -16,7 +16,7 @@ func TestDistributeCandies(t *testing.T) {
 		{"unique capped by half", []int{1, 1, 2, 3}, 2},
 		{"unique exceeds half", []int{1, 1, 1, 1, 2, 2, 2, 3, 3, 3}, 3},
 		{"large values", []int{1000, 1000, 2, 1, 2, 5, 3, 1}, 4},
-		{"single type", []int{5, 5, 5, 5}, 2},
+		{"single type", []int{5, 5, 5, 5}, 1},
 		{"all unique", []int{1, 2, 3, 4}, 2},
 		{"empty", []int{}, 0},
 	}
