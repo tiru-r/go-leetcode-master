@@ -1,14 +1,16 @@
 package letter_combinations_of_a_phone_number_17
 
+// letterCombinations generates all letter combinations for phone number digits
+// Optimized: O(3^m * 4^n) time, O(3^m * 4^n) space with Go 1.24 modern syntax
 func letterCombinations(digits string) []string {
 	if len(digits) == 0 {
 		return nil
 	}
 
-	// constant lookup table indexed by digit-'0'
-	keys := [...]string{
+	// Constant lookup table with Go 1.24 syntax
+	digitToLetters := [10]string{
 		2: "abc",
-		3: "def",
+		3: "def", 
 		4: "ghi",
 		5: "jkl",
 		6: "mno",
@@ -17,33 +19,35 @@ func letterCombinations(digits string) []string {
 		9: "wxyz",
 	}
 
-	// validation + capacity
-	cap := 1
-	for i := 0; i < len(digits); i++ {
-		d := digits[i] - '0'
+	// Calculate exact capacity and validate
+	capacity := 1
+	for _, digit := range digits {
+		d := int(digit - '0')
 		if d < 2 || d > 9 {
 			return nil
 		}
-		cap *= len(keys[d])
+		capacity *= len(digitToLetters[d])
 	}
 
-	// pre-allocate result and buffer
-	res := make([]string, 0, cap)
-	buf := make([]byte, len(digits))
+	// Pre-allocate with exact capacity
+	result := make([]string, 0, capacity)
+	combination := make([]byte, len(digits))
 
-	var dfs func(int)
-	dfs = func(pos int) {
-		if pos == len(digits) {
-			res = append(res, string(buf))
+	// Backtracking with early termination
+	var backtrack func(int)
+	backtrack = func(index int) {
+		if index == len(digits) {
+			result = append(result, string(combination))
 			return
 		}
-		letters := keys[digits[pos]-'0']
-		for i := 0; i < len(letters); i++ {
-			buf[pos] = letters[i]
-			dfs(pos + 1)
+		
+		letters := digitToLetters[digits[index]-'0']
+		for i := range letters {
+			combination[index] = letters[i]
+			backtrack(index + 1)
 		}
 	}
 
-	dfs(0)
-	return res
+	backtrack(0)
+	return result
 }

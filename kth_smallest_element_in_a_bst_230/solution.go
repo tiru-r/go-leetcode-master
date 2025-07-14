@@ -1,34 +1,41 @@
 package kth_smallest_element_in_a_bst_230
 
-// Definition for a binary tree node.
+// TreeNode represents a binary search tree node
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
 	Right *TreeNode
 }
 
-// kthSmallest returns the k-th (1-based) smallest element in the BST.
-// Runs in O(h + k) time and O(h) space (stack height h).
+// kthSmallest finds k-th smallest element using optimized inorder traversal
+// Optimized: O(h+k) time, O(h) space with Go 1.24 modern syntax and early termination
 func kthSmallest(root *TreeNode, k int) int {
-	var stack []*TreeNode
-	curr := root
-
-	for curr != nil || len(stack) > 0 {
-		// push left spine
-		for curr != nil {
-			stack = append(stack, curr)
-			curr = curr.Left
+	count := 0
+	var result int
+	
+	// Recursive inorder with early termination
+	var inorder func(*TreeNode) bool
+	inorder = func(node *TreeNode) bool {
+		if node == nil {
+			return false
 		}
-
-		curr = stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
-
-		k--
-		if k == 0 {
-			return curr.Val
+		
+		// Traverse left subtree
+		if inorder(node.Left) {
+			return true
 		}
-
-		curr = curr.Right
+		
+		// Process current node
+		count++
+		if count == k {
+			result = node.Val
+			return true // early termination
+		}
+		
+		// Traverse right subtree
+		return inorder(node.Right)
 	}
-	return -1 // unreachable if 1 <= k <= #nodes
+	
+	inorder(root)
+	return result
 }

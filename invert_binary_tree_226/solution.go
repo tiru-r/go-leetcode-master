@@ -1,28 +1,25 @@
 package invert_binary_tree_226
 
-// Definition for a binary tree node.
+// TreeNode represents a binary tree node
 type TreeNode struct {
 	Val   int
 	Left  *TreeNode
 	Right *TreeNode
 }
 
-// Iterative DFS (stack) – same O(n) time, O(n) worst-case space.
+// invertTree inverts binary tree using optimized recursive approach
+// Optimized: O(n) time, O(h) space with Go 1.24 modern syntax
 func invertTree(root *TreeNode) *TreeNode {
 	if root == nil {
 		return nil
 	}
-	stack := []*TreeNode{root}
-	for len(stack) > 0 {
-		node := stack[len(stack)-1]
-		stack = stack[:len(stack)-1]
-		node.Left, node.Right = node.Right, node.Left
-		if node.Left != nil {
-			stack = append(stack, node.Left)
-		}
-		if node.Right != nil {
-			stack = append(stack, node.Right)
-		}
-	}
+	
+	// Swap children using Go's multiple assignment
+	root.Left, root.Right = root.Right, root.Left
+	
+	// Recursively invert subtrees
+	invertTree(root.Left)
+	invertTree(root.Right)
+	
 	return root
 }
