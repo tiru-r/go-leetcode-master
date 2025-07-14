@@ -29,10 +29,10 @@ func Test_rob(t *testing.T) {
 
 		// 4. Monotonic patterns
 		{"increasing", []int{1, 2, 3, 4, 5}, 8}, // 2+4 (skip 1 and 5)
-		{"decreasing", []int{5, 4, 3, 2, 1}, 9}, // 5+3+1 (skip 4 and 2)
+		{"decreasing", []int{5, 4, 3, 2, 1}, 8}, // 5+3 (skip last, can't rob 5+3+1 due to circular)
 
 		// 5. Alternating high/low
-		{"alternating", []int{10, 1, 10, 1, 10}, 30},
+		{"alternating", []int{10, 1, 10, 1, 10}, 20},
 
 		// 6. Large input (performance smoke)
 		{"large 100", make([]int, 100), 0}, // all zeroes

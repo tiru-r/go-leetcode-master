@@ -1,40 +1,55 @@
 package implement_trie_208
 
+// Trie implements an optimized prefix tree using Go 1.24 modern syntax
+// Optimized: O(m) operations with lazy allocation and efficient traversal
 type Trie struct {
-	root *trieNode
-}
-
-type trieNode struct {
+	children [26]*Trie
 	isEnd    bool
-	children [26]*trieNode
 }
 
-func NewTrie() *Trie { return &Trie{root: &trieNode{}} }
+// NewTrie creates a new Trie instance (idiomatic Go constructor)
+func NewTrie() *Trie {
+	return &Trie{}
+}
 
+// Insert adds a word to the trie using modern range syntax
+// Time: O(m), Space: O(m) worst case with lazy node allocation
 func (t *Trie) Insert(word string) {
-	current := t.root
-	for _, char := range word {
-		index := char - 'a'
-		if current.children[index] == nil {
-			current.children[index] = &trieNode{}
+	curr := t
+	for _, char := range []byte(word) {
+		idx := char - 'a'
+		if curr.children[idx] == nil {
+			curr.children[idx] = &Trie{}
 		}
-		current = current.children[index]
+		curr = curr.children[idx]
 	}
-	current.isEnd = true
+	curr.isEnd = true
 }
 
-func (t *Trie) Search(word string) bool { return t.traverse(word, true) }
-
-func (t *Trie) StartsWith(prefix string) bool { return t.traverse(prefix, false) }
-
-func (t *Trie) traverse(s string, requireEnd bool) bool {
-	current := t.root
-	for _, char := range s {
-		index := char - 'a'
-		if current.children[index] == nil {
-			return false
-		}
-		current = current.children[index]
+// Search returns true if the word exists in the trie
+// Time: O(m) with early termination on missing paths
+func (t *Trie) Search(word string) bool {
+	if node := t.findPrefix(word); node != nil {
+		return node.isEnd
 	}
-	return !requireEnd || current.isEnd
+	return false
+}
+
+// StartsWith returns true if any word has the given prefix
+// Time: O(m) with optimized prefix traversal
+func (t *Trie) StartsWith(prefix string) bool {
+	return t.findPrefix(prefix) != nil
+}
+
+// findPrefix traverses to the end of prefix, returns nil if path doesn't exist
+func (t *Trie) findPrefix(prefix string) *Trie {
+	curr := t
+	for _, char := range []byte(prefix) {
+		idx := char - 'a'
+		if curr.children[idx] == nil {
+			return nil
+		}
+		curr = curr.children[idx]
+	}
+	return curr
 }

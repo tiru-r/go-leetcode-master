@@ -57,7 +57,7 @@ func TestInorderSuccessor(t *testing.T) {
 		{"LC 2-1-3", []int{2, 1, 3}, 1, 2, false},
 		{"LC 5-3-6-2-4-nil-nil-1", []int{5, 3, 6, 2, 4, -1, -1, 1}, 6, 0, true}, // successor nil
 		{"root only", []int{1}, 1, 0, true},
-		{"right skew", []int{1, -1, 2, -1, -1, -1, 3}, 2, 3, false},
+		{"right skew", []int{1, -1, 2, -1, 3}, 2, 3, false},
 		{"left skew", []int{3, 2, -1, 1}, 1, 2, false},
 		{"missing successor", []int{5, 3, 7}, 7, 0, true},
 		{"duplicate values (first)", []int{2, 2, 3}, 2, 3, false},

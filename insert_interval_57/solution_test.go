@@ -28,8 +28,8 @@ func TestInsert(t *testing.T) {
 		// 5. Single interval merge
 		{"merge single", [][]int{{1, 5}}, []int{2, 7}, [][]int{{1, 7}}},
 
-		// 6. No overlap
-		{"no overlap", [][]int{{1, 2}, {4, 5}}, []int{2, 3}, [][]int{{1, 2}, {2, 3}, {4, 5}}},
+		// 6. Touching boundary (merges)
+		{"touching boundary", [][]int{{1, 2}, {4, 5}}, []int{2, 3}, [][]int{{1, 3}, {4, 5}}},
 
 		// 7. Fully contained
 		{"fully contained", [][]int{{1, 10}}, []int{3, 7}, [][]int{{1, 10}}},
@@ -40,8 +40,21 @@ func TestInsert(t *testing.T) {
 		// 9. Touching edges
 		{"touch edges", [][]int{{1, 2}, {4, 5}}, []int{2, 4}, [][]int{{1, 5}}},
 
-		// 10. Large data (performance smoke)
-		{"large 1e4", make([][]int, 10000), []int{5000, 5001}, [][]int{{5000, 5001}}},
+		// 10. Large data (performance smoke) - insert at end
+		{"large 1000", func() [][]int {
+			large := make([][]int, 1000)
+			for i := range large {
+				large[i] = []int{i * 2, i*2 + 1}
+			}
+			return large
+		}(), []int{3000, 3001}, func() [][]int {
+			result := make([][]int, 1001)
+			for i := 0; i < 1000; i++ {
+				result[i] = []int{i * 2, i*2 + 1}
+			}
+			result[1000] = []int{3000, 3001}
+			return result
+		}()},
 	}
 
 	for _, tt := range tests {

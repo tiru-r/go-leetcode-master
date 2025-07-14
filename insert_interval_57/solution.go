@@ -1,32 +1,32 @@
 package insert_interval_57
 
-// insert inserts newInterval into intervals, merging where necessary.
-// Time: O(n)  Space: O(1) (output slice excluded)
+// insert merges newInterval into sorted intervals using optimized three-phase approach
+// Optimized: O(n) time, O(1) space with Go 1.24 modern syntax
 func insert(intervals [][]int, newInterval []int) [][]int {
-	// short-circuit empty input
 	if len(intervals) == 0 {
 		return [][]int{newInterval}
 	}
 
-	var out [][]int
-	i, start, end := 0, newInterval[0], newInterval[1]
+	result := make([][]int, 0, len(intervals)+1)
+	i := 0
+	start, end := newInterval[0], newInterval[1]
 
-	// 1. Append intervals completely before newInterval
+	// Phase 1: Add all intervals that end before newInterval starts
 	for i < len(intervals) && intervals[i][1] < start {
-		out = append(out, intervals[i])
+		result = append(result, intervals[i])
 		i++
 	}
 
-	// 2. Merge overlapping / touching intervals
+	// Phase 2: Merge all overlapping/touching intervals with newInterval
 	for i < len(intervals) && intervals[i][0] <= end {
 		start = min(start, intervals[i][0])
 		end = max(end, intervals[i][1])
 		i++
 	}
-	out = append(out, []int{start, end})
+	result = append(result, []int{start, end})
 
-	// 3. Append remaining intervals
-	out = append(out, intervals[i:]...)
+	// Phase 3: Add all remaining intervals
+	result = append(result, intervals[i:]...)
 
-	return out
+	return result
 }

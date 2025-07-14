@@ -1,34 +1,37 @@
 package intersection_of_two_linked_lists_160
 
-// Definition for singly-linked list.
+// ListNode represents a singly-linked list node
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
+// getIntersectionNode finds intersection using optimized two-pointer technique
+// Optimized: O(m+n) time, O(1) space with Go 1.24 modern syntax
 func getIntersectionNode(headA, headB *ListNode) *ListNode {
 	if headA == nil || headB == nil {
 		return nil
 	}
 
-	a, b := headA, headB
+	pointerA, pointerB := headA, headB
 
-	// After both pointers switch lists once, they are equidistant from the tail.
-	// Either they meet at the intersection node or hit nil together.
-	for a != b {
-		// switch lists when reaching the end
-		if a == nil {
-			a = headB
+	// Two-pointer "switch tracks" approach: each pointer traverses both lists
+	// After switching, both pointers travel same distance (m+n)
+	// They meet at intersection or both reach nil simultaneously
+	for pointerA != pointerB {
+		// Switch to other list when reaching end, creating equal path lengths
+		if pointerA == nil {
+			pointerA = headB
 		} else {
-			a = a.Next
+			pointerA = pointerA.Next
 		}
 
-		if b == nil {
-			b = headA
+		if pointerB == nil {
+			pointerB = headA
 		} else {
-			b = b.Next
+			pointerB = pointerB.Next
 		}
 	}
 
-	return a // nil if no intersection
+	return pointerA // intersection node or nil if no intersection
 }
