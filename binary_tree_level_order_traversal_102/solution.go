@@ -6,24 +6,24 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-func LevelOrder(root *TreeNode) [][]int {
+func levelOrder(root *TreeNode) [][]int {
 	if root == nil {
 		return nil
 	}
 
+	var result [][]int
 	queue := []*TreeNode{root}
-	result := make([][]int, 0, 8)
 
 	for len(queue) > 0 {
 		levelSize := len(queue)
 		level := make([]int, 0, levelSize)
-		
+
 		for range levelSize {
 			node := queue[0]
 			queue = queue[1:]
-			
+
 			level = append(level, node.Val)
-			
+
 			if node.Left != nil {
 				queue = append(queue, node.Left)
 			}
@@ -31,7 +31,7 @@ func LevelOrder(root *TreeNode) [][]int {
 				queue = append(queue, node.Right)
 			}
 		}
-		
+
 		result = append(result, level)
 	}
 

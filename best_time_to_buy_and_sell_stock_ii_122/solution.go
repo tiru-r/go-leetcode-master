@@ -4,12 +4,12 @@ func maxProfit(prices []int) int {
 	if len(prices) <= 1 {
 		return 0
 	}
-	
-	totalProfit := 0
-	for i := range len(prices) - 1 {
-		if diff := prices[i+1] - prices[i]; diff > 0 {
-			totalProfit += diff
+
+	profit := 0
+	for i := 1; i < len(prices); i++ {
+		if prices[i] > prices[i-1] {
+			profit += prices[i] - prices[i-1]
 		}
 	}
-	return totalProfit
+	return profit
 }
