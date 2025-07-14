@@ -1,16 +1,11 @@
 package minimum_number_of_days_to_disconnect_island_1568
 
-// MinDays finds minimum days to disconnect the island
-// Time: O(m*n*(m*n)), Space: O(m*n)
-func MinDays(grid [][]int) int {
-	m, n := len(grid), len(grid[0])
-	
-	// Check if already disconnected
+func minDays(grid [][]int) int {
 	if countIslands(grid) != 1 {
 		return 0
 	}
 	
-	// Try removing each land cell (1 day)
+	m, n := len(grid), len(grid[0])
 	for i := range m {
 		for j := range n {
 			if grid[i][j] == 1 {
@@ -18,16 +13,14 @@ func MinDays(grid [][]int) int {
 				if countIslands(grid) != 1 {
 					return 1
 				}
-				grid[i][j] = 1 // backtrack
+				grid[i][j] = 1
 			}
 		}
 	}
 	
-	// Maximum days needed is 2 (proven by theory)
 	return 2
 }
 
-// countIslands counts number of connected island components
 func countIslands(grid [][]int) int {
 	m, n := len(grid), len(grid[0])
 	visited := make([][]bool, m)
@@ -48,7 +41,6 @@ func countIslands(grid [][]int) int {
 	return count
 }
 
-// dfs performs depth-first search to mark connected land cells
 func dfs(grid [][]int, visited [][]bool, i, j int) {
 	m, n := len(grid), len(grid[0])
 	
@@ -58,9 +50,8 @@ func dfs(grid [][]int, visited [][]bool, i, j int) {
 	
 	visited[i][j] = true
 	
-	// Visit all 4 directions
-	directions := [][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
-	for _, dir := range directions {
+	dirs := [][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+	for _, dir := range dirs {
 		dfs(grid, visited, i+dir[0], j+dir[1])
 	}
 }

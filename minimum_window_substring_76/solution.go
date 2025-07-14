@@ -1,56 +1,49 @@
 package minimum_window_substring_76
 
-// minWindow returns the minimum substring of s that contains every
-// character of t (including duplicates).  If no such window exists,
-// the empty string is returned.
 func minWindow(s string, t string) string {
-	if len(t) == 0 || len(s) < len(t) {
+	if len(s) < len(t) {
 		return ""
 	}
 
-	// 1. frequency table for t
-	tFreq := make([]int, 128)
-	for _, r := range t {
-		tFreq[r]++
-	}
-	required := 0
-	for _, v := range tFreq {
-		if v > 0 {
-			required++
-		}
+	tFreq := make(map[byte]int)
+	for i := range t {
+		tFreq[t[i]]++
 	}
 
-	// 2. sliding-window state
-	win := make([]int, 128)
+	required := len(tFreq)
 	formed := 0
-	left := 0
+	windowCounts := make(map[byte]int)
+	
+	left, right := 0, 0
 	minLen := len(s) + 1
-	minStart := 0
+	minLeft := 0
 
-	for right, r := range s {
-		// expand window
-		win[r]++
-		if win[r] == tFreq[r] {
+	for right < len(s) {
+		char := s[right]
+		windowCounts[char]++
+		
+		if count, exists := tFreq[char]; exists && windowCounts[char] == count {
 			formed++
 		}
 
-		// contract while valid
-		for formed == required && left <= right {
+		for left <= right && formed == required {
 			if right-left+1 < minLen {
 				minLen = right - left + 1
-				minStart = left
+				minLeft = left
 			}
-			leftR := s[left]
-			win[leftR]--
-			if win[leftR] == tFreq[leftR]-1 {
+
+			leftChar := s[left]
+			windowCounts[leftChar]--
+			if count, exists := tFreq[leftChar]; exists && windowCounts[leftChar] < count {
 				formed--
 			}
 			left++
 		}
+		right++
 	}
 
 	if minLen == len(s)+1 {
 		return ""
 	}
-	return s[minStart : minStart+minLen]
+	return s[minLeft : minLeft+minLen]
 }

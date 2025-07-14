@@ -16,7 +16,7 @@ func TestMovingAverage(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		ma := NewMovingAverage(tt.size)
+		ma := New(tt.size)
 		var results []float64
 		for _, value := range tt.values {
 			results = append(results, ma.Next(value))
@@ -28,7 +28,7 @@ func TestMovingAverage(t *testing.T) {
 }
 
 func BenchmarkNext(b *testing.B) {
-	ma := NewMovingAverage(1000)
+	ma := New(1000)
 	b.ResetTimer()
 	for i := range b.N {
 		_ = ma.Next(i)

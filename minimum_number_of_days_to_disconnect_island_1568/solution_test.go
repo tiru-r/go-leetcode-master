@@ -74,7 +74,7 @@ func TestMinDays(t *testing.T) {
 			copy(gridCopy[j], test.grid[j])
 		}
 		
-		got := MinDays(gridCopy)
+		got := minDays(gridCopy)
 		if got != test.want {
 			t.Errorf("Test %d: MinDays(%v) = %d; want %d", i, test.grid, got, test.want)
 		}
@@ -130,13 +130,13 @@ func TestCountIslands(t *testing.T) {
 func TestEdgeCases(t *testing.T) {
 	// Single cell with land
 	grid := [][]int{{1}}
-	if got := MinDays(grid); got != 1 {
+	if got := minDays(grid); got != 1 {
 		t.Errorf("Single land cell should return 1, got %d", got)
 	}
 	
 	// Single cell with water
 	grid = [][]int{{0}}
-	if got := MinDays(grid); got != 0 {
+	if got := minDays(grid); got != 0 {
 		t.Errorf("Single water cell should return 0, got %d", got)
 	}
 	
@@ -145,7 +145,7 @@ func TestEdgeCases(t *testing.T) {
 		{1, 0, 1},
 		{0, 0, 0},
 	}
-	if got := MinDays(grid); got != 0 {
+	if got := minDays(grid); got != 0 {
 		t.Errorf("Already disconnected should return 0, got %d", got)
 	}
 	
@@ -155,7 +155,7 @@ func TestEdgeCases(t *testing.T) {
 		{0, 1, 0},
 		{1, 1, 1},
 	}
-	if got := MinDays(grid); got != 1 {
+	if got := minDays(grid); got != 1 {
 		t.Errorf("Articulation point should return 1, got %d", got)
 	}
 }
@@ -176,6 +176,6 @@ func BenchmarkMinDays(b *testing.B) {
 			gridCopy[i] = make([]int, len(grid[i]))
 			copy(gridCopy[i], grid[i])
 		}
-		MinDays(gridCopy)
+		minDays(gridCopy)
 	}
 }
