@@ -1,6 +1,5 @@
 package max_points_on_a_line_149
 
-import "strconv"
 
 func maxPointsOnLine(points [][]int) int {
 	n := len(points)
@@ -10,30 +9,30 @@ func maxPointsOnLine(points [][]int) int {
 
 	maxPoints := 2
 
-	for i := 0; i < n; i++ {
-		slopes := make(map[string]int)
+	for i := range n {
+		slopes := make(map[[2]int]int)
 		duplicate := 1
 		localMax := 0
 
 		for j := i + 1; j < n; j++ {
-			deltaX := points[j][0] - points[i][0]
-			deltaY := points[j][1] - points[i][1]
+			dx := points[j][0] - points[i][0]
+			dy := points[j][1] - points[i][1]
 
-			if deltaX == 0 && deltaY == 0 {
+			if dx == 0 && dy == 0 {
 				duplicate++
 				continue
 			}
 
-			gcd := gcd(deltaX, deltaY)
-			deltaX /= gcd
-			deltaY /= gcd
+			g := gcd(dx, dy)
+			dx /= g
+			dy /= g
 
-			if deltaX < 0 || (deltaX == 0 && deltaY < 0) {
-				deltaX = -deltaX
-				deltaY = -deltaY
+			if dx < 0 || (dx == 0 && dy < 0) {
+				dx = -dx
+				dy = -dy
 			}
 
-			slope := strconv.Itoa(deltaX) + "," + strconv.Itoa(deltaY)
+			slope := [2]int{dx, dy}
 			slopes[slope]++
 			localMax = max(localMax, slopes[slope])
 		}

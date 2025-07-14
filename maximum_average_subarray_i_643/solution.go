@@ -1,22 +1,16 @@
 package maximum_average_subarray_i_643
 
 func findMaxAverage(nums []int, k int) float64 {
-	start := 0
-	end := k - 1
-	sum := 0.0
-
-	for i := start; i <= end; i++ {
-		sum += float64(nums[i])
+	sum := 0
+	for i := range k {
+		sum += nums[i]
 	}
 
-	maxAvg := sum / float64(k)
-	for end < len(nums)-1 {
-		sum -= float64(nums[start])
-		sum += float64(nums[end+1])
-		maxAvg = max(maxAvg, sum/float64(k))
-		start++
-		end++
+	maxSum := sum
+	for i := k; i < len(nums); i++ {
+		sum += nums[i] - nums[i-k]
+		maxSum = max(maxSum, sum)
 	}
 
-	return maxAvg
+	return float64(maxSum) / float64(k)
 }
