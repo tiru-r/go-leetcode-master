@@ -1,35 +1,30 @@
 package merge_two_sorted_lists_21
 
-// ListNode definition using Go 1.24 - no external dependencies needed
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
-func mergeTwoLists(l1 *ListNode, l2 *ListNode) *ListNode {
-	// Note: Cool technique to not have to worry about front of list being null
-	//       current.Next is always where the next will go
-	holdFront := &ListNode{}
-	current := holdFront
+func mergeTwoLists(list1 *ListNode, list2 *ListNode) *ListNode {
+	dummy := &ListNode{}
+	curr := dummy
 
-	for l1 != nil && l2 != nil {
-		if l1.Val <= l2.Val {
-			current.Next = l1
-			l1 = l1.Next
+	for list1 != nil && list2 != nil {
+		if list1.Val <= list2.Val {
+			curr.Next = list1
+			list1 = list1.Next
 		} else {
-			current.Next = l2
-			l2 = l2.Next
+			curr.Next = list2
+			list2 = list2.Next
 		}
-
-		current = current.Next
+		curr = curr.Next
 	}
 
-	// Append remaining nodes (one of l1 or l2 is nil)
-	if l1 != nil {
-		current.Next = l1
+	if list1 != nil {
+		curr.Next = list1
 	} else {
-		current.Next = l2
+		curr.Next = list2
 	}
 
-	return holdFront.Next
+	return dummy.Next
 }

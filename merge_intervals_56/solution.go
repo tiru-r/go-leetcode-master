@@ -5,13 +5,11 @@ import (
 	"slices"
 )
 
-// Second solution
 func merge(intervals [][]int) [][]int {
 	if len(intervals) <= 1 {
 		return intervals
 	}
 
-	// Use cmp.Compare for type-safe comparison
 	slices.SortFunc(intervals, func(a, b []int) int {
 		return cmp.Compare(a[0], b[0])
 	})

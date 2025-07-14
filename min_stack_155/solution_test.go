@@ -31,7 +31,7 @@ func TestMinStack(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ms := NewMinStack()
+			ms := New()
 			outIdx := 0
 			for i, op := range tt.ops {
 				switch op {
@@ -58,7 +58,7 @@ func TestMinStack(t *testing.T) {
 }
 
 func BenchmarkMinStack(b *testing.B) {
-	ms := NewMinStack()
+	ms := New()
 	for range b.N {
 		ms.Push(b.N)
 		_ = ms.GetMin()

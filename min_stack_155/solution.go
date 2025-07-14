@@ -5,41 +5,29 @@ type MinStack struct {
 	mins  []int
 }
 
-func NewMinStack() *MinStack {
-	return &MinStack{
-		stack: make([]int, 0, 16),
-		mins:  make([]int, 0, 16),
+func New() *MinStack {
+	return &MinStack{}
+}
+
+func (s *MinStack) Push(val int) {
+	s.stack = append(s.stack, val)
+	if len(s.mins) == 0 || val <= s.mins[len(s.mins)-1] {
+		s.mins = append(s.mins, val)
 	}
 }
 
-func (ms *MinStack) Push(val int) {
-	ms.stack = append(ms.stack, val)
-	if len(ms.mins) == 0 || val <= ms.mins[len(ms.mins)-1] {
-		ms.mins = append(ms.mins, val)
+func (s *MinStack) Pop() {
+	top := s.stack[len(s.stack)-1]
+	s.stack = s.stack[:len(s.stack)-1]
+	if top == s.mins[len(s.mins)-1] {
+		s.mins = s.mins[:len(s.mins)-1]
 	}
 }
 
-func (ms *MinStack) Pop() {
-	if len(ms.stack) == 0 {
-		return
-	}
-	top := ms.stack[len(ms.stack)-1]
-	ms.stack = ms.stack[:len(ms.stack)-1]
-	if top == ms.mins[len(ms.mins)-1] {
-		ms.mins = ms.mins[:len(ms.mins)-1]
-	}
+func (s *MinStack) Top() int {
+	return s.stack[len(s.stack)-1]
 }
 
-func (ms *MinStack) Top() int {
-	if len(ms.stack) == 0 {
-		panic("empty stack")
-	}
-	return ms.stack[len(ms.stack)-1]
-}
-
-func (ms *MinStack) GetMin() int {
-	if len(ms.mins) == 0 {
-		panic("empty stack")
-	}
-	return ms.mins[len(ms.mins)-1]
+func (s *MinStack) GetMin() int {
+	return s.mins[len(s.mins)-1]
 }

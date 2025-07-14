@@ -1,13 +1,10 @@
 package merge_k_sorted_lists_23
 
-// ListNode is a node in a singly-linked list.
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
-// mergeKLists merges k sorted linked lists into one sorted list.
-// Time: O(N log k)  Space: O(log k)  (recursion stack)
 func mergeKLists(lists []*ListNode) *ListNode {
 	if len(lists) == 0 {
 		return nil
@@ -15,7 +12,6 @@ func mergeKLists(lists []*ListNode) *ListNode {
 	return mergeRange(lists, 0, len(lists)-1)
 }
 
-// mergeRange recursively merges lists[left:right] inclusive.
 func mergeRange(lists []*ListNode, left, right int) *ListNode {
 	if left == right {
 		return lists[left]
@@ -26,7 +22,6 @@ func mergeRange(lists []*ListNode, left, right int) *ListNode {
 	return mergeTwoLists(l, r)
 }
 
-// mergeTwoLists merges two sorted lists iteratively.
 func mergeTwoLists(l1, l2 *ListNode) *ListNode {
 	dummy := &ListNode{}
 	curr := dummy
