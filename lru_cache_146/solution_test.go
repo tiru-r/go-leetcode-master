@@ -139,3 +139,31 @@ func TestNewLRUCache(t *testing.T) {
 		t.Error("sentinel links are wrong")
 	}
 }
+
+func BenchmarkLRUCache(b *testing.B) {
+	cache := NewLRUCache(100)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cache.Put(i%200, i)
+		cache.Get(i % 100)
+	}
+}
+
+func BenchmarkLRUCacheGet(b *testing.B) {
+	cache := NewLRUCache(1000)
+	for i := 0; i < 1000; i++ {
+		cache.Put(i, i*10)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cache.Get(i % 1000)
+	}
+}
+
+func BenchmarkLRUCachePut(b *testing.B) {
+	cache := NewLRUCache(1000)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		cache.Put(i, i*10)
+	}
+}

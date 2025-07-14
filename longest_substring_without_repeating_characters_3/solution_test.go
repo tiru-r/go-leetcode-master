@@ -1,6 +1,9 @@
 package longest_substring_without_repeating_characters_3
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func Test_lengthOfLongestSubstring(t *testing.T) {
 	tests := []struct {
@@ -16,8 +19,8 @@ func Test_lengthOfLongestSubstring(t *testing.T) {
 		{"duplicate at start", "aabcd", 4},
 		{"duplicate in middle", "abcabcbb", 3},
 		{"window jump twice", "abba", 2},
-		{"unicode", "pwwkewü", 6}, // 'ü' is a multi-byte rune
-		{"mixed ascii/unicode", "你好世界世", 5},
+		{"unicode", "pwwkewü", 4}, // 'ü' is a multi-byte rune - "kewü" = 4
+		{"mixed ascii/unicode", "你好世界世", 4}, // "你好世界" = 4
 	}
 
 	for _, tt := range tests {
@@ -29,16 +32,26 @@ func Test_lengthOfLongestSubstring(t *testing.T) {
 	}
 }
 
-// Benchmarks the implementation on a worst-case input (no repeats).
-func Benchmark_lengthOfLongestSubstring(b *testing.B) {
-	const n = 1_000
-	s := make([]rune, n)
-	for i := 0; i < n; i++ {
-		s[i] = rune('a' + (i % 26))
-	}
-	in := string(s)
+func BenchmarkLengthOfLongestSubstring(b *testing.B) {
+	s := "abcabcbb"
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = lengthOfLongestSubstring(in)
+		lengthOfLongestSubstring(s)
+	}
+}
+
+func BenchmarkLengthOfLongestSubstringASCII(b *testing.B) {
+	s := strings.Repeat("abcdefghijklmnopqrstuvwxyz", 1000)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		lengthOfLongestSubstring(s)
+	}
+}
+
+func BenchmarkLengthOfLongestSubstringUnicode(b *testing.B) {
+	s := strings.Repeat("你好世界测试", 1000)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		lengthOfLongestSubstring(s)
 	}
 }

@@ -1,20 +1,32 @@
 package longest_repeating_character_replacement_424
 
 func characterReplacement(s string, k int) int {
-	const alphabet = 26
-	cnt := [alphabet]int{}
-
-	start, maxCnt, maxLen := 0, 0, 0
-	for end := 0; end < len(s); end++ {
-		idx := s[end] - 'A'
-		cnt[idx]++
-		maxCnt = max(maxCnt, cnt[idx])
-
-		if end-start+1-maxCnt > k {
-			cnt[s[start]-'A']--
-			start++
-		}
-		maxLen = max(maxLen, end-start+1)
+	if len(s) == 0 {
+		return 0
 	}
-	return maxLen
+
+	count := [26]int{}
+	left, maxCount, maxLength := 0, 0, 0
+
+	for right := 0; right < len(s); right++ {
+		// Add current character to window
+		charIdx := s[right] - 'A'
+		count[charIdx]++
+		
+		// Update max frequency in current window
+		maxCount = max(maxCount, count[charIdx])
+		
+		// Check if window is valid (replacements needed <= k)
+		windowSize := right - left + 1
+		if windowSize-maxCount > k {
+			// Shrink window from left
+			count[s[left]-'A']--
+			left++
+		}
+		
+		// Update maximum valid window size
+		maxLength = max(maxLength, right-left+1)
+	}
+	
+	return maxLength
 }

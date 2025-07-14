@@ -1,93 +1,89 @@
 package maximum_number_of_darts_inside_of_a_circular_dartboard_1453
 
-import (
-	"math"
-)
+import "math"
 
-const EPS = 1e-7
+const eps = 1e-7
 
-// Point represents a 2D coordinate
-type Point struct {
+type point struct {
 	x, y float64
 }
 
-// NumPointsInCircle finds the maximum number of darts that can be enclosed by a circle of radius r
-// Time: O(n³), Space: O(1)
-func NumPointsInCircle(darts [][]int, r int) int {
+// numPointsInCircle finds the maximum number of darts that can be enclosed by a circle of radius r.
+// Uses geometric approach: for optimal circle, at least 2 points must be on the boundary.
+// Time: O(n³), Space: O(n)
+func numPointsInCircle(darts [][]int, r int) int {
 	n := len(darts)
 	if n <= 1 {
 		return n
 	}
-	
-	points := make([]Point, n)
+
+	points := make([]point, n)
 	for i, dart := range darts {
-		points[i] = Point{float64(dart[0]), float64(dart[1])}
+		points[i] = point{float64(dart[0]), float64(dart[1])}
 	}
-	
-	maxPoints := 1
+
+	maxCount := 1
 	radius := float64(r)
-	
-	// Try all pairs of points to find circle centers
+
+	// Try all pairs of points as potential boundary points
 	for i := 0; i < n; i++ {
 		for j := i + 1; j < n; j++ {
 			centers := getCircleCenters(points[i], points[j], radius)
-			
 			for _, center := range centers {
-				count := 0
-				for k := 0; k < n; k++ {
-					if distance(center, points[k]) <= radius+EPS {
-						count++
-					}
-				}
-				maxPoints = max(maxPoints, count)
+				maxCount = max(maxCount, countPointsInCircle(points, center, radius))
 			}
 		}
+
+		// Also try circles centered at each point
+		maxCount = max(maxCount, countPointsInCircle(points, points[i], radius))
 	}
-	
-	return maxPoints
+
+	return maxCount
 }
 
-// getCircleCenters finds the centers of circles with given radius passing through two points
-func getCircleCenters(p1, p2 Point, r float64) []Point {
-	dx := p2.x - p1.x
-	dy := p2.y - p1.y
+// getCircleCenters finds centers of circles with given radius passing through two points
+func getCircleCenters(p1, p2 point, r float64) []point {
+	dx, dy := p2.x-p1.x, p2.y-p1.y
 	d := math.Sqrt(dx*dx + dy*dy)
-	
-	// Points are too far apart for a circle of radius r
-	if d > 2*r+EPS {
-		return []Point{}
+
+	// Points too far apart or coincident
+	if d > 2*r+eps || d < eps {
+		return nil
 	}
-	
-	// Points are the same or very close
-	if d < EPS {
-		return []Point{}
-	}
-	
-	// Midpoint between the two points
-	mx := (p1.x + p2.x) / 2
-	my := (p1.y + p2.y) / 2
-	
-	// Distance from midpoint to circle centers
+
+	// Midpoint and perpendicular distance
+	mx, my := (p1.x+p2.x)/2, (p1.y+p2.y)/2
 	h := math.Sqrt(r*r - (d/2)*(d/2))
-	
-	// Unit vector perpendicular to the line connecting p1 and p2
-	ux := -dy / d
-	uy := dx / d
-	
-	// Two possible circle centers
-	c1 := Point{mx + h*ux, my + h*uy}
-	c2 := Point{mx - h*ux, my - h*uy}
-	
-	if math.Abs(h) < EPS {
-		return []Point{c1} // Only one center when points are diameter apart
+
+	// Perpendicular unit vector
+	ux, uy := -dy/d, dx/d
+
+	centers := []point{
+		{mx + h*ux, my + h*uy},
+		{mx - h*ux, my - h*uy},
 	}
-	
-	return []Point{c1, c2}
+
+	// If points are diameter apart, return only one center
+	if math.Abs(h) < eps {
+		return centers[:1]
+	}
+
+	return centers
 }
 
-// distance calculates Euclidean distance between two points
-func distance(p1, p2 Point) float64 {
-	dx := p1.x - p2.x
-	dy := p1.y - p2.y
-	return math.Sqrt(dx*dx + dy*dy)
+// countPointsInCircle counts points within or on the circle boundary
+func countPointsInCircle(points []point, center point, radius float64) int {
+	count := 0
+	for _, p := range points {
+		if distanceSquared(center, p) <= radius*radius+eps {
+			count++
+		}
+	}
+	return count
+}
+
+// distanceSquared calculates squared Euclidean distance (avoids sqrt for performance)
+func distanceSquared(p1, p2 point) float64 {
+	dx, dy := p1.x-p2.x, p1.y-p2.y
+	return dx*dx + dy*dy
 }

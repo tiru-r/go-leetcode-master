@@ -1,63 +1,51 @@
 package majority_element_ii_229
 
-// Note: study again
+// majorityElement finds all elements that appear more than ⌊n/3⌋ times.
+// Uses Boyer-Moore majority vote algorithm extended for k=2 candidates.
+// Time: O(n), Space: O(1)
 func majorityElement(nums []int) []int {
 	if len(nums) == 0 {
 		return []int{}
 	}
 
-	// At most, nums can contain 2 majority elements which
-	// occur more than len(nums) / 3 times. So, we need two
-	// counts and two candidates for the Moore Voting algorithm.
+	// Phase 1: Find potential candidates using Boyer-Moore
+	candidate1, candidate2 := 0, 1 // Use different initial values to avoid collision
 	count1, count2 := 0, 0
-
-	// Pick candidates (they is arbitrary)
-	candidate1, candidate2 := 10, 11
 
 	for _, num := range nums {
 		if num == candidate1 {
-			// Saw num that is equal to candidate 1, increase it's count
 			count1++
 		} else if num == candidate2 {
-			// Saw num that is equal to candidate 2, increase it's count
 			count2++
 		} else if count1 == 0 {
-			// Replacing first candidate
 			candidate1, count1 = num, 1
 		} else if count2 == 0 {
-			// Replacing second candidate
 			candidate2, count2 = num, 1
 		} else {
-			// Both candidates counts decrease
 			count1--
 			count2--
 		}
 	}
 
-	// At this point, candidate1 and candidate2 are set to majority elements in nums
-	// Tally how many times they were seen in nums bc the algorithm doesn't
-	// guarantee a majority element.
-	count1 = 0
-	count2 = 0
-	for _, n := range nums {
-		if n == candidate1 {
-			count1++
-		}
+	// Phase 2: Verify candidates actually appear > n/3 times
+	count1, count2 = 0, 0
+	threshold := len(nums) / 3
 
-		if n == candidate2 {
+	for _, num := range nums {
+		if num == candidate1 {
+			count1++
+		} else if num == candidate2 {
 			count2++
 		}
 	}
 
-	// if counts for candidate1 and candidate2 are larger than len(nums)/3, return them
-	maj := make([]int, 0, 2)
-	if count1 > len(nums)/3 {
-		maj = append(maj, candidate1)
+	result := make([]int, 0, 2)
+	if count1 > threshold {
+		result = append(result, candidate1)
+	}
+	if count2 > threshold && candidate2 != candidate1 {
+		result = append(result, candidate2)
 	}
 
-	if count2 > len(nums)/3 {
-		maj = append(maj, candidate2)
-	}
-
-	return maj
+	return result
 }

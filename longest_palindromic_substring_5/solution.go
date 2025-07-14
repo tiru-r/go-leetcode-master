@@ -7,24 +7,35 @@ func longestPalindrome(s string) string {
 
 	start, maxLen := 0, 1
 
-	// helper expands around left, right and returns length
-	expand := func(l, r int) int {
+	// Optimized expand function
+	expand := func(l, r int) (int, int) {
 		for l >= 0 && r < len(s) && s[l] == s[r] {
 			l--
 			r++
 		}
-		return r - l - 1 // length after final mismatch
+		return l + 1, r - 1
 	}
 
 	for i := 0; i < len(s); i++ {
-		if len1 := expand(i, i); len1 > maxLen {
-			maxLen = len1
-			start = i - (len1-1)/2
+		// Skip if remaining characters can't form a longer palindrome
+		if len(s)-i <= maxLen/2 {
+			break
 		}
-		if len2 := expand(i, i+1); len2 > maxLen {
-			maxLen = len2
-			start = i - (len2-1)/2
+
+		// Check odd-length palindromes (center at i)
+		if left, right := expand(i, i); right-left+1 > maxLen {
+			maxLen = right - left + 1
+			start = left
+		}
+
+		// Check even-length palindromes (center between i and i+1)
+		if i+1 < len(s) {
+			if left, right := expand(i, i+1); right-left+1 > maxLen {
+				maxLen = right - left + 1
+				start = left
+			}
 		}
 	}
+
 	return s[start : start+maxLen]
 }

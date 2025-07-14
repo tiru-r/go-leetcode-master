@@ -6,16 +6,27 @@ type TreeNode struct {
 	Right *TreeNode
 }
 
-// lowestCommonAncestor returns the lowest common ancestor of p and q in a BST.
 func lowestCommonAncestor(root, p, q *TreeNode) *TreeNode {
+	// Ensure p has smaller value for optimization
+	if p.Val > q.Val {
+		p, q = q, p
+	}
+	
+	// Iterative solution with single comparison optimization
 	for root != nil {
-		if p.Val < root.Val && q.Val < root.Val {
+		rootVal := root.Val
+		
+		// Both nodes are in left subtree
+		if q.Val < rootVal {
 			root = root.Left
-		} else if p.Val > root.Val && q.Val > root.Val {
+		} else if p.Val > rootVal {
+			// Both nodes are in right subtree
 			root = root.Right
 		} else {
+			// Split point found: p.Val <= rootVal <= q.Val
 			return root
 		}
 	}
-	return nil // unreachable for valid inputs
+	
+	return nil
 }

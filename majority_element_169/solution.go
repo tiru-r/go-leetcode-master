@@ -1,18 +1,20 @@
 package majority_element_169
 
-// Note: https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm
-// Good problem and intro to a new algorithm.
+// majorityElement finds the majority element using Boyer-Moore algorithm.
+// Time: O(n), Space: O(1)
 func majorityElement(nums []int) int {
-	count := 0
-	candidate := 0
+	if len(nums) == 0 {
+		return 0
+	}
 
-	// Use range over values for better performance
-	for _, num := range nums {
+	candidate := nums[0]
+	count := 1
+
+	for i := 1; i < len(nums); i++ {
 		if count == 0 {
-			candidate = num
-		}
-
-		if num == candidate {
+			candidate = nums[i]
+			count = 1
+		} else if nums[i] == candidate {
 			count++
 		} else {
 			count--

@@ -1,32 +1,44 @@
 package longest_common_prefix_14
 
 func longestCommonPrefix(strs []string) string {
-	switch len(strs) {
-	case 0:
+	if len(strs) == 0 {
 		return ""
-	case 1:
+	}
+	if len(strs) == 1 {
 		return strs[0]
 	}
 
-	// find the shortest string once
-	min := len(strs[0])
-	for _, s := range strs[1:] {
-		if len(s) < min {
-			min = len(s)
+	// Find minimum length with early termination
+	minLen := len(strs[0])
+	for i := 1; i < len(strs); i++ {
+		if len(strs[i]) < minLen {
+			minLen = len(strs[i])
 		}
-		if min == 0 {
+		if minLen == 0 {
 			return ""
 		}
 	}
 
-	// byte-by-byte scan (cache-friendly)
-	for i := 0; i < min; i++ {
-		c := strs[0][i]
-		for _, s := range strs[1:] {
-			if s[i] != c {
-				return strs[0][:i]
-			}
+	// Binary search for optimal length
+	left, right := 0, minLen
+	for left < right {
+		mid := (left + right + 1) / 2
+		if hasCommonPrefix(strs, mid) {
+			left = mid
+		} else {
+			right = mid - 1
 		}
 	}
-	return strs[0][:min]
+	
+	return strs[0][:left]
+}
+
+func hasCommonPrefix(strs []string, length int) bool {
+	prefix := strs[0][:length]
+	for i := 1; i < len(strs); i++ {
+		if strs[i][:length] != prefix {
+			return false
+		}
+	}
+	return true
 }

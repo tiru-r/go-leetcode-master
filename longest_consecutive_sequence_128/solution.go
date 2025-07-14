@@ -5,24 +5,31 @@ func longestConsecutive(nums []int) int {
 		return 0
 	}
 
-	// Build a set for O(1) existence checks
-	set := make(map[int]bool, len(nums))
-	for _, v := range nums {
-		set[v] = true
+	// Use empty struct for memory efficiency
+	set := make(map[int]struct{}, len(nums))
+	for _, num := range nums {
+		set[num] = struct{}{}
 	}
 
-	longest := 0
-	for v := range set {
-		// only start counting if v-1 is NOT in the set
-		if !set[v-1] {
-			length := 1
-			for cur := v + 1; set[cur]; cur++ {
-				length++
+	maxLength := 0
+	for num := range set {
+		// Only start counting if this is the beginning of a sequence
+		if _, exists := set[num-1]; !exists {
+			currentNum := num
+			currentLength := 1
+			
+			// Count consecutive numbers
+			for {
+				if _, exists := set[currentNum+1]; !exists {
+					break
+				}
+				currentNum++
+				currentLength++
 			}
-			if length > longest {
-				longest = length
-			}
+			
+			maxLength = max(maxLength, currentLength)
 		}
 	}
-	return longest
+	
+	return maxLength
 }

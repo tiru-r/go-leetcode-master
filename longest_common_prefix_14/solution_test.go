@@ -27,3 +27,22 @@ func Test_longestCommonPrefix(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkLongestCommonPrefix(b *testing.B) {
+	strs := []string{"flower", "flow", "flight"}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		longestCommonPrefix(strs)
+	}
+}
+
+func BenchmarkLongestCommonPrefixLarge(b *testing.B) {
+	strs := make([]string, 1000)
+	for i := range strs {
+		strs[i] = "commonprefix" + string(rune('a'+i%26))
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		longestCommonPrefix(strs)
+	}
+}

@@ -2,69 +2,71 @@ package lru_cache_146
 
 type LRUCache struct {
 	capacity int
-	cache    map[int]*cacheNode
-	head     *cacheNode
-	tail     *cacheNode
+	cache    map[int]*node
+	head     *node
+	tail     *node
 }
 
-type cacheNode struct {
-	prev  *cacheNode
-	next  *cacheNode
-	key   int
-	value int
+type node struct {
+	key, value int
+	prev, next *node
 }
 
 func NewLRUCache(capacity int) *LRUCache {
-	head, tail := &cacheNode{}, &cacheNode{}
-	head.next, tail.prev = tail, head
+	head := &node{}
+	tail := &node{}
+	head.next = tail
+	tail.prev = head
 
 	return &LRUCache{
 		capacity: capacity,
-		cache:    make(map[int]*cacheNode, capacity),
+		cache:    make(map[int]*node, capacity),
 		head:     head,
 		tail:     tail,
 	}
 }
 
 func (c *LRUCache) Get(key int) int {
-	if node := c.cache[key]; node != nil {
-		c.moveToHead(node)
-		return node.value
+	node, exists := c.cache[key]
+	if !exists {
+		return -1
 	}
-	return -1
+	c.moveToHead(node)
+	return node.value
 }
 
 func (c *LRUCache) Put(key, value int) {
-	if node := c.cache[key]; node != nil {
+	if node, exists := c.cache[key]; exists {
 		node.value = value
 		c.moveToHead(node)
 		return
 	}
 
-	if len(c.cache) == c.capacity {
+	node := &node{key: key, value: value}
+	
+	if len(c.cache) >= c.capacity {
 		lru := c.tail.prev
+		c.removeNode(lru)
 		delete(c.cache, lru.key)
-		c.unlink(lru)
 	}
 
-	node := &cacheNode{key: key, value: value}
 	c.cache[key] = node
-	c.linkHead(node)
+	c.addToHead(node)
 }
 
-func (c *LRUCache) moveToHead(node *cacheNode) {
-	c.unlink(node)
-	c.linkHead(node)
+func (c *LRUCache) moveToHead(node *node) {
+	c.removeNode(node)
+	c.addToHead(node)
 }
 
-func (c *LRUCache) linkHead(node *cacheNode) {
+func (c *LRUCache) addToHead(node *node) {
 	node.prev = c.head
 	node.next = c.head.next
 	c.head.next.prev = node
 	c.head.next = node
 }
 
-func (c *LRUCache) unlink(node *cacheNode) {
+func (c *LRUCache) removeNode(node *node) {
 	node.prev.next = node.next
 	node.next.prev = node.prev
 }

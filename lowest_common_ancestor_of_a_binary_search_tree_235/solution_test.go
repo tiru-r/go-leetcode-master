@@ -76,3 +76,28 @@ func Test_lowestCommonAncestor(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkLowestCommonAncestor(b *testing.B) {
+	root := build(6, 2, 8, 0, 4, 7, 9, 3, 5)
+	p := find(root, 2)
+	q := find(root, 8)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		lowestCommonAncestor(root, p, q)
+	}
+}
+
+func BenchmarkLowestCommonAncestorDeep(b *testing.B) {
+	// Create a deep BST
+	vals := make([]int, 1000)
+	for i := 0; i < 1000; i++ {
+		vals[i] = i
+	}
+	root := build(vals...)
+	p := find(root, 100)
+	q := find(root, 900)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		lowestCommonAncestor(root, p, q)
+	}
+}

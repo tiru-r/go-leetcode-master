@@ -1,6 +1,7 @@
 package longest_palindromic_substring_5
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,5 +31,21 @@ func Test_longestPalindrome(t *testing.T) {
 					(tt.name == "odd palindrome" && (got == "bab" || got == "aba")),
 				"expected %q or equivalent palindrome, got %q", tt.want, got)
 		})
+	}
+}
+
+func BenchmarkLongestPalindrome(b *testing.B) {
+	s := "babad"
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		longestPalindrome(s)
+	}
+}
+
+func BenchmarkLongestPalindromeLarge(b *testing.B) {
+	s := strings.Repeat("abcdefghijklmnopqrstuvwxyz", 100) + "racecar" + strings.Repeat("zyxwvutsrqponmlkjihgfedcba", 100)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		longestPalindrome(s)
 	}
 }
