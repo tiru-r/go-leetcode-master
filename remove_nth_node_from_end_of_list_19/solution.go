@@ -1,36 +1,23 @@
 package remove_nth_node_from_end_of_list_19
 
-// Definition for singly-linked list.
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
 func removeNthFromEnd(head *ListNode, n int) *ListNode {
-	n = df(head, n)
+	dummy := &ListNode{Next: head}
+	slow, fast := dummy, dummy
 
-	// if the head needs to be removed, then 0 is returned
-	if n == 0 {
-		head = head.Next
+	for i := 0; i <= n; i++ {
+		fast = fast.Next
 	}
 
-	return head
-}
-
-func df(curr *ListNode, n int) int {
-	if curr == nil {
-		return n
+	for fast != nil {
+		slow = slow.Next
+		fast = fast.Next
 	}
 
-	// Depth-first, where we subtract from n every time
-	// time a stack frame is popped off.
-	n = df(curr.Next, n)
-
-	// If n is zero, we can skip over the curr.Next.Next,
-	// which removes the nth from the bottom of the list
-	if n == 0 {
-		curr.Next = curr.Next.Next
-	}
-
-	return n - 1
+	slow.Next = slow.Next.Next
+	return dummy.Next
 }

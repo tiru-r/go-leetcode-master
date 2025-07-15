@@ -1,46 +1,49 @@
 package palindrome_linked_list_234
 
-// Definition for singly-linked list.
 type ListNode struct {
 	Val  int
 	Next *ListNode
 }
 
-/**
- * Definition for singly-linked list.
- * type ListNode struct {
- *     Val int
- *     Next *ListNode
- * }
- *
- * O(n^2) rt and O(1) space.
- */
 func isPalindrome(head *ListNode) bool {
 	if head == nil || head.Next == nil {
 		return true
 	}
 
-	current := head
-	length := 0
-	for current != nil {
-		length++
-		current = current.Next
+	mid := findMiddle(head)
+	secondHalf := reverse(mid)
+	defer func() { reverse(secondHalf) }()
+
+	return compareLists(head, secondHalf)
+}
+
+func findMiddle(head *ListNode) *ListNode {
+	slow, fast := head, head
+	for fast != nil && fast.Next != nil {
+		slow = slow.Next
+		fast = fast.Next.Next
 	}
+	return slow
+}
 
-	current = head
-	front := head
-	for i := 0; i < length/2; i++ {
-		for j := 0; j < (length-1)-(2*i); j++ {
-			current = current.Next
-		}
+func reverse(head *ListNode) *ListNode {
+	var prev *ListNode
+	for head != nil {
+		next := head.Next
+		head.Next = prev
+		prev = head
+		head = next
+	}
+	return prev
+}
 
-		if front.Val != current.Val {
+func compareLists(first, second *ListNode) bool {
+	for second != nil {
+		if first.Val != second.Val {
 			return false
 		}
-
-		front = front.Next
-		current = front
+		first = first.Next
+		second = second.Next
 	}
-
 	return true
 }

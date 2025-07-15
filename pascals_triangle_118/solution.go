@@ -1,18 +1,22 @@
 package pascals_triangle_118
 
 func generate(numRows int) [][]int {
-	res := make([][]int, 0, numRows)
-	for r := 0; r < numRows; r++ {
-		row := make([]int, r+1)
-		row[0], row[len(row)-1] = 1, 1
-
-		// Build the new row by using values from the previous row
-		for c := 1; c < len(row)-1; c++ {
-			row[c] = res[r-1][c-1] + res[r-1][c]
-		}
-
-		res = append(res, row)
+	if numRows == 0 {
+		return nil
 	}
 
-	return res
+	result := make([][]int, numRows)
+	
+	for i := range numRows {
+		row := make([]int, i+1)
+		row[0], row[i] = 1, 1
+		
+		for j := 1; j < i; j++ {
+			row[j] = result[i-1][j-1] + result[i-1][j]
+		}
+		
+		result[i] = row
+	}
+
+	return result
 }

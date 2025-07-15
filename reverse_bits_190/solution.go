@@ -1,15 +1,16 @@
 package reverse_bits_190
 
+import "math/bits"
+
 func reverseBits(num uint32) uint32 {
-	var res uint32
-	for i := 0; i < 32; i++ {
-		res <<= 1
+	return bits.Reverse32(num)
+}
 
-		// num & 1 gives last digit of num
-		res |= num & 1
-
+func reverseBitsManual(num uint32) uint32 {
+	result := uint32(0)
+	for range 32 {
+		result = (result << 1) | (num & 1)
 		num >>= 1
 	}
-
-	return res
+	return result
 }

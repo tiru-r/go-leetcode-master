@@ -53,7 +53,7 @@ func TestMinCut(t *testing.T) {
 		{
 			name:     "longer string",
 			input:    "abacdc",
-			expected: 2,
+			expected: 1,
 		},
 		{
 			name:     "all unique characters",

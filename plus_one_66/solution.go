@@ -8,8 +8,6 @@ func plusOne(digits []int) []int {
 		}
 		digits[i] = 0
 	}
-
-	result := make([]int, len(digits)+1)
-	result[0] = 1
-	return result
+	
+	return append([]int{1}, digits...)
 }

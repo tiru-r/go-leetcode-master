@@ -2,65 +2,55 @@ package partition_to_k_equal_sum_subsets_698
 
 import "slices"
 
-// Note: study again. Good problem!
 func canPartitionKSubsets(nums []int, k int) bool {
-	sum := 0
-	for _, n := range nums {
-		sum += n
-	}
-
-	// if we can't evenly distribute the sum of each num over k partitions
-	if sum%k != 0 {
+	total := sum(nums)
+	if total%k != 0 {
 		return false
 	}
 
-	// the target sum for each partition
-	target := sum / k
-
-	// if the largest value in the array is greater than the target sum, return false
-	// ex: [5,2,1] k=2 target=4 (we can't use 5 for any partition)
+	target := total / k
 	slices.Sort(nums)
-	end := len(nums) - 1
-	if nums[end] > target {
+	
+	if nums[len(nums)-1] > target {
 		return false
 	}
 
-	// clip off values that would fit directly into a partition and reduce k
-	for end >= 0 && nums[end] == target {
-		end--
-		k--
-	}
-
-	return fill(make([]int, k), end, nums, target)
+	end := trimExact(nums, target, &k)
+	return backtrack(make([]int, k), end, nums, target)
 }
 
-func fill(subsets []int, idx int, nums []int, target int) bool {
+func sum(nums []int) int {
+	total := 0
+	for _, num := range nums {
+		total += num
+	}
+	return total
+}
+
+func trimExact(nums []int, target int, k *int) int {
+	end := len(nums) - 1
+	for end >= 0 && nums[end] == target {
+		end--
+		*k--
+	}
+	return end
+}
+
+func backtrack(subsets []int, idx int, nums []int, target int) bool {
 	if idx < 0 {
 		return true
 	}
 
-	// choose a value from nums to try to slot into each subset
-	pick := nums[idx]
-	idx--
-
-	// try to fill each subset
-	for i := 0; i < len(subsets); i++ {
-		if subsets[i]+pick <= target {
-			subsets[i] += pick
-
-			// explore if the subsets current value + chosen value is <= target
-			if fill(subsets, idx, nums, target) {
-				// if call to fill is true, we were able to partition successfully
-				// if not, continue on the search
+	num := nums[idx]
+	for i := range subsets {
+		if subsets[i]+num <= target {
+			subsets[i] += num
+			if backtrack(subsets, idx-1, nums, target) {
 				return true
 			}
-
-			// un-choose the value for the current subset
-			subsets[i] -= pick
+			subsets[i] -= num
 		}
-
-		// if current subset became 0 from the un-choose, then break
-		// this keeps all unfilled subsets on the end and reduces work
+		
 		if subsets[i] == 0 {
 			break
 		}
