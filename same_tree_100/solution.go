@@ -8,18 +8,8 @@ type TreeNode struct {
 }
 
 func isSameTree(p *TreeNode, q *TreeNode) bool {
-	// if p is nil and q is not or vice versa
-	if (p == nil && q != nil) || (p != nil && q == nil) {
-		return false
+	if p == nil || q == nil {
+		return p == q
 	}
-
-	// p and q are either both nil or both not nil
-	if p == nil && q == nil {
-		return true
-	}
-
-	// p and q are both not nil
-	return p.Val == q.Val &&
-		isSameTree(p.Right, q.Right) &&
-		isSameTree(p.Left, q.Left)
+	return p.Val == q.Val && isSameTree(p.Left, q.Left) && isSameTree(p.Right, q.Right)
 }

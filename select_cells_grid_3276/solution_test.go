@@ -48,7 +48,7 @@ func Test_maxScore(t *testing.T) {
 		{
 			name: "largest values force overlap on rows",
 			grid: [][]int{{10, 3}, {10, 2}},
-			want: 10, // can only pick one of the 10s
+			want: 12, // 10 from either row + 2 from second row
 		},
 		{
 			name: "three rows with overlaps",

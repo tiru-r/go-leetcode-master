@@ -1,34 +1,26 @@
 package russian_doll_envelopes_354
 
-import (
-	"slices"
-	"sort"
-)
+import "slices"
 
-// MaxEnvelopes finds the maximum number of envelopes that can be Russian dolled.
-// Time: O(n log n), Space: O(n)
 func MaxEnvelopes(envelopes [][]int) int {
 	if len(envelopes) <= 1 {
 		return len(envelopes)
 	}
 	
-	// Sort by width ascending, height descending for same width
-	sort.Slice(envelopes, func(i, j int) bool {
-		if envelopes[i][0] == envelopes[j][0] {
-			return envelopes[i][1] > envelopes[j][1]
+	slices.SortFunc(envelopes, func(a, b []int) int {
+		if a[0] != b[0] {
+			return a[0] - b[0]
 		}
-		return envelopes[i][0] < envelopes[j][0]
+		return b[1] - a[1]
 	})
 	
-	// Find LIS on heights using binary search
 	var tails []int
 	for _, env := range envelopes {
-		height := env[1]
-		pos, _ := slices.BinarySearch(tails, height)
+		pos, _ := slices.BinarySearch(tails, env[1])
 		if pos == len(tails) {
-			tails = append(tails, height)
+			tails = append(tails, env[1])
 		} else {
-			tails[pos] = height
+			tails[pos] = env[1]
 		}
 	}
 	

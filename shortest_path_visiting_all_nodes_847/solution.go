@@ -1,13 +1,9 @@
 package shortest_path_visiting_all_nodes_847
 
-// State represents a node and the set of visited nodes
 type State struct {
-	node int
-	mask int
+	node, mask int
 }
 
-// ShortestPathLength finds the shortest path that visits every node
-// Time: O(n² * 2ⁿ), Space: O(n * 2ⁿ)
 func ShortestPathLength(graph [][]int) int {
 	n := len(graph)
 	if n == 1 {
@@ -18,29 +14,25 @@ func ShortestPathLength(graph [][]int) int {
 	visited := make(map[State]bool)
 	queue := make([]State, 0, n)
 	
-	// Start from all nodes
-	for i := 0; i < n; i++ {
-		state := State{node: i, mask: 1 << i}
+	for i := range n {
+		state := State{i, 1 << i}
 		queue = append(queue, state)
 		visited[state] = true
 	}
 	
-	steps := 0
-	
-	for len(queue) > 0 {
+	for steps := 0; len(queue) > 0; steps++ {
 		size := len(queue)
 		
-		for i := 0; i < size; i++ {
-			curr := queue[i]
+		for range size {
+			curr := queue[0]
+			queue = queue[1:]
 			
 			if curr.mask == target {
 				return steps
 			}
 			
-			// Visit all neighbors
 			for _, neighbor := range graph[curr.node] {
-				newMask := curr.mask | (1 << neighbor)
-				newState := State{node: neighbor, mask: newMask}
+				newState := State{neighbor, curr.mask | (1 << neighbor)}
 				
 				if !visited[newState] {
 					visited[newState] = true
@@ -48,12 +40,7 @@ func ShortestPathLength(graph [][]int) int {
 				}
 			}
 		}
-		
-		queue = queue[size:]
-		steps++
 	}
 	
-	// If we reach here, the graph is disconnected
-	// Return minimum steps to visit all components
 	return n - 1
 }

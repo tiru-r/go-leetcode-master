@@ -10,11 +10,7 @@ type ListNode struct {
 // Time: O(n), Space: O(1).
 func ReverseList(head *ListNode) *ListNode {
 	var prev *ListNode
-	for curr := head; curr != nil; {
-		next := curr.Next
-		curr.Next = prev
-		prev = curr
-		curr = next
+	for curr := head; curr != nil; curr, prev, curr.Next = curr.Next, curr, prev {
 	}
 	return prev
 }
