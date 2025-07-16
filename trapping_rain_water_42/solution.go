@@ -1,14 +1,11 @@
 package trapping_rain_water_42
 
-// trap returns the total units of water trapped after raining.
-// height[i] is the non-negative height of the wall at index i.
 func trap(height []int) int {
-	n := len(height)
-	if n < 3 {
+	if len(height) < 3 {
 		return 0
 	}
 
-	left, right := 0, n-1
+	left, right := 0, len(height)-1
 	leftMax, rightMax := height[left], height[right]
 	water := 0
 

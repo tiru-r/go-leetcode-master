@@ -3,26 +3,24 @@ package three_sum_15
 import "slices"
 
 func threeSum(nums []int) [][]int {
-	n := len(nums)
-	if n < 3 {
-		return [][]int{}
+	if len(nums) < 3 {
+		return nil
 	}
 
 	slices.Sort(nums)
 	var result [][]int
 
-	for i := 0; i < n-2; i++ {
+	for i := range len(nums) - 2 {
 		if i > 0 && nums[i] == nums[i-1] {
 			continue
 		}
 
-		// Early termination: if smallest element is positive, no solution exists
 		if nums[i] > 0 {
 			break
 		}
 
 		target := -nums[i]
-		left, right := i+1, n-1
+		left, right := i+1, len(nums)-1
 
 		for left < right {
 			sum := nums[left] + nums[right]

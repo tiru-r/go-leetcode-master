@@ -18,8 +18,8 @@ func NewTimeMap() *TimeMap {
 	return &TimeMap{data: make(map[string][]timeEntry)}
 }
 
-func (tm *TimeMap) Set(key string, value string, timestamp int) {
-	entry := timeEntry{value: value, timestamp: timestamp}
+func (tm *TimeMap) Set(key, value string, timestamp int) {
+	entry := timeEntry{value, timestamp}
 	entries := tm.data[key]
 
 	index, found := slices.BinarySearchFunc(entries, entry,
@@ -39,8 +39,7 @@ func (tm *TimeMap) Get(key string, timestamp int) string {
 		return ""
 	}
 
-	entry := timeEntry{timestamp: timestamp}
-	index, exact := slices.BinarySearchFunc(entries, entry,
+	index, exact := slices.BinarySearchFunc(entries, timeEntry{timestamp: timestamp},
 		func(a, b timeEntry) int { return cmp.Compare(a.timestamp, b.timestamp) })
 
 	if exact {

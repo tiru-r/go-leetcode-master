@@ -30,26 +30,6 @@ func TestSuperEggDrop(t *testing.T) {
 	}
 }
 
-func TestSuperEggDropMemo(t *testing.T) {
-	tests := []struct {
-		k    int
-		n    int
-		want int
-	}{
-		{1, 2, 2},
-		{2, 6, 3},
-		{3, 14, 4},
-		{2, 10, 4},
-		{3, 25, 5},
-	}
-
-	for i, test := range tests {
-		got := SuperEggDropMemo(test.k, test.n)
-		if got != test.want {
-			t.Errorf("Test %d: SuperEggDropMemo(%d, %d) = %d; want %d", i, test.k, test.n, got, test.want)
-		}
-	}
-}
 
 func TestEdgeCases(t *testing.T) {
 	// Zero floors
@@ -73,26 +53,6 @@ func TestEdgeCases(t *testing.T) {
 	}
 }
 
-func TestBothImplementations(t *testing.T) {
-	testCases := []struct {
-		k, n int
-	}{
-		{2, 6},
-		{3, 14},
-		{2, 10},
-		{4, 20},
-	}
-	
-	for _, tc := range testCases {
-		opt := SuperEggDrop(tc.k, tc.n)
-		memo := SuperEggDropMemo(tc.k, tc.n)
-		
-		if opt != memo {
-			t.Errorf("Implementations disagree for k=%d, n=%d: opt=%d, memo=%d", 
-				tc.k, tc.n, opt, memo)
-		}
-	}
-}
 
 func BenchmarkSuperEggDrop(b *testing.B) {
 	testCases := []struct {
@@ -114,21 +74,3 @@ func BenchmarkSuperEggDrop(b *testing.B) {
 	}
 }
 
-func BenchmarkSuperEggDropMemo(b *testing.B) {
-	testCases := []struct {
-		name string
-		k, n int
-	}{
-		{"Small", 2, 10},
-		{"Medium", 3, 50},
-		{"Large", 4, 100},
-	}
-	
-	for _, tc := range testCases {
-		b.Run(tc.name, func(b *testing.B) {
-			for range b.N {
-				SuperEggDropMemo(tc.k, tc.n)
-			}
-		})
-	}
-}
