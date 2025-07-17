@@ -1,80 +1,91 @@
 package word_search_212
 
 type TrieNode struct {
-	children map[byte]*TrieNode
+	children [26]*TrieNode
 	word     string
-}
-
-func NewTrieNode() *TrieNode {
-	return &TrieNode{children: make(map[byte]*TrieNode)}
+	isEnd    bool
 }
 
 func (t *TrieNode) insert(word string) {
-	cur := t
-	for i := 0; i < len(word); i++ {
-		ch := word[i]
-		if cur.children[ch] == nil {
-			cur.children[ch] = NewTrieNode()
+	node := t
+	for _, ch := range []byte(word) {
+		idx := ch - 'a'
+		if node.children[idx] == nil {
+			node.children[idx] = &TrieNode{}
 		}
-		cur = cur.children[ch]
+		node = node.children[idx]
 	}
-	cur.word = word
+	node.word = word
+	node.isEnd = true
 }
 
-var dirs = [4][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+func (t *TrieNode) hasChildren() bool {
+	for _, child := range t.children {
+		if child != nil {
+			return true
+		}
+	}
+	return false
+}
 
 func findWords(board [][]byte, words []string) []string {
 	if len(board) == 0 || len(board[0]) == 0 || len(words) == 0 {
 		return []string{}
 	}
 
-	root := NewTrieNode()
-	for _, w := range words {
-		root.insert(w)
+	root := &TrieNode{}
+	for _, word := range words {
+		root.insert(word)
 	}
 
-	m, n := len(board), len(board[0])
-	visited := make([][]bool, m)
-	for i := range visited {
-		visited[i] = make([]bool, n)
-	}
-
-	var res []string
+	result := make([]string, 0, len(words))
 
 	var dfs func(int, int, *TrieNode)
 	dfs = func(i, j int, node *TrieNode) {
-		if i < 0 || i >= m || j < 0 || j >= n || visited[i][j] {
+		if i < 0 || i >= len(board) || j < 0 || j >= len(board[0]) {
 			return
 		}
+
 		ch := board[i][j]
-		next := node.children[ch]
+		if ch == '#' || ch < 'a' || ch > 'z' {
+			return
+		}
+
+		idx := ch - 'a'
+		next := node.children[idx]
 		if next == nil {
 			return
 		}
 
-		visited[i][j] = true
-
-		if next.word != "" {
-			res = append(res, next.word)
-			next.word = "" // avoid duplicates
+		if next.isEnd {
+			result = append(result, next.word)
+			next.isEnd = false
+			next.word = ""
 		}
 
-		for _, d := range dirs {
-			dfs(i+d[0], j+d[1], next)
+		board[i][j] = '#'
+
+		// Explore all 4 directions
+		dfs(i-1, j, next)
+		dfs(i+1, j, next)
+		dfs(i, j-1, next)
+		dfs(i, j+1, next)
+
+		board[i][j] = ch
+
+		// Pruning: remove dead branches
+		if !next.isEnd && next.word == "" && !next.hasChildren() {
+			node.children[idx] = nil
 		}
+	}
 
-		visited[i][j] = false
-
-		// pruning: remove dead branch
-		if len(next.children) == 0 {
-			delete(node.children, ch)
+	for i := range board {
+		for j := range board[i] {
+			if ch := board[i][j]; ch >= 'a' && ch <= 'z' && root.children[ch-'a'] != nil {
+				dfs(i, j, root)
+			}
 		}
 	}
 
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			dfs(i, j, root)
-		}
-	}
-	return res
+	return result
 }

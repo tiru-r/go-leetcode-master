@@ -22,7 +22,7 @@ func TestXorQueries(t *testing.T) {
 		{"LC example 2",
 			[]int{4, 8, 2, 10},
 			[][]int{{2, 3}, {1, 3}, {0, 0}, {0, 3}},
-			[]int{8, 8, 4, 4}},
+			[]int{8, 0, 4, 4}},
 		{"whole array", []int{6, 2, 7, 3, 8}, [][]int{{0, 4}}, []int{6 ^ 2 ^ 7 ^ 3 ^ 8}},
 		{"many queries",
 			[]int{1, 2, 3, 4, 5, 6, 7, 8},

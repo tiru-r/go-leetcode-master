@@ -1,76 +1,100 @@
 package word_ladder_ii_126
 
-import "slices"
-
 func findLadders(beginWord, endWord string, wordList []string) [][]string {
-	wordSet := make(map[string]bool, len(wordList))
-	for _, word := range wordList {
-		wordSet[word] = true
+	if beginWord == endWord {
+		return [][]string{{beginWord}}
 	}
-	
-	if !wordSet[endWord] {
+
+	// Use struct{} for memory efficiency in sets
+	wordSet := make(map[string]struct{}, len(wordList)+1)
+	for _, word := range wordList {
+		wordSet[word] = struct{}{}
+	}
+	wordSet[beginWord] = struct{}{}
+
+	if _, exists := wordSet[endWord]; !exists {
 		return [][]string{}
 	}
-	
-	level := map[string]bool{beginWord: true}
+
+	// BFS to find shortest paths with optimized queue management
+	queue := []string{beginWord}
+	visited := map[string]int{beginWord: 1}
 	parents := make(map[string][]string)
 	found := false
-	
-	for len(level) > 0 && !found {
-		nextLevel := make(map[string]bool)
-		for word := range level {
-			for i := range len(word) {
+
+	for len(queue) > 0 && !found {
+		nextQueue := make([]string, 0, len(queue)*4) // Pre-allocate with expected growth
+		levelVisited := make(map[string]struct{})
+
+		for _, word := range queue {
+			// Generate neighbors by changing one character
+			wordBytes := []byte(word)
+			for i := range wordBytes {
+				original := wordBytes[i]
 				for c := byte('a'); c <= 'z'; c++ {
-					if c == word[i] {
+					if c == original {
 						continue
 					}
-					
-					newWord := word[:i] + string(c) + word[i+1:]
-					if !wordSet[newWord] {
+					wordBytes[i] = c
+					neighbor := string(wordBytes)
+
+					if _, exists := wordSet[neighbor]; !exists {
 						continue
 					}
-					
-					if newWord == endWord {
+
+					if neighbor == endWord {
 						found = true
 					}
-					
-					if !found {
-						if _, exists := level[newWord]; !exists {
-							nextLevel[newWord] = true
-						}
+
+					if dist, seen := visited[neighbor]; !seen {
+						visited[neighbor] = visited[word] + 1
+						parents[neighbor] = []string{word}
+						nextQueue = append(nextQueue, neighbor)
+						levelVisited[neighbor] = struct{}{}
+					} else if dist == visited[word]+1 {
+						parents[neighbor] = append(parents[neighbor], word)
 					}
-					
-					parents[newWord] = append(parents[newWord], word)
 				}
+				wordBytes[i] = original
 			}
 		}
-		
-		for word := range nextLevel {
+
+		// Remove this level's words to prevent cycles
+		for word := range levelVisited {
 			delete(wordSet, word)
 		}
-		level = nextLevel
+
+		queue = nextQueue
 	}
-	
+
 	if !found {
 		return [][]string{}
 	}
-	
-	var result [][]string
-	var dfs func(string, []string)
-	dfs = func(word string, path []string) {
+
+	// DFS path reconstruction with optimized memory usage
+	result := make([][]string, 0, 4)
+	path := make([]string, 0, visited[endWord])
+
+	var dfs func(string)
+	dfs = func(word string) {
+		path = append(path, word)
+
 		if word == beginWord {
+			// Create reversed path efficiently
 			reversed := make([]string, len(path))
-			copy(reversed, path)
-			slices.Reverse(reversed)
+			for i, j := 0, len(path)-1; i < len(path); i, j = i+1, j-1 {
+				reversed[i] = path[j]
+			}
 			result = append(result, reversed)
-			return
+		} else {
+			for _, parent := range parents[word] {
+				dfs(parent)
+			}
 		}
-		
-		for _, parent := range parents[word] {
-			dfs(parent, append(path, parent))
-		}
+
+		path = path[:len(path)-1]
 	}
-	
-	dfs(endWord, []string{endWord})
+
+	dfs(endWord)
 	return result
 }

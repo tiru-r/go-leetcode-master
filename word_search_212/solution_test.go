@@ -42,8 +42,8 @@ func TestFindWords(t *testing.T) {
 				{'k', 'l', 'm', 'n', 'o'},
 				{'p', 'q', 'r', 's', 't'},
 			},
-			[]string{"abcdefghijklmnoqrst"},
-			[]string{"abcdefghijklmnoqrst"},
+			[]string{"abcd", "abcde"},
+			[]string{"abcd", "abcde"},
 		},
 	}
 

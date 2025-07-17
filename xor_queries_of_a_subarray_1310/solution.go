@@ -5,23 +5,17 @@ func xorQueries(arr []int, queries [][]int) []int {
 		return []int{}
 	}
 
-	// Build prefix-XOR array
-	n := len(arr)
-	prefix := make([]int, n+1)
-	for i := 1; i <= n; i++ {
-		prefix[i] = prefix[i-1] ^ arr[i-1]
+	// Build prefix XOR array for O(1) range queries
+	prefix := make([]int, len(arr)+1)
+	for i, val := range arr {
+		prefix[i+1] = prefix[i] ^ val
 	}
 
-	// Answer queries
-	res := make([]int, len(queries))
-	for idx, q := range queries {
-		l, r := q[0], q[1]
-		// Defensive check (optional if inputs are guaranteed valid)
-		if l < 0 || r >= n || l > r {
-			res[idx] = 0
-			continue
-		}
-		res[idx] = prefix[r+1] ^ prefix[l]
+	// Process queries using prefix XOR property: XOR(l,r) = prefix[r+1] ^ prefix[l]
+	result := make([]int, len(queries))
+	for i, query := range queries {
+		l, r := query[0], query[1]
+		result[i] = prefix[r+1] ^ prefix[l]
 	}
-	return res
+	return result
 }
