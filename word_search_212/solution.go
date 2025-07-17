@@ -1,17 +1,18 @@
 package word_search_212
 
 type TrieNode struct {
-	children map[rune]*TrieNode
+	children map[byte]*TrieNode
 	word     string
 }
 
 func NewTrieNode() *TrieNode {
-	return &TrieNode{children: make(map[rune]*TrieNode)}
+	return &TrieNode{children: make(map[byte]*TrieNode)}
 }
 
 func (t *TrieNode) insert(word string) {
 	cur := t
-	for _, ch := range word {
+	for i := 0; i < len(word); i++ {
+		ch := word[i]
 		if cur.children[ch] == nil {
 			cur.children[ch] = NewTrieNode()
 		}
@@ -20,11 +21,11 @@ func (t *TrieNode) insert(word string) {
 	cur.word = word
 }
 
-var dirs = [][]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
+var dirs = [4][2]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
 
 func findWords(board [][]byte, words []string) []string {
 	if len(board) == 0 || len(board[0]) == 0 || len(words) == 0 {
-		return nil
+		return []string{}
 	}
 
 	root := NewTrieNode()
@@ -34,7 +35,7 @@ func findWords(board [][]byte, words []string) []string {
 
 	m, n := len(board), len(board[0])
 	visited := make([][]bool, m)
-	for i := range m {
+	for i := range visited {
 		visited[i] = make([]bool, n)
 	}
 
@@ -45,8 +46,7 @@ func findWords(board [][]byte, words []string) []string {
 		if i < 0 || i >= m || j < 0 || j >= n || visited[i][j] {
 			return
 		}
-
-		ch := rune(board[i][j])
+		ch := board[i][j]
 		next := node.children[ch]
 		if next == nil {
 			return
@@ -56,7 +56,7 @@ func findWords(board [][]byte, words []string) []string {
 
 		if next.word != "" {
 			res = append(res, next.word)
-			next.word = ""
+			next.word = "" // avoid duplicates
 		}
 
 		for _, d := range dirs {
@@ -65,13 +65,14 @@ func findWords(board [][]byte, words []string) []string {
 
 		visited[i][j] = false
 
+		// pruning: remove dead branch
 		if len(next.children) == 0 {
 			delete(node.children, ch)
 		}
 	}
 
-	for i := range m {
-		for j := range n {
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
 			dfs(i, j, root)
 		}
 	}
