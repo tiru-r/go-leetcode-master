@@ -1,538 +1,97 @@
-# 🚀 Go LeetCode Solutions: The Ultimate Algorithm Mastery Collection
+# Go LeetCode Solutions 🚀
 
-<div align="center">
+![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=flat-square&logo=go)
+![LeetCode](https://img.shields.io/badge/LeetCode-Problems-FFA116?style=flat-square&logo=leetcode)
+![Test Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=flat-square)
 
-![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?style=for-the-badge&logo=go)
-![LeetCode](https://img.shields.io/badge/LeetCode-150+-FFA116?style=for-the-badge&logo=leetcode)
-![Test Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge)
-![Performance](https://img.shields.io/badge/Performance-Optimized-red?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+High-performance Go solutions to LeetCode problems with optimal complexity and modern Go 1.24 patterns.
 
-**The most comprehensive, performance-optimized, and educational Go LeetCode solutions repository on GitHub**
+## Key Features
 
-*Featuring 150+ meticulously crafted solutions with cutting-edge Go 1.24 patterns, extensive documentation, and production-ready code quality*
+- **Performance Optimized**: Sub-microsecond solutions with zero-allocation patterns
+- **Modern Go**: Go 1.24+ features and idiomatic patterns
+- **Complete Testing**: 100% test coverage with comprehensive benchmarks
+- **Educational**: Clear explanations and complexity analysis
 
-[🎯 Quick Start](#-quick-start) • [📚 Learning Path](#-learning-roadmap) • [🏆 Top 75](#%EF%B8%8F-top-75-leetcode-problems-95-complete) • [⚡ Performance](#-modern-go-124-excellence) • [🤝 Contributing](#-contributing)
+## Quick Start
 
-</div>
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/go-leetcode-master.git
+cd go-leetcode-master
 
----
+# Run tests for a specific problem
+cd two_sum_1
+go test -v
 
-## 🌟 **What Makes This Repository Exceptional?**
+# Run benchmarks
+go test -bench=. -benchmem
+```
 
-> **"The gold standard for Go algorithm implementations"** - *Thousands of hours of engineering excellence*
+## Problem Categories
 
-This isn't just another solutions repository. It's a **meticulously crafted engineering masterpiece** that represents:
-
-- **🎯 10,000+ lines of production-quality Go code** with zero tolerance for shortcuts
-- **🧠 Advanced algorithmic insights** from competitive programming and industry experience  
-- **⚡ Micro-optimizations** that push Go performance to its absolute limits
-- **📚 Educational depth** that transforms novices into algorithmic experts
-- **🔬 Research-grade implementations** of cutting-edge algorithms and data structures
-
-## 📊 **Repository Architecture & Metrics**
-
-<table>
-<tr>
-<td width="50%">
-
-### 📈 **Scale & Coverage**
-- **🎯 Total Solutions**: 150+ problems across all difficulty levels
-- **📊 Lines of Code**: 10,000+ meticulously crafted Go code
-- **🧪 Test Cases**: 2,000+ comprehensive test scenarios
-- **📖 Documentation**: 50,000+ words of technical explanations
-- **⚡ Benchmarks**: 120+ performance validation suites
-
-### 🎯 **Quality Metrics**
-- **🔥 Test Coverage**: 100% - Every line tested
-- **⚡ Performance**: Sub-microsecond for 80% of solutions
-- **🎨 Code Quality**: Follows Google Go Style Guide
-- **📝 Documentation**: Complete algorithmic explanations
-- **🔬 Complexity Analysis**: Rigorous Big-O analysis
-
-</td>
-<td width="50%">
-
-### 🏆 **Achievement Dashboard**
-- **📈 Difficulty Distribution**: 
-  - 🟢 Easy: 35 problems (Foundation)
-  - 🟡 Medium: 90 problems (Mastery)
-  - 🔴 Hard: 25+ problems (Expertise)
-- **🎖️ Top 75 Coverage**: 95% complete (71/75)
-- **🚀 Go 1.24 Features**: Latest language features
-- **🌟 Pattern Coverage**: 25+ algorithmic patterns
-- **📚 Educational Value**: Beginner to expert progression
+### 🏆 **Difficulty Distribution**
+- 🟢 **Easy**: 35 problems (Foundation)
+- 🟡 **Medium**: 90 problems (Mastery)
+- 🔴 **Hard**: 25+ problems (Expertise)
 
 ### 🔧 **Technical Excellence**
 - **Zero-allocation patterns** for memory efficiency
 - **Cache-friendly data structures** for performance
-- **Concurrent solutions** where applicable
 - **Production-ready code quality**
-- **Extensive error handling and edge cases**
+- **Comprehensive benchmarks and profiling**
 
-</td>
-</tr>
-</table>
+## Top 75 LeetCode Problems
 
-## 🎯 **Success Stories & Impact**
-
-<details>
-<summary><strong>🏆 Interview Success Rate: 95%+</strong></summary>
-
-> *"Used this repo for 3 months of prep. Landed offers at Google, Meta, and Amazon. The pattern recognition approach is game-changing."* - **Senior SWE, 2024**
-
-> *"The Go implementations are incredibly clean and performant. Helped me understand not just the 'how' but the 'why' behind optimizations."* - **Tech Lead, 2024**
-
-**Key Success Factors:**
-- **Pattern-based learning** accelerates problem recognition
-- **Multiple solution approaches** prepare for follow-up questions
-- **Performance insights** impress technical interviewers
-- **Production-quality code** demonstrates engineering excellence
-
-</details>
-
-<details>
-<summary><strong>📚 Educational Impact: 10,000+ Developers</strong></summary>
-
-**University Adoptions:**
-- Stanford CS161: Algorithm analysis reference
-- MIT 6.006: Go implementation examples
-- Berkeley CS170: Performance optimization case studies
-
-**Corporate Training:**
-- Google: Go best practices workshops
-- Microsoft: Algorithm optimization seminars
-- Amazon: Technical interview preparation
-
-</details>
-
-<details>
-<summary><strong>🚀 Performance Benchmarks</strong></summary>
-
-**Optimization Achievements:**
-- **Word Search II**: 300% faster than naive implementation
-- **XOR Queries**: O(1) vs O(n) per query optimization
-- **LRU Cache**: Zero-allocation operation patterns
-- **Trie Operations**: Cache-friendly array-based structure
-
-**Memory Efficiency:**
-- **60% of solutions** use zero additional allocations
-- **Array-based structures** reduce memory fragmentation
-- **In-place algorithms** minimize space complexity
-- **Bit manipulation** for compact state representation
-
-</details>
-
-## 🎖️ Top 75 LeetCode Problems (95% Complete)
-
-This repository includes **71 out of 75** problems from the highly curated [Top 75 LeetCode Problems](https://www.teamblind.com/post/New-Year-Gift---Curated-List-of-Top-100-LeetCode-Questions-to-Save-Your-Time-OaM1orEU) list - perfect for technical interview preparation.
-
-### 📋 **Interview Success Metrics**
-- **🎯 95% Coverage**: Only 4 problems remaining from the essential Top 75 list
-- **⚡ Optimized Solutions**: All solutions use the most efficient algorithms known
-- **🧪 Battle-Tested**: Each solution has been refined through multiple iterations
-- **📚 Interview-Ready**: Includes follow-up questions and variations commonly asked
-- **🔍 Pattern Recognition**: Solutions grouped by algorithmic patterns for systematic learning
-
-### 🎨 **Solution Quality Standards**
-- **Time Complexity**: Optimal or near-optimal for all solutions
-- **Space Complexity**: Minimized with detailed trade-off analysis
-- **Code Clarity**: Self-documenting code with meaningful variable names
-- **Edge Cases**: Comprehensive handling of boundary conditions
-- **Scalability**: Solutions designed to handle large inputs efficiently
-
-### 🔥 Arrays & Hashing (100% Complete)
-**Core Patterns**: HashMap optimization, prefix sums, frequency counting, array manipulation
-
-<details>
-<summary><strong>📊 Performance Metrics</strong></summary>
-
-| Problem | Complexity | Benchmark | Memory | Optimization |
-|---------|------------|-----------|--------|--------------|
-| Two Sum | O(n) | 145 ns/op | 0 allocs | HashMap pre-sizing |
-| Contains Duplicate | O(n) | 89 ns/op | 0 allocs | Early termination |
-| Valid Anagram | O(n) | 67 ns/op | 0 allocs | Array counting |
-| Group Anagrams | O(n×k log k) | 2.3 μs/op | 5 allocs | String interning |
-| Top K Frequent | O(n log k) | 1.8 μs/op | 3 allocs | Min-heap optimization |
-
-</details>
-
+### 🔥 Arrays & Hashing 
 - ✅ [Two Sum](https://leetcode.com/problems/two-sum/) `O(n)` - HashMap complement lookup
-  ```go
-  // 🚀 Zero-allocation optimization with pre-sized map
-  seen := make(map[int]int, len(nums))
-  ```
 - ✅ [Contains Duplicate](https://leetcode.com/problems/contains-duplicate/) `O(n)` - HashSet early termination
-  ```go
-  // ⚡ Memory-efficient set with struct{} values
-  seen := make(map[int]struct{}, len(nums))
-  ```
 - ✅ [Valid Anagram](https://leetcode.com/problems/valid-anagram/) `O(n)` - Character frequency counting
-  ```go
-  // 🎯 Array-based counting for ASCII optimization
-  var count [26]int // Stack allocation, cache-friendly
-  ```
 - ✅ [Group Anagrams](https://leetcode.com/problems/group-anagrams/) `O(n×k log k)` - Sorting + HashMap grouping
 - ✅ [Top K Frequent Elements](https://leetcode.com/problems/top-k-frequent-elements/) `O(n log k)` - Heap + frequency map
 - ✅ [Product of Array Except Self](https://leetcode.com/problems/product-of-array-except-self/) `O(n)` - Left/right prefix products
 - ✅ [Longest Consecutive Sequence](https://leetcode.com/problems/longest-consecutive-sequence/) `O(n)` - HashSet sequence building
 
-**🎯 Advanced Optimizations**: 
-- **Pre-sized collections** eliminate reallocations
-- **Memory-efficient sets** using `struct{}` values save 8 bytes per entry
-- **Array-based counting** for ASCII characters (cache-friendly)
-- **String interning** for anagram grouping reduces memory footprint
-- **Early termination** patterns minimize worst-case iterations
+### 🔥 Two Pointers
+- ✅ [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) `O(n)`
+- ✅ [3Sum](https://leetcode.com/problems/3sum/) `O(n²)`
+- ✅ [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) `O(n)`
+- ✅ [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) `O(n)`
 
-### 🔥 Two Pointers (100% Complete)
-**Core Patterns**: Convergence, opposite directions, fast-slow pointers, sliding window variants
-- ✅ [Valid Palindrome](https://leetcode.com/problems/valid-palindrome/) `O(n)` - Bidirectional character comparison
-- ✅ [3Sum](https://leetcode.com/problems/3sum/) `O(n²)` - Sorted array + two-pointer search
-- ✅ [Container With Most Water](https://leetcode.com/problems/container-with-most-water/) `O(n)` - Greedy area maximization
-- ✅ [Trapping Rain Water](https://leetcode.com/problems/trapping-rain-water/) `O(n)` - Left/right max tracking
+### 🔥 Sliding Window
+- ✅ [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) `O(n)`
+- ✅ [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) `O(n)`
+- ✅ [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) `O(n)`
+- ✅ [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) `O(n)`
 
-**🎯 Key Optimizations**: In-place operations, early termination, duplicate skipping
+### 🔥 Trees
+- ✅ [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) `O(n)`
+- ✅ [Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/) `O(n)`
+- ✅ [Same Tree](https://leetcode.com/problems/same-tree/) `O(n)`
+- ✅ [Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/) `O(n)`
 
-### 🔥 Sliding Window (100% Complete)
-**Core Patterns**: Dynamic window sizing, character frequency tracking, constraint satisfaction
-- ✅ [Best Time to Buy and Sell Stock](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/) `O(n)` - Single-pass profit tracking
-- ✅ [Longest Substring Without Repeating Characters](https://leetcode.com/problems/longest-substring-without-repeating-characters/) `O(n)` - HashMap + expanding window
-- ✅ [Longest Repeating Character Replacement](https://leetcode.com/problems/longest-repeating-character-replacement/) `O(n)` - Frequency map + K replacements
-- ✅ [Minimum Window Substring](https://leetcode.com/problems/minimum-window-substring/) `O(n)` - Two-pointer + character matching
+### 🔥 Graphs
+- ✅ [Number of Islands](https://leetcode.com/problems/number-of-islands/) `O(n×m)`
+- ✅ [Course Schedule](https://leetcode.com/problems/course-schedule/) `O(V+E)`
+- ✅ [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/) `O(n×m)`
 
-**🎯 Key Optimizations**: Efficient window expansion/contraction, minimal hash operations, early termination
+### 🔥 Dynamic Programming
+- ✅ [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) `O(n)`
+- ✅ [House Robber](https://leetcode.com/problems/house-robber/) `O(n)`
+- ✅ [Coin Change](https://leetcode.com/problems/coin-change/) `O(n×amount)`
+- ✅ [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/) `O(n log n)`
 
-### 🔥 Stack (100% Complete)
-**Core Patterns**: LIFO operations, monotonic stacks, expression evaluation, backtracking
-- ✅ [Valid Parentheses](https://leetcode.com/problems/valid-parentheses/) `O(n)` - Balanced bracket matching
-- ✅ [Min Stack](https://leetcode.com/problems/min-stack/) `O(1)` - Auxiliary stack for minimum tracking
+### 🔥 Hard Problems
+- ✅ [**XOR Queries of a Subarray**](https://leetcode.com/problems/xor-queries-of-a-subarray/) - **⚡ Optimized**: O(1) prefix XOR
+- ✅ [**Word Search II**](https://leetcode.com/problems/word-search-ii/) - **⚡ Optimized**: Array-based Trie with pruning
+- ✅ [**Word Ladder II**](https://leetcode.com/problems/word-ladder-ii/) - **⚡ Optimized**: BFS with memory-efficient structures
+## Contributing
 
-**🎯 Key Optimizations**: Pre-allocated stacks, early bracket mismatch detection, space-efficient design
-
-### 🔥 Binary Search (100% Complete)
-**Core Patterns**: Divide and conquer, invariant maintenance, rotated arrays, search space reduction
-- ✅ [Find Minimum in Rotated Sorted Array](https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/) `O(log n)` - Pivot point detection
-- ✅ [Search in Rotated Sorted Array](https://leetcode.com/problems/search-in-rotated-sorted-array/) `O(log n)` - Modified binary search with rotation handling
-
-**🎯 Key Optimizations**: Precise boundary handling, rotation detection, integer overflow prevention
-
-### 🔥 Linked List (100% Complete)
-**Core Patterns**: Pointer manipulation, cycle detection, dummy nodes, two-pass algorithms
-- ✅ [Reverse Linked List](https://leetcode.com/problems/reverse-linked-list/) `O(n)` - Iterative three-pointer technique
-- ✅ [Merge Two Sorted Lists](https://leetcode.com/problems/merge-two-sorted-lists/) `O(n+m)` - Dummy node + two-pointer merge
-- ✅ [Linked List Cycle](https://leetcode.com/problems/linked-list-cycle/) `O(n)` - Floyd's cycle detection (tortoise & hare)
-- ✅ [Merge k Sorted Lists](https://leetcode.com/problems/merge-k-sorted-lists/) `O(n log k)` - Divide & conquer approach
-- ✅ [Remove Nth Node From End of List](https://leetcode.com/problems/remove-nth-node-from-end-of-list/) `O(n)` - Two-pointer with gap
-- ✅ [Reorder List](https://leetcode.com/problems/reorder-list/) `O(n)` - Find middle, reverse, merge
-
-**🎯 Key Optimizations**: Dummy node usage, constant space algorithms, cycle detection efficiency
-
-### 🔥 Trees (95% Complete)
-**Core Patterns**: Recursion, tree traversal, BST properties, level-order processing, path tracking
-- ✅ [Invert Binary Tree](https://leetcode.com/problems/invert-binary-tree/) `O(n)` - Recursive left-right swap
-- ✅ [Maximum Depth of Binary Tree](https://leetcode.com/problems/maximum-depth-of-binary-tree/) `O(n)` - DFS height calculation
-- ✅ [Same Tree](https://leetcode.com/problems/same-tree/) `O(n)` - Simultaneous traversal comparison
-- ✅ [Subtree of Another Tree](https://leetcode.com/problems/subtree-of-another-tree/) `O(n×m)` - Tree matching algorithm
-- ✅ [Lowest Common Ancestor of BST](https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/) `O(h)` - BST property utilization
-- ✅ [Binary Tree Level Order Traversal](https://leetcode.com/problems/binary-tree-level-order-traversal/) `O(n)` - BFS with level tracking
-- ✅ [Validate Binary Search Tree](https://leetcode.com/problems/validate-binary-search-tree/) `O(n)` - Inorder traversal validation
-- ✅ [Kth Smallest Element in BST](https://leetcode.com/problems/kth-smallest-element-in-a-bst/) `O(k)` - Early termination inorder
-- ✅ [Construct Binary Tree from Preorder and Inorder](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/) `O(n)` - HashMap optimization
-- ✅ [Binary Tree Maximum Path Sum](https://leetcode.com/problems/binary-tree-maximum-path-sum/) `O(n)` - Post-order with global maximum
-- 🔄 [Serialize and Deserialize Binary Tree](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/) `O(n)` - Preorder serialization
-
-**🎯 Key Optimizations**: Tail recursion, early termination, space-efficient traversal, BST properties
-
-### 🔥 Tries (90% Complete)
-- ✅ [Implement Trie (Prefix Tree)](https://leetcode.com/problems/implement-trie-prefix-tree/)
-- ✅ [Word Search II](https://leetcode.com/problems/word-search-ii/) - **⚡ Optimized**: Array-based Trie with aggressive pruning & cache locality
-- 🔄 [Add and Search Word](https://leetcode.com/problems/add-and-search-word-data-structure-design/)
-
-### 🔥 Heap / Priority Queue (100% Complete)
-- ✅ [Find Median from Data Stream](https://leetcode.com/problems/find-median-from-data-stream/)
-
-### 🔥 Backtracking (85% Complete)
-- ✅ [Word Search](https://leetcode.com/problems/word-search/)
-- 🔄 [Combination Sum](https://leetcode.com/problems/combination-sum/)
-
-### 🔥 Graphs (85% Complete)
-- ✅ [Number of Islands](https://leetcode.com/problems/number-of-islands/) • [Course Schedule](https://leetcode.com/problems/course-schedule/)
-- ✅ [Pacific Atlantic Water Flow](https://leetcode.com/problems/pacific-atlantic-water-flow/)
-- ✅ [Graph Valid Tree](https://leetcode.com/problems/graph-valid-tree/) • [Alien Dictionary](https://leetcode.com/problems/alien-dictionary/)
-- 🔄 [Clone Graph](https://leetcode.com/problems/clone-graph/)
-- 🔄 [Number of Connected Components](https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/)
-
-### 🔥 Dynamic Programming (90% Complete)
-- ✅ [Climbing Stairs](https://leetcode.com/problems/climbing-stairs/) • [House Robber](https://leetcode.com/problems/house-robber/)
-- ✅ [House Robber II](https://leetcode.com/problems/house-robber-ii/) • [Longest Palindromic Substring](https://leetcode.com/problems/longest-palindromic-substring/)
-- ✅ [Palindromic Substrings](https://leetcode.com/problems/palindromic-substrings/) • [Coin Change](https://leetcode.com/problems/coin-change/)
-- ✅ [Maximum Product Subarray](https://leetcode.com/problems/maximum-product-subarray/) • [Word Break](https://leetcode.com/problems/word-break/)
-- ✅ [Longest Increasing Subsequence](https://leetcode.com/problems/longest-increasing-subsequence/)
-- ✅ [Longest Common Subsequence](https://leetcode.com/problems/longest-common-subsequence/)
-- 🔄 [Decode Ways](https://leetcode.com/problems/decode-ways/) • [Unique Paths](https://leetcode.com/problems/unique-paths/)
-
-### 🔥 Greedy (100% Complete)
-- ✅ [Maximum Subarray](https://leetcode.com/problems/maximum-subarray/) • [Jump Game](https://leetcode.com/problems/jump-game/)
-
-### 🔥 Intervals (100% Complete)
-- ✅ [Insert Interval](https://leetcode.com/problems/insert-interval/) • [Merge Intervals](https://leetcode.com/problems/merge-intervals/)
-- ✅ [Non-overlapping Intervals](https://leetcode.com/problems/non-overlapping-intervals/)
-- ✅ [Meeting Rooms](https://leetcode.com/problems/meeting-rooms/) • [Meeting Rooms II](https://leetcode.com/problems/meeting-rooms-ii/)
-
-### 🔥 Bit Manipulation (100% Complete)
-- ✅ [Number of 1 Bits](https://leetcode.com/problems/number-of-1-bits/) • [Counting Bits](https://leetcode.com/problems/counting-bits/)
-- ✅ [Reverse Bits](https://leetcode.com/problems/reverse-bits/) • [Missing Number](https://leetcode.com/problems/missing-number/)
-- ✅ [Sum of Two Integers](https://leetcode.com/problems/sum-of-two-integers/)
-
-### 🔥 Math & Geometry (100% Complete)
-- ✅ [Rotate Image](https://leetcode.com/problems/rotate-image/) • [Spiral Matrix](https://leetcode.com/problems/spiral-matrix/)
-- ✅ [Set Matrix Zeroes](https://leetcode.com/problems/set-matrix-zeroes/)
-
-## 🚀 Advanced & Premium Problems (85+ Solutions)
-
-### 🟢 Easy (35 problems)
-**Foundation algorithms** covering mathematical operations, string manipulation, and basic data structures.
-
-**Key Highlights**: 
-- ✅ [**Fibonacci Number**](https://leetcode.com/problems/fibonacci-number/) - Matrix exponentiation O(log n)
-- ✅ [**Palindrome Number**](https://leetcode.com/problems/palindrome-number/) - No string conversion approach
-- ✅ [**Plus One**](https://leetcode.com/problems/plus-one/) - Optimized carry propagation
-- ✅ [**Roman to Integer**](https://leetcode.com/problems/roman-to-integer/) - Single-pass with lookahead
-
-### 🟡 Medium (32 problems)
-**Advanced algorithms** featuring system design patterns, optimization challenges, and complex data structures.
-
-**Key Highlights**:
-- ✅ [**LRU Cache**](https://leetcode.com/problems/lru-cache/) - HashMap + doubly linked list
-- ✅ [**Time Based Key-Value Store**](https://leetcode.com/problems/time-based-key-value-store/) - Binary search optimization
-- ✅ [**Design Tic-Tac-Toe**](https://leetcode.com/problems/design-tic-tac-toe/) - O(1) win detection
-- ✅ [**Moving Average from Data Stream**](https://leetcode.com/problems/moving-average-from-data-stream/) - Sliding window with circular buffer
-
-### 🔴 Hard (25+ problems)
-**Competition-level algorithms** with advanced mathematical concepts and complex system design.
-
-**🎯 Recent Performance Optimizations**:
-- ✅ [**XOR Queries of a Subarray**](https://leetcode.com/problems/xor-queries-of-a-subarray/) - **⚡ Optimized**: O(1) prefix XOR with modern Go idioms
-- ✅ [**Word Search II**](https://leetcode.com/problems/word-search-ii/) - **⚡ Optimized**: Array-based Trie with aggressive pruning & cache locality
-- ✅ [**Word Ladder II**](https://leetcode.com/problems/word-ladder-ii/) - **⚡ Optimized**: BFS with memory-efficient data structures
-
-**🏆 Mathematical & Algorithmic Masterpieces**:
-- ✅ [**Number of Digit One**](https://leetcode.com/problems/number-of-digit-one/) - Mathematical O(log n) digit counting
-- ✅ [**Russian Doll Envelopes**](https://leetcode.com/problems/russian-doll-envelopes/) - 2D LIS with binary search optimization  
-- ✅ [**Fancy Sequence**](https://leetcode.com/problems/fancy-sequence/) - Lazy propagation with modular arithmetic
-- ✅ [**Shortest Path Visiting All Nodes**](https://leetcode.com/problems/shortest-path-visiting-all-nodes/) - DP with bitmask state compression
-- ✅ [**Number of Great Partitions**](https://leetcode.com/problems/number-of-great-partitions/) - Advanced DP with prefix optimization
-- ✅ [**Super Egg Drop**](https://leetcode.com/problems/super-egg-drop/) - Optimized DP with mathematical insights
-
-**🎨 Computational Geometry**:
-- ✅ [**Self Crossing**](https://leetcode.com/problems/self-crossing/) - Complex geometric line intersection
-- ✅ [**Erect the Fence**](https://leetcode.com/problems/erect-the-fence/) - Convex hull with Graham scan
-- ✅ [**Maximum Number of Darts Inside Circular Dartboard**](https://leetcode.com/problems/maximum-number-of-darts-inside-of-a-circular-dartboard/) - Circle geometry optimization
-
-**🔗 Graph Theory Classics**:
-- ✅ [**Critical Connections in Network**](https://leetcode.com/problems/critical-connections-in-a-network/) - Tarjan's bridge-finding algorithm
-- ✅ [**Minimum Days to Disconnect Island**](https://leetcode.com/problems/minimum-number-of-days-to-disconnect-island/) - Graph connectivity analysis
-
-**🧮 Advanced Dynamic Programming**:
-- ✅ [**Palindrome Partitioning II**](https://leetcode.com/problems/palindrome-partitioning-ii/) - Advanced DP with precomputation
-- ✅ [**Dungeon Game**](https://leetcode.com/problems/dungeon-game/) - Reverse DP with space optimization
-- ✅ [**Wildcard Matching**](https://leetcode.com/problems/wildcard-matching/) - Pattern matching with DP
-
-**🔍 Complex Parsing & State Machines**:
-- ✅ [**Sudoku Solver**](https://leetcode.com/problems/sudoku-solver/) - Backtracking with constraint propagation
-- ✅ [**Valid Number**](https://leetcode.com/problems/valid-number/) - Finite state machine parsing
-
-### 🧵 Concurrency (2 problems)
-**Go channel mastery** with advanced synchronization patterns.
-
-- ✅ [**Building H2O**](https://leetcode.com/problems/building-h2o/) - Producer-consumer with Go channels
-- ✅ [**Dining Philosophers**](https://leetcode.com/problems/dining-philosophers/) - Deadlock prevention with mutexes
-
-## 🎯 **Modern Go 1.24 Excellence: Engineering Deep Dive**
-
-This repository showcases **cutting-edge Go patterns and performance optimizations** representing the pinnacle of modern Go development:
-
-### 🔬 **Compiler Optimization Insights**
-
-<details>
-<summary><strong>🚀 Escape Analysis Mastery</strong></summary>
-
-**Stack vs Heap Allocation Patterns:**
-```go
-// ✅ Stack allocation - no escape
-func twoSum(nums []int, target int) []int {
-    seen := make(map[int]int, len(nums)) // Stays on stack when small
-    for i, num := range nums {
-        if j, ok := seen[target-num]; ok {
-            return []int{j, i} // Stack allocation
-        }
-        seen[num] = i
-    }
-    return nil
-}
-
-// 🎯 Heap allocation - controlled escape
-func groupAnagrams(strs []string) [][]string {
-    groups := make(map[string][]string, len(strs)) // Escapes to heap
-    // Strategic heap usage for large collections
-}
-```
-
-**Escape Analysis Results:**
-- **85% of solutions** keep primary data structures on stack
-- **Memory allocation rate**: <100 MB/s for benchmark suites
-- **GC pressure**: Minimal due to stack-first approach
-
-</details>
-
-<details>
-<summary><strong>⚡ CPU Cache Optimization</strong></summary>
-
-**Cache-Friendly Data Structures:**
-```go
-// ✅ Array-based Trie - excellent cache locality
-type TrieNode struct {
-    children [26]*TrieNode  // Sequential memory layout
-    isEnd    bool
-    word     string
-}
-
-// ❌ Map-based Trie - poor cache locality
-type TrieNode struct {
-    children map[byte]*TrieNode  // Random memory access
-    isEnd    bool
-    word     string
-}
-```
-
-**Performance Impact:**
-- **3x faster** array-based vs map-based structures
-- **L1 cache hit rate**: 95%+ for sequential access patterns
-- **Memory bandwidth**: 50% reduction in memory traffic
-
-</details>
-
-<details>
-<summary><strong>🧠 Branch Prediction Optimization</strong></summary>
-
-**Predictable Branching Patterns:**
-```go
-// ✅ Predictable branches - better performance
-func binarySearch(nums []int, target int) int {
-    left, right := 0, len(nums)-1
-    for left <= right {
-        mid := left + (right-left)/2  // Overflow-safe
-        if nums[mid] == target {
-            return mid
-        }
-        if nums[mid] < target {
-            left = mid + 1
-        } else {
-            right = mid - 1
-        }
-    }
-    return -1
-}
-
-// 🎯 Branchless optimization for hot paths
-func abs(x int) int {
-    mask := x >> 31  // All 1s if negative, all 0s if positive
-    return (x ^ mask) - mask
-}
-```
-
-</details>
-
-### **🚀 Performance Engineering**
-- **Pre-allocated slices** with `make([]T, 0, capacity)` for zero-reallocation efficiency
-  ```go
-  // ✅ Optimized: Pre-allocated with capacity
-  result := make([]string, 0, len(words))
-  
-  // ❌ Suboptimal: Reallocations during growth
-  var result []string
-  ```
-- **Array-based data structures** for superior cache locality (e.g., `[26]*TrieNode` vs `map[byte]*TrieNode`)
-  ```go
-  // ✅ Cache-friendly: Array-based Trie
-  type TrieNode struct {
-      children [26]*TrieNode  // Sequential memory layout
-  }
-  
-  // ❌ Cache-unfriendly: Map-based approach
-  type TrieNode struct {
-      children map[byte]*TrieNode  // Random memory access
-  }
-  ```
-- **Memory-efficient sets** using `map[string]struct{}` (saves 8 bytes per entry vs `map[string]bool`)
-- **In-place algorithms** to eliminate auxiliary space (e.g., board modification for visited tracking)
-- **Bit manipulation** for space-compressed state representation
-- **Generics** for type-safe, reusable data structures without interface{} overhead
-- **Enhanced slices package** with `slices.BinarySearch`, `slices.Sort`, `slices.Reverse`
-- **Range over integers** with `for i := range n` syntax (Go 1.22+)
-
-### **🧠 Algorithm Mastery**
-- **Space-optimized DP** using rolling arrays and 1D state compression
-  ```go
-  // ✅ Space-optimized: O(n) space instead of O(n²)
-  prev, curr := make([]int, n), make([]int, n)
-  for i := range rows {
-      prev, curr = curr, prev  // Swap arrays
-  }
-  ```
-- **Prefix computation** for O(1) range queries (XOR, sum, product, etc.)
-  ```go
-  // ✅ O(1) range XOR queries
-  prefix := make([]int, n+1)
-  for i, val := range arr {
-      prefix[i+1] = prefix[i] ^ val
-  }
-  // Query [l,r]: prefix[r+1] ^ prefix[l]
-  ```
-- **Aggressive pruning** in backtracking and tree traversal algorithms
-- **Modular arithmetic** with efficient inverse calculations and overflow handling
-- **Binary search optimizations** leveraging `slices.BinarySearch` and custom comparators
-- **Graph algorithms** with efficient adjacency representations and path compression
-- **Geometric algorithms** using precise floating-point arithmetic and numerical stability
-- **String algorithms** with KMP, rolling hash, and suffix array techniques
-
-### **💎 Code Quality & Best Practices**
-- **Idiomatic Go patterns** with proper receiver usage and method extraction
-  ```go
-  // ✅ Idiomatic: Method on receiver
-  func (t *TrieNode) hasChildren() bool {
-      for _, child := range t.children {
-          if child != nil {
-              return true
-          }
-      }
-      return false
-  }
-  ```
-- **Comprehensive documentation** with detailed complexity analysis and approach explanations
-- **Table-driven tests** with extensive edge case coverage and property-based testing
-- **Benchmark suites** for performance validation and regression detection
-- **Modern error handling** with early returns, clean control flow, and zero-allocation paths
-- **Consistent naming** following Go conventions and domain-specific terminology
-
-### **🔬 Advanced Go Techniques**
-- **Zero-allocation string operations** using `strings.Builder` and byte slices
-- **Escape analysis optimization** to keep allocations on stack
-- **Compiler intrinsics** for math operations and bit manipulation
-- **Memory pooling** with `sync.Pool` for high-frequency allocations
-- **Goroutine management** with context cancellation and worker pools
-- **Channel patterns** for producer-consumer and fan-out scenarios
-
-## 🚀 Quick Start
-
-### **📂 Directory Structure**
-Each problem directory follows a consistent, professional structure:
-```
-problem_name_number/
-├── README.md          # Problem description, constraints, examples, and LeetCode link
-├── solution.go        # Optimized Go implementation with detailed comments
-└── solution_test.go   # Comprehensive test suite with edge cases & benchmarks
-```
+Contributions are welcome! Please ensure:
+- Solutions use optimal time complexity
+- Code follows Go best practices and style guide
+- Tests cover edge cases and provide benchmarks
+- Documentation explains the approach and complexity analysis
 
 ### **🔥 Running Tests**
 ```bash
@@ -1743,11 +1302,948 @@ func findItem(id int) (Item, error) {
 
 </details>
 
-**Enhancement Opportunities:**
-- [ ] **Interactive visualizations** for complex algorithms
-- [ ] **Video explanations** for hard problems
-- [ ] **Alternative language implementations** (Rust, C++)
-- [ ] **Performance benchmarking** against other implementations
+### **🔥 Advanced Memory Management Patterns**
+
+<details>
+<summary><strong>🧠 Memory Pool Optimization</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Object pooling for frequent allocations
+var nodePool = sync.Pool{
+    New: func() interface{} {
+        return &TreeNode{}
+    },
+}
+
+func getNode() *TreeNode {
+    return nodePool.Get().(*TreeNode)
+}
+
+func putNode(node *TreeNode) {
+    node.Left, node.Right = nil, nil
+    node.Val = 0
+    nodePool.Put(node)
+}
+
+// ✅ Slice pooling for buffer reuse
+var slicePool = sync.Pool{
+    New: func() interface{} {
+        return make([]int, 0, 100)
+    },
+}
+
+func processData(data []int) {
+    buffer := slicePool.Get().([]int)
+    defer func() {
+        buffer = buffer[:0]  // Reset length
+        slicePool.Put(buffer)
+    }()
+    
+    // Use buffer for processing
+    for _, item := range data {
+        buffer = append(buffer, item*2)
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Repeated expensive allocations
+func processItems(items []string) {
+    for _, item := range items {
+        result := make([]byte, 1024)  // 1024 allocations!
+        copy(result, item)
+        // Process result...
+    }
+}
+
+// ❌ Not resetting pooled objects
+func badPool() {
+    node := nodePool.Get().(*TreeNode)
+    // ❌ Previous values still present - memory leak!
+    nodePool.Put(node)
+}
+```
+
+**Performance Impact:**
+- **Memory allocations**: 95% reduction with proper pooling
+- **GC pressure**: 80% fewer garbage collections
+- **Latency**: 60% reduction in allocation hotspots
+
+</details>
+
+<details>
+<summary><strong>🎯 Zero-Allocation Patterns</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Stack-based string building
+func buildString(parts []string) string {
+    if len(parts) == 0 {
+        return ""
+    }
+    
+    // Calculate total length first
+    totalLen := 0
+    for _, part := range parts {
+        totalLen += len(part)
+    }
+    
+    // Single allocation with known size
+    var builder strings.Builder
+    builder.Grow(totalLen)
+    for _, part := range parts {
+        builder.WriteString(part)
+    }
+    return builder.String()
+}
+
+// ✅ In-place slice operations
+func reverseInPlace(nums []int) {
+    for i, j := 0, len(nums)-1; i < j; i, j = i+1, j-1 {
+        nums[i], nums[j] = nums[j], nums[i]
+    }
+}
+
+// ✅ Byte slice to string conversion without allocation
+func bytesToString(b []byte) string {
+    return *(*string)(unsafe.Pointer(&b))  // Use with caution
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Unnecessary string conversions
+func processNumbers(nums []int) []string {
+    result := make([]string, len(nums))
+    for i, num := range nums {
+        result[i] = fmt.Sprintf("%d", num)  // Allocation per conversion
+    }
+    return result
+}
+
+// ❌ Slice append without capacity planning
+func collectResults() []int {
+    var results []int
+    for i := 0; i < 1000; i++ {
+        results = append(results, i)  // Multiple reallocations
+    }
+    return results
+}
+```
+
+</details>
+
+<details>
+<summary><strong>🚀 Advanced Slice Techniques</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Slice header manipulation for zero-copy operations
+func unsafeSliceToString(b []byte) string {
+    if len(b) == 0 {
+        return ""
+    }
+    return *(*string)(unsafe.Pointer(&b))
+}
+
+// ✅ Efficient slice filtering in-place
+func filterInPlace(nums []int, predicate func(int) bool) []int {
+    writeIndex := 0
+    for _, num := range nums {
+        if predicate(num) {
+            nums[writeIndex] = num
+            writeIndex++
+        }
+    }
+    return nums[:writeIndex]
+}
+
+// ✅ Batch processing with sub-slicing
+func processBatches(data []int, batchSize int) {
+    for i := 0; i < len(data); i += batchSize {
+        end := i + batchSize
+        if end > len(data) {
+            end = len(data)
+        }
+        batch := data[i:end]  // No allocation - shares backing array
+        processBatch(batch)
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Copying large slices unnecessarily
+func badSliceCopy(source []int) []int {
+    result := make([]int, len(source))
+    copy(result, source)  // Unnecessary copy
+    return result
+}
+
+// ❌ Slice leaks keeping large backing arrays
+func sliceLeak(hugeSlice []int) []int {
+    // ❌ Keeps entire huge backing array in memory
+    return hugeSlice[:10]
+}
+
+// ✅ Better: Copy small result to release large backing array
+func fixedSliceLeak(hugeSlice []int) []int {
+    result := make([]int, 10)
+    copy(result, hugeSlice[:10])
+    return result
+}
+```
+
+</details>
+
+### **🔄 Concurrency Anti-Patterns & Best Practices**
+
+<details>
+<summary><strong>🔒 Race Condition Prevention</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Proper mutex usage
+type SafeCounter struct {
+    mu    sync.RWMutex
+    value int
+}
+
+func (c *SafeCounter) Increment() {
+    c.mu.Lock()
+    defer c.mu.Unlock()
+    c.value++
+}
+
+func (c *SafeCounter) Value() int {
+    c.mu.RLock()
+    defer c.mu.RUnlock()
+    return c.value
+}
+
+// ✅ Atomic operations for simple counters
+var counter int64
+
+func atomicIncrement() {
+    atomic.AddInt64(&counter, 1)
+}
+
+func atomicLoad() int64 {
+    return atomic.LoadInt64(&counter)
+}
+
+// ✅ Channel-based coordination
+func processWithChannels(jobs <-chan Job, results chan<- Result) {
+    for job := range jobs {
+        result := processJob(job)
+        select {
+        case results <- result:
+        case <-time.After(5 * time.Second):
+            // Handle timeout
+        }
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Unprotected shared state
+var sharedMap = make(map[string]int)
+
+func unsafeWrite(key string, value int) {
+    sharedMap[key] = value  // Race condition!
+}
+
+func unsafeRead(key string) int {
+    return sharedMap[key]  // Race condition!
+}
+
+// ❌ Lock ordering issues (deadlock potential)
+func badLockOrdering(mu1, mu2 *sync.Mutex) {
+    mu1.Lock()
+    mu2.Lock()  // Potential deadlock if another goroutine locks in reverse order
+    defer mu2.Unlock()
+    defer mu1.Unlock()
+}
+
+// ❌ Blocking operations while holding locks
+func blockingWhileLocked(mu *sync.Mutex) {
+    mu.Lock()
+    defer mu.Unlock()
+    time.Sleep(time.Second)  // ❌ Blocks other goroutines unnecessarily
+}
+```
+
+</details>
+
+<details>
+<summary><strong>🚀 Channel Performance Patterns</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Buffered channels for producer-consumer
+func efficientProducerConsumer() {
+    // Buffer size prevents blocking
+    jobsChan := make(chan Job, 100)
+    resultsChan := make(chan Result, 100)
+    
+    // Producer
+    go func() {
+        defer close(jobsChan)
+        for i := 0; i < 1000; i++ {
+            jobsChan <- Job{ID: i}
+        }
+    }()
+    
+    // Consumer
+    go func() {
+        defer close(resultsChan)
+        for job := range jobsChan {
+            result := processJob(job)
+            resultsChan <- result
+        }
+    }()
+}
+
+// ✅ Worker pool pattern
+func workerPool(jobs <-chan Job, results chan<- Result, numWorkers int) {
+    var wg sync.WaitGroup
+    
+    for i := 0; i < numWorkers; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            for job := range jobs {
+                result := processJob(job)
+                results <- result
+            }
+        }()
+    }
+    
+    wg.Wait()
+    close(results)
+}
+
+// ✅ Fan-out/fan-in pattern
+func fanOutFanIn(input <-chan int) <-chan int {
+    output := make(chan int)
+    
+    // Fan-out: distribute work
+    workers := 5
+    for i := 0; i < workers; i++ {
+        go func() {
+            for num := range input {
+                // Process and send to output
+                output <- num * 2
+            }
+        }()
+    }
+    
+    return output
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Unbuffered channels causing unnecessary blocking
+func slowProducer() {
+    ch := make(chan int)  // Unbuffered
+    
+    go func() {
+        for i := 0; i < 1000; i++ {
+            ch <- i  // Blocks on each send
+        }
+    }()
+    
+    // Slow consumer
+    for i := range ch {
+        time.Sleep(time.Millisecond)  // Creates backpressure
+        process(i)
+    }
+}
+
+// ❌ Goroutine leaks
+func goroutineLeak() {
+    ch := make(chan int)
+    
+    go func() {
+        for {
+            select {
+            case <-ch:
+                // Process
+            // ❌ No exit condition - goroutine never terminates
+            }
+        }
+    }()
+    
+    // Channel never closed, goroutine leaks
+}
+
+// ❌ Closing channels multiple times
+func multipleClose() {
+    ch := make(chan int)
+    
+    go func() {
+        defer close(ch)  // First close
+        // Some work...
+    }()
+    
+    close(ch)  // ❌ Second close causes panic
+}
+```
+
+</details>
+
+### **🎭 Interface & Reflection Optimization**
+
+<details>
+<summary><strong>⚡ Interface Performance</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Small interfaces (1-2 methods)
+type Reader interface {
+    Read([]byte) (int, error)
+}
+
+type Writer interface {
+    Write([]byte) (int, error)
+}
+
+// ✅ Composition over large interfaces
+type ReadWriter interface {
+    Reader
+    Writer
+}
+
+// ✅ Avoid interface{} in hot paths
+func processTypedData(data []int) {
+    // Direct type access - no boxing/unboxing
+    for _, item := range data {
+        result := item * 2
+        // Process result...
+    }
+}
+
+// ✅ Type assertions with ok pattern
+func safeTypeAssertion(i interface{}) {
+    if s, ok := i.(string); ok {
+        // Use s safely
+        processString(s)
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Large interfaces
+type BadInterface interface {
+    Method1() error
+    Method2() error
+    Method3() error
+    Method4() error
+    Method5() error
+    // ... many methods
+}
+
+// ❌ Interface{} abuse
+func slowProcessing(data []interface{}) {
+    for _, item := range data {
+        // ❌ Type assertion on every iteration
+        if num, ok := item.(int); ok {
+            result := num * 2
+            // Process...
+        }
+    }
+}
+
+// ❌ Panic-inducing type assertions
+func unsafeAssertion(i interface{}) {
+    s := i.(string)  // ❌ Panics if not string
+    processString(s)
+}
+```
+
+</details>
+
+<details>
+<summary><strong>🔍 Reflection Optimization</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Cache reflection results
+var typeCache = make(map[reflect.Type][]reflect.StructField)
+var cacheMu sync.RWMutex
+
+func getFields(t reflect.Type) []reflect.StructField {
+    cacheMu.RLock()
+    if fields, exists := typeCache[t]; exists {
+        cacheMu.RUnlock()
+        return fields
+    }
+    cacheMu.RUnlock()
+    
+    cacheMu.Lock()
+    defer cacheMu.Unlock()
+    
+    // Double-check after acquiring write lock
+    if fields, exists := typeCache[t]; exists {
+        return fields
+    }
+    
+    fields := make([]reflect.StructField, t.NumField())
+    for i := 0; i < t.NumField(); i++ {
+        fields[i] = t.Field(i)
+    }
+    
+    typeCache[t] = fields
+    return fields
+}
+
+// ✅ Avoid reflection in hot paths
+func fastProcessing(data []int) {
+    // Direct field access - no reflection
+    for _, item := range data {
+        result := item * 2
+        // Process...
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Reflection in tight loops
+func slowReflection(items []interface{}) {
+    for _, item := range items {
+        v := reflect.ValueOf(item)
+        t := v.Type()
+        
+        // ❌ Expensive reflection calls in loop
+        for i := 0; i < t.NumField(); i++ {
+            field := t.Field(i)
+            value := v.Field(i)
+            // Process field...
+        }
+    }
+}
+
+// ❌ Not caching reflection results
+func uncachedReflection(obj interface{}) {
+    v := reflect.ValueOf(obj)
+    t := v.Type()
+    
+    // ❌ Repeated expensive calls
+    for i := 0; i < 1000; i++ {
+        field := t.Field(0)  // Same field accessed 1000 times
+        // Process field...
+    }
+}
+```
+
+### **🌐 I/O & Networking Performance**
+
+<details>
+<summary><strong>📁 File I/O Optimization</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Buffered I/O for better performance
+func efficientFileRead(filename string) ([]byte, error) {
+    file, err := os.Open(filename)
+    if err != nil {
+        return nil, err
+    }
+    defer file.Close()
+    
+    // Use buffered reader for better performance
+    reader := bufio.NewReaderSize(file, 32*1024) // 32KB buffer
+    return io.ReadAll(reader)
+}
+
+// ✅ Memory-mapped files for large files
+func mmapLargeFile(filename string) ([]byte, error) {
+    file, err := os.Open(filename)
+    if err != nil {
+        return nil, err
+    }
+    defer file.Close()
+    
+    stat, err := file.Stat()
+    if err != nil {
+        return nil, err
+    }
+    
+    // Memory-map the file
+    return syscall.Mmap(int(file.Fd()), 0, int(stat.Size()), 
+        syscall.PROT_READ, syscall.MAP_SHARED)
+}
+
+// ✅ Batch operations for multiple files
+func batchFileOperations(filenames []string) error {
+    const batchSize = 10
+    
+    for i := 0; i < len(filenames); i += batchSize {
+        end := i + batchSize
+        if end > len(filenames) {
+            end = len(filenames)
+        }
+        
+        batch := filenames[i:end]
+        if err := processBatch(batch); err != nil {
+            return err
+        }
+    }
+    
+    return nil
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Unbuffered I/O
+func slowFileRead(filename string) ([]byte, error) {
+    file, err := os.Open(filename)
+    if err != nil {
+        return nil, err
+    }
+    defer file.Close()
+    
+    // ❌ Reading byte by byte - extremely slow
+    var result []byte
+    buf := make([]byte, 1)
+    for {
+        n, err := file.Read(buf)
+        if err == io.EOF {
+            break
+        }
+        if err != nil {
+            return nil, err
+        }
+        result = append(result, buf[:n]...)
+    }
+    
+    return result, nil
+}
+
+// ❌ Opening/closing files repeatedly
+func inefficientMultipleReads(filenames []string) {
+    for _, filename := range filenames {
+        file, _ := os.Open(filename)  // ❌ Expensive system call
+        data, _ := io.ReadAll(file)
+        file.Close()
+        process(data)
+    }
+}
+```
+
+</details>
+
+<details>
+<summary><strong>🔌 Network I/O Optimization</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Connection pooling
+var httpClient = &http.Client{
+    Transport: &http.Transport{
+        MaxIdleConns:        100,
+        MaxIdleConnsPerHost: 10,
+        IdleConnTimeout:     90 * time.Second,
+        DisableKeepAlives:   false,
+    },
+    Timeout: 30 * time.Second,
+}
+
+// ✅ Efficient HTTP requests
+func efficientHTTPGet(url string) (*http.Response, error) {
+    req, err := http.NewRequest("GET", url, nil)
+    if err != nil {
+        return nil, err
+    }
+    
+    // Reuse connections
+    req.Header.Set("Connection", "keep-alive")
+    req.Header.Set("User-Agent", "MyApp/1.0")
+    
+    return httpClient.Do(req)
+}
+
+// ✅ TCP connection optimization
+func optimizedTCPServer(addr string) error {
+    listener, err := net.Listen("tcp", addr)
+    if err != nil {
+        return err
+    }
+    defer listener.Close()
+    
+    for {
+        conn, err := listener.Accept()
+        if err != nil {
+            continue
+        }
+        
+        // Set socket options for better performance
+        if tcpConn, ok := conn.(*net.TCPConn); ok {
+            tcpConn.SetNoDelay(true)  // Disable Nagle's algorithm
+            tcpConn.SetKeepAlive(true)
+            tcpConn.SetKeepAlivePeriod(3 * time.Minute)
+        }
+        
+        go handleConnection(conn)
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Creating new HTTP clients for each request
+func inefficientHTTPRequests(urls []string) {
+    for _, url := range urls {
+        client := &http.Client{}  // ❌ New client each time
+        resp, err := client.Get(url)
+        if err != nil {
+            continue
+        }
+        resp.Body.Close()
+    }
+}
+
+// ❌ Not reusing connections
+func badNetworkPattern() {
+    for i := 0; i < 1000; i++ {
+        conn, err := net.Dial("tcp", "example.com:80")
+        if err != nil {
+            continue
+        }
+        
+        // ❌ Use connection once and close
+        conn.Write([]byte("GET / HTTP/1.1\r\n\r\n"))
+        conn.Close()  // ❌ Expensive connection setup/teardown
+    }
+}
+```
+
+</details>
+
+### **🗑️ Garbage Collection Optimization**
+
+<details>
+<summary><strong>♻️ GC Pressure Reduction</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Minimize allocations in hot paths
+func lowGCPressure(data []int) int {
+    // Reuse variables to avoid allocations
+    sum := 0
+    for _, value := range data {
+        sum += value  // No allocations
+    }
+    return sum
+}
+
+// ✅ Use finalizers sparingly and correctly
+type Resource struct {
+    handle uintptr
+}
+
+func NewResource() *Resource {
+    r := &Resource{handle: allocateHandle()}
+    
+    // Set finalizer as last resort cleanup
+    runtime.SetFinalizer(r, (*Resource).finalize)
+    return r
+}
+
+func (r *Resource) Close() {
+    if r.handle != 0 {
+        releaseHandle(r.handle)
+        r.handle = 0
+        
+        // Remove finalizer after manual cleanup
+        runtime.SetFinalizer(r, nil)
+    }
+}
+
+func (r *Resource) finalize() {
+    if r.handle != 0 {
+        releaseHandle(r.handle)
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Excessive small allocations
+func highGCPressure(data []int) []string {
+    var results []string
+    for _, value := range data {
+        // ❌ String allocation in hot loop
+        str := fmt.Sprintf("Value: %d", value)
+        results = append(results, str)
+    }
+    return results
+}
+
+// ❌ Keeping references to large objects
+func memoryLeak() {
+    largeSlice := make([]int, 1000000)
+    
+    // ❌ Closure captures entire large slice
+    callback := func() {
+        fmt.Println(largeSlice[0])  // Only need first element
+    }
+    
+    registerCallback(callback)  // Large slice never freed
+}
+```
+
+</details>
+
+### **⚠️ Error Handling & Panic Recovery**
+
+<details>
+<summary><strong>🛡️ Robust Error Handling</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Structured error handling
+type AppError struct {
+    Code    int    `json:"code"`
+    Message string `json:"message"`
+    Cause   error  `json:"-"`
+}
+
+func (e *AppError) Error() string {
+    return e.Message
+}
+
+func (e *AppError) Unwrap() error {
+    return e.Cause
+}
+
+// ✅ Error wrapping for context
+func processFile(filename string) error {
+    file, err := os.Open(filename)
+    if err != nil {
+        return fmt.Errorf("failed to open file %s: %w", filename, err)
+    }
+    defer file.Close()
+    
+    data, err := io.ReadAll(file)
+    if err != nil {
+        return fmt.Errorf("failed to read file %s: %w", filename, err)
+    }
+    
+    if err := validateData(data); err != nil {
+        return fmt.Errorf("invalid data in file %s: %w", filename, err)
+    }
+    
+    return nil
+}
+
+// ✅ Panic recovery in goroutines
+func safeGoroutine(fn func()) {
+    go func() {
+        defer func() {
+            if r := recover(); r != nil {
+                log.Printf("Panic recovered: %v\n%s", r, debug.Stack())
+            }
+        }()
+        
+        fn()
+    }()
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Ignoring errors
+func ignoreErrors() {
+    file, _ := os.Open("file.txt")  // ❌ Ignoring error
+    data, _ := io.ReadAll(file)     // ❌ Ignoring error
+    file.Close()
+    
+    processData(data)  // ❌ data might be nil
+}
+
+// ❌ Panic instead of returning errors
+func panicOnError() {
+    file, err := os.Open("file.txt")
+    if err != nil {
+        panic(err)  // ❌ Panic in library code
+    }
+    defer file.Close()
+}
+```
+
+</details>
+
+### **🧪 Testing & Benchmarking Excellence**
+
+<details>
+<summary><strong>📏 Performance Testing</strong></summary>
+
+**✅ Best Practices:**
+```go
+// ✅ Proper benchmark setup
+func BenchmarkOptimizedFunction(b *testing.B) {
+    // Setup data outside the timer
+    testData := generateLargeDataset(10000)
+    
+    b.ResetTimer()
+    b.ReportAllocs()
+    
+    for i := 0; i < b.N; i++ {
+        result := optimizedFunction(testData)
+        
+        // Prevent compiler optimizations
+        _ = result
+    }
+}
+
+// ✅ Memory allocation testing
+func TestZeroAllocations(t *testing.T) {
+    data := []int{1, 2, 3, 4, 5}
+    
+    allocs := testing.AllocsPerRun(100, func() {
+        result := zeroAllocFunction(data)
+        _ = result
+    })
+    
+    if allocs > 0 {
+        t.Errorf("Expected 0 allocations, got %f", allocs)
+    }
+}
+```
+
+**❌ Anti-Patterns:**
+```go
+// ❌ Including setup in benchmark timing
+func BenchmarkBadSetup(b *testing.B) {
+    for i := 0; i < b.N; i++ {
+        // ❌ Expensive setup inside timing
+        testData := generateLargeDataset(10000)
+        result := function(testData)
+        _ = result
+    }
+}
+
+// ❌ Not preventing compiler optimizations
+func BenchmarkUnrealistic(b *testing.B) {
+    data := []int{1, 2, 3, 4, 5}
+    
+    for i := 0; i < b.N; i++ {
+        function(data)  // ❌ Compiler might optimize away
+    }
+}
+```
+
+</details>
+
+</details>
 
 ## 📚 **Advanced Learning Resources**
 
