@@ -19,6 +19,83 @@ cd go-leetcode-master/two_sum_1
 go test -v -bench=. -benchmem
 ```
 
+## Data Structures & Algorithms
+
+### Data Structures Used
+
+**Arrays & Hash Tables**
+- **Arrays**: Contiguous memory blocks providing O(1) random access by index. Used for problems requiring fast lookups and cache-friendly sequential access patterns.
+- **Hash Maps**: Key-value pairs with O(1) average lookup time. Essential for problems like Two Sum where we need to find complements quickly.
+- **Hash Sets**: Unique element storage using `map[T]struct{}` in Go for zero memory overhead. Perfect for duplicate detection and membership testing.
+
+**Trees**
+- **Binary Trees**: Hierarchical structure where each node has at most two children. Used for problems involving tree traversal, path finding, and hierarchical data representation.
+- **Binary Search Trees (BST)**: Ordered binary trees where left subtree < root < right subtree. Provides O(log n) search, insert, and delete operations.
+- **Trie (Prefix Tree)**: Tree-like structure for string storage where each node represents a character. Excellent for word search, autocomplete, and prefix matching problems.
+
+**Linked Lists**
+- **Singly Linked Lists**: Linear data structure where elements point to the next node. Used when you need dynamic size and don't require random access.
+- **Floyd's Cycle Detection**: Two-pointer technique (tortoise and hare) to detect cycles in linked lists in O(n) time with O(1) space.
+
+**Graphs**
+- **Adjacency Lists**: Graph representation using arrays/slices of neighbors. Memory-efficient for sparse graphs and enables fast neighbor iteration.
+- **Union-Find (Disjoint Set)**: Data structure for tracking connected components with path compression and union by rank for nearly O(1) operations.
+
+**Stacks & Queues**
+- **Stacks**: LIFO (Last In, First Out) structure perfect for problems involving matching parentheses, function calls, and backtracking.
+- **Queues**: FIFO (First In, First Out) structure essential for BFS traversal and level-order processing.
+
+### Algorithms Used
+
+**Sorting & Searching**
+- **Binary Search**: O(log n) algorithm for finding elements in sorted arrays. Works by repeatedly dividing search space in half.
+- **Merge Sort**: Divide-and-conquer sorting algorithm with O(n log n) time complexity. Concepts used in problems requiring stable sorting or merging operations.
+
+**Graph Algorithms**
+- **DFS (Depth-First Search)**: Explores as far as possible along each branch before backtracking. Used for tree traversal, topological sorting, and finding connected components.
+- **BFS (Breadth-First Search)**: Explores all neighbors at current depth before moving to next level. Perfect for shortest path in unweighted graphs and level-order traversal.
+- **Topological Sort**: Ordering vertices in directed acyclic graph where each vertex comes before its dependencies. Used in course scheduling and dependency resolution.
+
+**Dynamic Programming**
+- **Memoization**: Top-down approach storing results of expensive function calls to avoid recomputation. Used in recursive problems with overlapping subproblems.
+- **Bottom-up DP**: Building solution iteratively from smaller subproblems to larger ones. More space-efficient than memoization.
+- **Space Optimization**: Techniques like rolling arrays to reduce space complexity from O(n²) to O(n) in 2D DP problems.
+
+**Two Pointers**
+- **Left/Right Pointers**: Two pointers moving from opposite ends of array. Used for problems like palindrome checking, two sum in sorted array, and container problems.
+- **Fast/Slow Pointers**: Pointers moving at different speeds. Classic technique for cycle detection and finding middle elements.
+
+**Sliding Window**
+- **Variable-Size Window**: Window that expands and contracts based on conditions. Used for substring problems like longest substring without repeating characters.
+- **Fixed-Size Window**: Window of constant size sliding through array. Used for problems involving subarrays of specific length.
+
+**Backtracking**
+- **Recursive Exploration**: Systematic way of exploring all possible solutions by making choices and undoing them. Used for generating permutations, combinations, and solving constraint satisfaction problems.
+- **Pruning**: Optimization technique to avoid exploring branches that cannot lead to valid solutions.
+
+**Greedy Algorithms**
+- **Local Optimal Choices**: Making locally optimal choice at each step hoping to find global optimum. Used in interval scheduling, activity selection, and some shortest path problems.
+- **Proof of Correctness**: Greedy algorithms require mathematical proof that local choices lead to global optimum.
+
+**Bit Manipulation**
+- **XOR Operations**: Bitwise exclusive OR useful for finding unique elements (x ^ x = 0, x ^ 0 = x). Used in problems involving pairs and duplicates.
+- **Bit Masks**: Using integers to represent sets where each bit represents presence/absence of element. Enables efficient subset enumeration and dynamic programming on subsets.
+
+### Time Complexity Analysis
+
+**Common Complexities**
+- **O(1)**: Constant time - hash table operations, array access
+- **O(log n)**: Logarithmic time - binary search, balanced tree operations
+- **O(n)**: Linear time - single pass through array, tree traversal
+- **O(n log n)**: Linearithmic time - efficient sorting, divide-and-conquer
+- **O(n²)**: Quadratic time - nested loops, some dynamic programming
+- **O(2ⁿ)**: Exponential time - brute force subset generation, naive recursion
+
+**Space Complexity Considerations**
+- **In-place algorithms**: O(1) space by modifying input
+- **Auxiliary space**: Additional space needed beyond input
+- **Recursive space**: Stack space used by recursive calls
+
 ## Problem Categories
 
 ### Arrays & Hashing
