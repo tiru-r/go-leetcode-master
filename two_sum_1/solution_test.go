@@ -20,9 +20,9 @@ func Test_twoSum(t *testing.T) {
 		{"duplicate values", []int{2, 2, 11, 15}, 4, []int{0, 1}},
 		{"negative numbers", []int{-1, -2, -3, -4, -5}, -8, []int{2, 4}},
 		{"endpoints", []int{2, 3, 11, 15}, 17, []int{0, 3}},
-		{"no solution", []int{1, 2, 3}, 7, []int{}},
-		{"single element", []int{5}, 10, []int{}},
-		{"empty", []int{}, 0, []int{}},
+		{"no solution", []int{1, 2, 3}, 7, nil},
+		{"single element", []int{5}, 10, nil},
+		{"empty", []int{}, 0, nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

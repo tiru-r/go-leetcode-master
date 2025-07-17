@@ -2,7 +2,7 @@ package word_ladder_ii_126
 
 import "slices"
 
-func findLadders(beginWord string, endWord string, wordList []string) [][]string {
+func findLadders(beginWord, endWord string, wordList []string) [][]string {
 	wordSet := make(map[string]bool, len(wordList))
 	for _, word := range wordList {
 		wordSet[word] = true
@@ -19,7 +19,7 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 	for len(level) > 0 && !found {
 		nextLevel := make(map[string]bool)
 		for word := range level {
-			for i := 0; i < len(word); i++ {
+			for i := range len(word) {
 				for c := byte('a'); c <= 'z'; c++ {
 					if c == word[i] {
 						continue
@@ -56,7 +56,7 @@ func findLadders(beginWord string, endWord string, wordList []string) [][]string
 	}
 	
 	var result [][]string
-	var dfs func(word string, path []string)
+	var dfs func(string, []string)
 	dfs = func(word string, path []string) {
 		if word == beginWord {
 			reversed := make([]string, len(path))

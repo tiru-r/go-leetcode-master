@@ -1,7 +1,5 @@
 package valid_tic_tac_toe_state_794
 
-// validTicTacToe returns true iff the board is legal.
-// board[i] is exactly three runes long and contains only {'X','O',' '}.
 func validTicTacToe(board []string) bool {
 	x, o := 0, 0
 	for _, row := range board {
@@ -15,16 +13,14 @@ func validTicTacToe(board []string) bool {
 		}
 	}
 
-	// Turn-order rule
 	if x != o && x != o+1 {
 		return false
 	}
 
-	// Pre-computed magic indices for the 8 lines.
 	lines := [8][3]int{
-		{0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // rows
-		{0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // cols
-		{0, 4, 8}, {2, 4, 6}, // diagonals
+		{0, 1, 2}, {3, 4, 5}, {6, 7, 8},
+		{0, 3, 6}, {1, 4, 7}, {2, 5, 8},
+		{0, 4, 8}, {2, 4, 6},
 	}
 
 	flat := board[0] + board[1] + board[2]
@@ -41,15 +37,12 @@ func validTicTacToe(board []string) bool {
 		}
 	}
 
-	// Mutual win impossible
 	if xWin && oWin {
 		return false
 	}
-	// If X wins, X must have played last
 	if xWin && x != o+1 {
 		return false
 	}
-	// If O wins, O must have played last
 	if oWin && x != o {
 		return false
 	}

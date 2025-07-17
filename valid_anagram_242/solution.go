@@ -1,6 +1,6 @@
 package valid_anagram_242
 
-func isAnagram(s string, t string) bool {
+func isAnagram(s, t string) bool {
 	if len(s) != len(t) {
 		return false
 	}

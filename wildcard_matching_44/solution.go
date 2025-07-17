@@ -1,13 +1,10 @@
 package wildcard_matching_44
 
-// IsMatch checks if string s matches pattern p with wildcards
-// Time: O(m*n), Space: O(n) - optimized space using rolling array
-func IsMatch(s string, p string) bool {
+func IsMatch(s, p string) bool {
 	m, n := len(s), len(p)
 	
-	// Optimize pattern by removing consecutive *
 	pattern := make([]byte, 0, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if p[i] == '*' && len(pattern) > 0 && pattern[len(pattern)-1] == '*' {
 			continue
 		}
@@ -15,36 +12,28 @@ func IsMatch(s string, p string) bool {
 	}
 	n = len(pattern)
 	
-	// Use two arrays for space optimization
 	prev := make([]bool, n+1)
 	curr := make([]bool, n+1)
 	
-	// Base case: empty string matches empty pattern
 	prev[0] = true
 	
-	// Handle patterns that start with *
-	for j := 1; j <= n; j++ {
-		prev[j] = prev[j-1] && pattern[j-1] == '*'
+	for j := range n {
+		prev[j+1] = prev[j] && pattern[j] == '*'
 	}
 	
-	// Fill DP table
-	for i := 1; i <= m; i++ {
-		curr[0] = false // Non-empty string cannot match empty pattern
+	for i := range m {
+		curr[0] = false
 		
-		for j := 1; j <= n; j++ {
-			if pattern[j-1] == '*' {
-				// * can match empty sequence or any character
-				curr[j] = curr[j-1] || prev[j]
-			} else if pattern[j-1] == '?' || pattern[j-1] == s[i-1] {
-				// ? matches any character, or exact character match
-				curr[j] = prev[j-1]
+		for j := range n {
+			if pattern[j] == '*' {
+				curr[j+1] = curr[j] || prev[j+1]
+			} else if pattern[j] == '?' || pattern[j] == s[i] {
+				curr[j+1] = prev[j]
 			} else {
-				// No match
-				curr[j] = false
+				curr[j+1] = false
 			}
 		}
 		
-		// Swap arrays for next iteration
 		prev, curr = curr, prev
 	}
 	

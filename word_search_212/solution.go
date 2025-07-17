@@ -20,7 +20,6 @@ func (t *TrieNode) insert(word string) {
 	cur.word = word
 }
 
-// global, immutable directions slice
 var dirs = [][]int{{-1, 0}, {1, 0}, {0, -1}, {0, 1}}
 
 func findWords(board [][]byte, words []string) []string {
@@ -35,13 +34,13 @@ func findWords(board [][]byte, words []string) []string {
 
 	m, n := len(board), len(board[0])
 	visited := make([][]bool, m)
-	for i := range visited {
+	for i := range m {
 		visited[i] = make([]bool, n)
 	}
 
 	var res []string
 
-	var dfs func(i, j int, node *TrieNode)
+	var dfs func(int, int, *TrieNode)
 	dfs = func(i, j int, node *TrieNode) {
 		if i < 0 || i >= m || j < 0 || j >= n || visited[i][j] {
 			return
@@ -66,7 +65,6 @@ func findWords(board [][]byte, words []string) []string {
 
 		visited[i][j] = false
 
-		// prune empty branches after DFS finishes
 		if len(next.children) == 0 {
 			delete(node.children, ch)
 		}

@@ -1,13 +1,6 @@
 package two_sum_1
 
-// TwoSum returns the indices of the two numbers in nums that add up to target.
-// Exactly one solution is assumed to exist; if the caller violates this
-// guarantee, an empty slice is returned.
-//
-// Time complexity: O(n) average, O(n²) worst (pathological hash collisions)
-// Space complexity: O(n)
 func twoSum(nums []int, target int) []int {
-	// Pre-size the map to avoid rehashing.
 	index := make(map[int]int, len(nums))
 
 	for currIdx, num := range nums {
@@ -16,11 +9,9 @@ func twoSum(nums []int, target int) []int {
 		}
 		index[num] = currIdx
 	}
-	return []int{}
+	return nil
 }
 
-// TwoSumSorted assumes nums is in non-decreasing order.
-// Time: O(n), Space: O(1)
 func twoSumSorted(nums []int, target int) (int, int) {
 	i, j := 0, len(nums)-1
 	for i < j {
@@ -34,5 +25,5 @@ func twoSumSorted(nums []int, target int) (int, int) {
 			j--
 		}
 	}
-	return -1, -1 // sentinel: no solution
+	return -1, -1
 }
