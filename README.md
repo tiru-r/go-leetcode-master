@@ -4807,11 +4807,151 @@ func (scp *SizeClassPool) Alloc(size int) unsafe.Pointer {
 ### Go-Specific Optimization Techniques Used
 
 **Modern Language Features**
-- `range n` syntax for numeric iteration (Go 1.22+)
-- `slices.BinarySearch()` for efficient searching
-- `maps.Keys()` and `slices.Collect()` for functional operations
-- Generic functions for type safety
-- `math/bits` package for bit operations
+Based on analysis of actual implementations in this codebase:
+
+*Go 1.21+ Built-in Functions*
+```go
+// ✅ min/max functions used extensively across solutions
+// From binary_tree_maximum_path_sum_124/solution.go
+leftGain := max(0, dfs(node.Left))
+rightGain := max(0, dfs(node.Right))
+maxSum = max(maxSum, pathSum)
+return node.Val + max(leftGain, rightGain)
+
+// From verifying_an_alien_dictionary_953/solution.go  
+for i := range min(len(s1), len(s2)) {
+    if result := cmp.Compare(charToIndex[s1[i]], charToIndex[s2[i]]); result != 0 {
+        return result
+    }
+}
+
+// ✅ clear() function for efficient array reuse
+// From group_anagrams_49/solution.go
+clear(key[:])  // Clear frequency array for reuse
+
+// From find_sum_of_array_product_of_magical_sequences_3539/solution.go
+clear(curr)  // Clear DP array between iterations
+```
+
+*Go 1.22+ Range Over Integers*
+```go
+// ✅ Range over numeric values - used throughout codebase
+// From reverse_bits_190/solution.go
+for range 32 {
+    result = (result << 1) | (num & 1)
+    num >>= 1
+}
+
+// From set_matrix_zeros_73/solution.go
+for r := range len(matrix) {
+    for c := range len(matrix[r]) {
+        if matrix[r][c] == 0 {
+            firstRowZero = firstRowZero || r == 0
+            firstColZero = firstColZero || c == 0
+            matrix[0][c] = 0
+            matrix[r][0] = 0
+        }
+    }
+}
+
+// From three_sum_15/solution.go
+for i := range len(nums) - 2 {
+    if i > 0 && nums[i] == nums[i-1] {
+        continue  // Skip duplicates
+    }
+    // Two pointers logic...
+}
+```
+
+*Advanced slices Package Usage*
+```go
+// ✅ slices.BinarySearchFunc() for custom search criteria
+// From time_based_key_value_store_981/solution.go
+index, found := slices.BinarySearchFunc(entries, entry,
+    func(a, b timeEntry) int { 
+        return cmp.Compare(a.timestamp, b.timestamp) 
+    })
+
+// ✅ slices.SortFunc() with custom comparators
+// From top_k_frequent_elements_347/solution.go
+unique := slices.Collect(maps.Keys(freq))
+slices.SortFunc(unique, func(a, b int) int {
+    return cmp.Compare(freq[b], freq[a])  // Sort by frequency desc
+})
+
+// ✅ slices.Reverse() for in-place reversal
+// From rotate_image_48/solution.go
+for i := range len(matrix) {
+    slices.Reverse(matrix[i])
+}
+
+// ✅ slices.Collect() with maps.Values() for functional operations
+// From group_anagrams_49/solution.go
+return slices.Collect(maps.Values(groups))
+```
+
+*cmp Package for Comparisons*
+```go
+// ✅ cmp.Compare() for type-safe comparisons
+// From verifying_an_alien_dictionary_953/solution.go
+if result := cmp.Compare(charToIndex[s1[i]], charToIndex[s2[i]]); result != 0 {
+    return result
+}
+return cmp.Compare(len(s1), len(s2))
+
+// ✅ cmp.Or() for chained comparisons (Go 1.22+)
+// From reorder_data_in_log_files_937/solution.go
+return cmp.Or(
+    strings.Compare(aContent, bContent),
+    strings.Compare(aId, bId),
+)
+```
+
+*strings.Cut for Efficient String Splitting*
+```go
+// ✅ strings.Cut() instead of strings.Split()
+// From reorder_data_in_log_files_937/solution.go
+aId, aContent, _ := strings.Cut(a, " ")
+bId, bContent, _ := strings.Cut(b, " ")
+```
+
+*math/bits Package for Bit Operations*
+```go
+// ✅ Hardware-optimized bit operations
+// From reverse_bits_190/solution.go
+func reverseBits(num uint32) uint32 {
+    return bits.Reverse32(num)  // Uses processor's bit reversal
+}
+
+// From number_of_1_bits_191/solution.go
+func hammingWeight(num uint32) int {
+    return bits.OnesCount32(num)  // Uses POPCNT instruction
+}
+```
+
+*Modern Error Handling Patterns*
+```go
+// ✅ any type alias (Go 1.18+)
+// From flatten_nested_list_iterator_341/solution.go
+type NestedInteger struct {
+    value any    // More explicit than interface{}
+    isInt bool
+}
+```
+
+*Functional Programming with Modern Standard Library*
+```go
+// ✅ Iterator patterns with slices.Collect (Go 1.23+)
+func processGroups(groups map[string][]string) [][]string {
+    return slices.Collect(maps.Values(groups))
+}
+
+// ✅ slices.Clone() for safe copying
+// From design_sql_2408/solution.go
+func (db *SQL) backup() []Record {
+    return slices.Clone(db.records)
+}
+```
 
 **Memory Efficiency Patterns**
 - `struct{}` for zero-memory sets: `map[T]struct{}`
