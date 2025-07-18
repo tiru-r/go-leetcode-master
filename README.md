@@ -4685,7 +4685,2139 @@ func processMultipleBatches(batches [][]int) {
 }
 ```
 
-## Algorithm Patterns
+### Advanced Go Concurrency Best Practices
+
+**Worker Pool Patterns for Algorithm Processing**
+
+*Bounded Worker Pool with Context*
+```go
+// ✅ Production-grade worker pool for CPU-intensive algorithms
+type WorkerPool struct {
+    workers    int
+    jobs       chan Job
+    results    chan Result
+    ctx        context.Context
+    cancel     context.CancelFunc
+    wg         sync.WaitGroup
+}
+
+type Job struct {
+    ID   int
+    Data []int
+    Fn   func([]int) int
+}
+
+type Result struct {
+    JobID int
+    Value int
+    Error error
+}
+
+func NewWorkerPool(workers int) *WorkerPool {
+    ctx, cancel := context.WithCancel(context.Background())
+    return &WorkerPool{
+        workers: workers,
+        jobs:    make(chan Job, workers*2), // Buffered for efficiency
+        results: make(chan Result, workers*2),
+        ctx:     ctx,
+        cancel:  cancel,
+    }
+}
+
+func (wp *WorkerPool) Start() {
+    for i := 0; i < wp.workers; i++ {
+        wp.wg.Add(1)
+        go wp.worker(i)
+    }
+}
+
+func (wp *WorkerPool) worker(id int) {
+    defer wp.wg.Done()
+    
+    for {
+        select {
+        case job, ok := <-wp.jobs:
+            if !ok {
+                return // Channel closed
+            }
+            
+            // Process algorithm with timeout protection
+            result := Result{JobID: job.ID}
+            
+            // Use context for cancellation during long computations
+            done := make(chan struct{})
+            go func() {
+                defer close(done)
+                result.Value = job.Fn(job.Data)
+            }()
+            
+            select {
+            case <-done:
+                wp.results <- result
+            case <-wp.ctx.Done():
+                result.Error = wp.ctx.Err()
+                wp.results <- result
+                return
+            }
+            
+        case <-wp.ctx.Done():
+            return
+        }
+    }
+}
+
+// ✅ Graceful shutdown pattern
+func (wp *WorkerPool) Shutdown() {
+    close(wp.jobs)    // No more jobs
+    wp.wg.Wait()      // Wait for workers to finish
+    wp.cancel()       // Cancel context
+    close(wp.results) // Close results channel
+}
+
+// Usage for batch algorithm processing
+func processAlgorithmsBatch(datasets [][]int, algorithm func([]int) int) []int {
+    pool := NewWorkerPool(runtime.NumCPU())
+    pool.Start()
+    defer pool.Shutdown()
+    
+    // Submit jobs
+    go func() {
+        for i, data := range datasets {
+            pool.jobs <- Job{ID: i, Data: data, Fn: algorithm}
+        }
+    }()
+    
+    // Collect results
+    results := make([]int, len(datasets))
+    for i := 0; i < len(datasets); i++ {
+        result := <-pool.results
+        if result.Error == nil {
+            results[result.JobID] = result.Value
+        }
+    }
+    
+    return results
+}
+```
+
+*Lock-Free Data Structures for High Performance*
+```go
+// ✅ Lock-free stack using atomic operations
+type LockFreeStack struct {
+    head unsafe.Pointer // *node
+}
+
+type node struct {
+    value int
+    next  unsafe.Pointer // *node
+}
+
+func (s *LockFreeStack) Push(value int) {
+    newNode := &node{value: value}
+    
+    for {
+        head := atomic.LoadPointer(&s.head)
+        newNode.next = head
+        
+        if atomic.CompareAndSwapPointer(&s.head, head, unsafe.Pointer(newNode)) {
+            break
+        }
+        // Retry on failure (someone else modified head)
+        runtime.Gosched() // Yield to other goroutines
+    }
+}
+
+func (s *LockFreeStack) Pop() (int, bool) {
+    for {
+        head := atomic.LoadPointer(&s.head)
+        if head == nil {
+            return 0, false // Empty stack
+        }
+        
+        headNode := (*node)(head)
+        next := atomic.LoadPointer(&headNode.next)
+        
+        if atomic.CompareAndSwapPointer(&s.head, head, next) {
+            return headNode.value, true
+        }
+        runtime.Gosched() // Yield on contention
+    }
+}
+
+// ✅ Lock-free queue for producer-consumer scenarios
+type LockFreeQueue struct {
+    head unsafe.Pointer // *qnode
+    tail unsafe.Pointer // *qnode
+}
+
+type qnode struct {
+    value int
+    next  unsafe.Pointer // *qnode
+}
+
+func NewLockFreeQueue() *LockFreeQueue {
+    dummy := &qnode{}
+    q := &LockFreeQueue{
+        head: unsafe.Pointer(dummy),
+        tail: unsafe.Pointer(dummy),
+    }
+    return q
+}
+
+func (q *LockFreeQueue) Enqueue(value int) {
+    newNode := &qnode{value: value}
+    
+    for {
+        tail := atomic.LoadPointer(&q.tail)
+        tailNode := (*qnode)(tail)
+        next := atomic.LoadPointer(&tailNode.next)
+        
+        if tail == atomic.LoadPointer(&q.tail) { // Consistency check
+            if next == nil {
+                // Try to link new node at end of list
+                if atomic.CompareAndSwapPointer(&tailNode.next, next, unsafe.Pointer(newNode)) {
+                    // Try to advance tail pointer
+                    atomic.CompareAndSwapPointer(&q.tail, tail, unsafe.Pointer(newNode))
+                    break
+                }
+            } else {
+                // Help advance tail pointer
+                atomic.CompareAndSwapPointer(&q.tail, tail, next)
+            }
+        }
+        runtime.Gosched()
+    }
+}
+```
+
+*Pipeline Pattern for Algorithm Composition*
+```go
+// ✅ Composable algorithm pipeline with error handling
+type Pipeline struct {
+    stages []Stage
+}
+
+type Stage func(context.Context, <-chan int) <-chan int
+
+func NewPipeline(stages ...Stage) *Pipeline {
+    return &Pipeline{stages: stages}
+}
+
+func (p *Pipeline) Process(ctx context.Context, input <-chan int) <-chan int {
+    current := input
+    
+    // Chain stages together
+    for _, stage := range p.stages {
+        current = stage(ctx, current)
+    }
+    
+    return current
+}
+
+// Example algorithm stages
+func FilterStage(predicate func(int) bool) Stage {
+    return func(ctx context.Context, input <-chan int) <-chan int {
+        output := make(chan int)
+        
+        go func() {
+            defer close(output)
+            
+            for {
+                select {
+                case value, ok := <-input:
+                    if !ok {
+                        return
+                    }
+                    if predicate(value) {
+                        select {
+                        case output <- value:
+                        case <-ctx.Done():
+                            return
+                        }
+                    }
+                case <-ctx.Done():
+                    return
+                }
+            }
+        }()
+        
+        return output
+    }
+}
+
+func TransformStage(transform func(int) int) Stage {
+    return func(ctx context.Context, input <-chan int) <-chan int {
+        output := make(chan int)
+        
+        go func() {
+            defer close(output)
+            
+            for {
+                select {
+                case value, ok := <-input:
+                    if !ok {
+                        return
+                    }
+                    transformed := transform(value)
+                    select {
+                    case output <- transformed:
+                    case <-ctx.Done():
+                        return
+                    }
+                case <-ctx.Done():
+                    return
+                }
+            }
+        }()
+        
+        return output
+    }
+}
+
+// Usage: Composable algorithm processing
+func processNumbersPipeline(numbers []int) []int {
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+    
+    // Create input channel
+    input := make(chan int, len(numbers))
+    go func() {
+        defer close(input)
+        for _, num := range numbers {
+            select {
+            case input <- num:
+            case <-ctx.Done():
+                return
+            }
+        }
+    }()
+    
+    // Build pipeline
+    pipeline := NewPipeline(
+        FilterStage(func(n int) bool { return n > 0 }),    // Filter positive
+        TransformStage(func(n int) int { return n * n }),  // Square
+        FilterStage(func(n int) bool { return n < 100 }),  // Filter < 100
+    )
+    
+    // Process and collect results
+    output := pipeline.Process(ctx, input)
+    var results []int
+    
+    for result := range output {
+        results = append(results, result)
+    }
+    
+    return results
+}
+```
+
+**Advanced Synchronization Patterns**
+
+*Semaphore Implementation for Resource Control*
+```go
+// ✅ Weighted semaphore for controlling resource usage
+type WeightedSemaphore struct {
+    ch chan struct{}
+}
+
+func NewWeightedSemaphore(capacity int) *WeightedSemaphore {
+    return &WeightedSemaphore{
+        ch: make(chan struct{}, capacity),
+    }
+}
+
+func (s *WeightedSemaphore) Acquire(ctx context.Context, weight int) error {
+    for i := 0; i < weight; i++ {
+        select {
+        case s.ch <- struct{}{}:
+            // Acquired one unit
+        case <-ctx.Done():
+            // Release already acquired units on timeout
+            for j := 0; j < i; j++ {
+                <-s.ch
+            }
+            return ctx.Err()
+        }
+    }
+    return nil
+}
+
+func (s *WeightedSemaphore) Release(weight int) {
+    for i := 0; i < weight; i++ {
+        <-s.ch
+    }
+}
+
+// Usage in algorithm processing with resource limits
+func processBatchWithLimits(datasets [][]int, maxConcurrency int) []int {
+    sem := NewWeightedSemaphore(maxConcurrency)
+    results := make([]int, len(datasets))
+    var wg sync.WaitGroup
+    
+    for i, data := range datasets {
+        wg.Add(1)
+        go func(index int, dataset []int) {
+            defer wg.Done()
+            
+            ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+            defer cancel()
+            
+            // Acquire semaphore with timeout
+            if err := sem.Acquire(ctx, 1); err != nil {
+                return // Timeout or cancellation
+            }
+            defer sem.Release(1)
+            
+            // Process algorithm (e.g., expensive sorting or searching)
+            results[index] = expensiveAlgorithm(dataset)
+        }(i, data)
+    }
+    
+    wg.Wait()
+    return results
+}
+```
+
+*Barrier Pattern for Synchronized Algorithm Phases*
+```go
+// ✅ Reusable barrier for multi-phase algorithms
+type Barrier struct {
+    n       int
+    count   int
+    mutex   sync.Mutex
+    cond    *sync.Cond
+    generation int
+}
+
+func NewBarrier(n int) *Barrier {
+    b := &Barrier{n: n}
+    b.cond = sync.NewCond(&b.mutex)
+    return b
+}
+
+func (b *Barrier) Wait() {
+    b.mutex.Lock()
+    defer b.mutex.Unlock()
+    
+    generation := b.generation
+    b.count++
+    
+    if b.count == b.n {
+        // Last goroutine to arrive
+        b.count = 0
+        b.generation++
+        b.cond.Broadcast() // Wake all waiting goroutines
+    } else {
+        // Wait for all others to arrive
+        for generation == b.generation {
+            b.cond.Wait()
+        }
+    }
+}
+
+// Usage in parallel divide-and-conquer algorithms
+func parallelMergeSort(data []int, workers int) []int {
+    if len(data) <= 1 {
+        return data
+    }
+    
+    barrier := NewBarrier(workers)
+    chunks := make([][]int, workers)
+    chunkSize := len(data) / workers
+    
+    var wg sync.WaitGroup
+    
+    // Phase 1: Parallel sort of chunks
+    for i := 0; i < workers; i++ {
+        wg.Add(1)
+        go func(workerID int) {
+            defer wg.Done()
+            
+            start := workerID * chunkSize
+            end := start + chunkSize
+            if workerID == workers-1 {
+                end = len(data) // Last worker takes remainder
+            }
+            
+            chunk := make([]int, end-start)
+            copy(chunk, data[start:end])
+            sort.Ints(chunk) // Sort chunk
+            chunks[workerID] = chunk
+            
+            barrier.Wait() // Synchronize before merge phase
+        }(i)
+    }
+    
+    wg.Wait()
+    
+    // Phase 2: Sequential merge (could be parallelized further)
+    result := chunks[0]
+    for i := 1; i < workers; i++ {
+        result = mergeSorted(result, chunks[i])
+    }
+    
+    return result
+}
+```
+
+### Go Interface Design & Composition Patterns
+
+**Algorithm Interface Design Best Practices**
+
+*Composable Algorithm Interfaces*
+```go
+// ✅ Small, focused interfaces following Go philosophy
+type Searcher interface {
+    Search(data []int, target int) (index int, found bool)
+}
+
+type Sorter interface {
+    Sort(data []int) []int
+}
+
+type Hasher interface {
+    Hash(key string) uint64
+}
+
+type Comparable interface {
+    Compare(other interface{}) int
+}
+
+// ✅ Interface composition for complex algorithms
+type SearchableSorter interface {
+    Searcher
+    Sorter
+}
+
+type HashSearcher interface {
+    Hasher
+    Searcher
+}
+
+// ✅ Generic interfaces with type parameters
+type GenericSearcher[T any] interface {
+    Search(data []T, target T, compare func(T, T) int) (int, bool)
+}
+
+type GenericSorter[T any] interface {
+    Sort(data []T, compare func(T, T) int) []T
+}
+
+// Implementation examples
+type BinarySearcher struct{}
+
+func (bs BinarySearcher) Search(data []int, target int) (int, bool) {
+    left, right := 0, len(data)-1
+    
+    for left <= right {
+        mid := left + (right-left)/2
+        
+        if data[mid] == target {
+            return mid, true
+        } else if data[mid] < target {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    
+    return -1, false
+}
+
+type QuickSorter struct{}
+
+func (qs QuickSorter) Sort(data []int) []int {
+    if len(data) <= 1 {
+        return data
+    }
+    
+    result := make([]int, len(data))
+    copy(result, data)
+    quickSortInPlace(result, 0, len(result)-1)
+    return result
+}
+
+// ✅ Composite algorithm using interface composition
+type SearchSortComposite struct {
+    Searcher
+    Sorter
+}
+
+func (ssc SearchSortComposite) SearchInSorted(data []int, target int) (int, bool) {
+    // First ensure data is sorted
+    sorted := ssc.Sort(data)
+    // Then search in sorted data
+    return ssc.Search(sorted, target)
+}
+
+// ✅ Factory pattern for algorithm selection
+type AlgorithmFactory struct {
+    algorithms map[string]interface{}
+}
+
+func NewAlgorithmFactory() *AlgorithmFactory {
+    return &AlgorithmFactory{
+        algorithms: map[string]interface{}{
+            "binary_search": BinarySearcher{},
+            "quick_sort":    QuickSorter{},
+            "search_sort":   SearchSortComposite{
+                Searcher: BinarySearcher{},
+                Sorter:   QuickSorter{},
+            },
+        },
+    }
+}
+
+func (af *AlgorithmFactory) GetSearcher(name string) (Searcher, bool) {
+    if alg, exists := af.algorithms[name]; exists {
+        if searcher, ok := alg.(Searcher); ok {
+            return searcher, true
+        }
+    }
+    return nil, false
+}
+```
+
+*Strategy Pattern for Algorithm Selection*
+```go
+// ✅ Strategy pattern for runtime algorithm selection
+type SortStrategy interface {
+    Sort(data []int) []int
+    OptimalFor(size int, sortedness float64) bool
+}
+
+type QuickSortStrategy struct{}
+func (qs QuickSortStrategy) Sort(data []int) []int { /* implementation */ return data }
+func (qs QuickSortStrategy) OptimalFor(size int, sortedness float64) bool {
+    return size > 10 && sortedness < 0.8 // Good for large, unsorted data
+}
+
+type InsertionSortStrategy struct{}
+func (is InsertionSortStrategy) Sort(data []int) []int { /* implementation */ return data }
+func (is InsertionSortStrategy) OptimalFor(size int, sortedness float64) bool {
+    return size <= 10 || sortedness > 0.9 // Good for small or nearly sorted data
+}
+
+type MergeSortStrategy struct{}
+func (ms MergeSortStrategy) Sort(data []int) []int { /* implementation */ return data }
+func (ms MergeSortStrategy) OptimalFor(size int, sortedness float64) bool {
+    return size > 1000 // Good for large datasets requiring stability
+}
+
+// ✅ Adaptive algorithm selector
+type AdaptiveSorter struct {
+    strategies []SortStrategy
+}
+
+func NewAdaptiveSorter() *AdaptiveSorter {
+    return &AdaptiveSorter{
+        strategies: []SortStrategy{
+            InsertionSortStrategy{},
+            QuickSortStrategy{},
+            MergeSortStrategy{},
+        },
+    }
+}
+
+func (as *AdaptiveSorter) Sort(data []int) []int {
+    size := len(data)
+    sortedness := calculateSortedness(data) // Measure how sorted data already is
+    
+    // Select optimal strategy based on data characteristics
+    for _, strategy := range as.strategies {
+        if strategy.OptimalFor(size, sortedness) {
+            return strategy.Sort(data)
+        }
+    }
+    
+    // Fallback to default strategy
+    return as.strategies[0].Sort(data)
+}
+
+func calculateSortedness(data []int) float64 {
+    if len(data) <= 1 {
+        return 1.0
+    }
+    
+    ordered := 0
+    for i := 1; i < len(data); i++ {
+        if data[i] >= data[i-1] {
+            ordered++
+        }
+    }
+    
+    return float64(ordered) / float64(len(data)-1)
+}
+```
+
+*Decorator Pattern for Algorithm Enhancement*
+```go
+// ✅ Decorator pattern for adding functionality to algorithms
+type AlgorithmDecorator interface {
+    Searcher
+    GetMetrics() Metrics
+}
+
+type Metrics struct {
+    Comparisons int
+    Duration    time.Duration
+    MemoryUsed  int64
+}
+
+type MetricsDecorator struct {
+    searcher Searcher
+    metrics  Metrics
+}
+
+func NewMetricsDecorator(searcher Searcher) *MetricsDecorator {
+    return &MetricsDecorator{searcher: searcher}
+}
+
+func (md *MetricsDecorator) Search(data []int, target int) (int, bool) {
+    start := time.Now()
+    
+    // Wrap the underlying searcher to count operations
+    instrumentedSearcher := &instrumentedSearcher{
+        Searcher: md.searcher,
+        metrics:  &md.metrics,
+    }
+    
+    index, found := instrumentedSearcher.Search(data, target)
+    
+    md.metrics.Duration = time.Since(start)
+    return index, found
+}
+
+func (md *MetricsDecorator) GetMetrics() Metrics {
+    return md.metrics
+}
+
+type instrumentedSearcher struct {
+    Searcher
+    metrics *Metrics
+}
+
+// ✅ Caching decorator for expensive algorithms
+type CachingDecorator struct {
+    searcher Searcher
+    cache    map[string]cacheEntry
+    mutex    sync.RWMutex
+}
+
+type cacheEntry struct {
+    index int
+    found bool
+    hash  uint64
+}
+
+func NewCachingDecorator(searcher Searcher) *CachingDecorator {
+    return &CachingDecorator{
+        searcher: searcher,
+        cache:    make(map[string]cacheEntry),
+    }
+}
+
+func (cd *CachingDecorator) Search(data []int, target int) (int, bool) {
+    key := fmt.Sprintf("%d:%v", target, hashSlice(data))
+    
+    // Check cache first
+    cd.mutex.RLock()
+    if entry, exists := cd.cache[key]; exists {
+        cd.mutex.RUnlock()
+        return entry.index, entry.found
+    }
+    cd.mutex.RUnlock()
+    
+    // Cache miss - perform search
+    index, found := cd.searcher.Search(data, target)
+    
+    // Update cache
+    cd.mutex.Lock()
+    cd.cache[key] = cacheEntry{index: index, found: found}
+    cd.mutex.Unlock()
+    
+    return index, found
+}
+
+func hashSlice(data []int) uint64 {
+    h := fnv.New64a()
+    for _, v := range data {
+        binary.Write(h, binary.LittleEndian, int64(v))
+    }
+    return h.Sum64()
+}
+```
+
+### Advanced Go Testing & Benchmarking Practices
+
+**Property-Based Testing for Algorithms**
+
+*Generative Testing with Randomized Inputs*
+```go
+// ✅ Property-based testing for algorithm correctness
+func TestSortingProperties(t *testing.T) {
+    // Property 1: Sorted output should have same length as input
+    t.Run("length_preservation", func(t *testing.T) {
+        for i := 0; i < 1000; i++ {
+            input := generateRandomSlice(rand.Intn(100) + 1)
+            sorted := quickSort(input)
+            
+            if len(sorted) != len(input) {
+                t.Errorf("Length mismatch: input=%d, sorted=%d", len(input), len(sorted))
+            }
+        }
+    })
+    
+    // Property 2: Output should be sorted
+    t.Run("sortedness", func(t *testing.T) {
+        for i := 0; i < 1000; i++ {
+            input := generateRandomSlice(rand.Intn(100) + 1)
+            sorted := quickSort(input)
+            
+            if !isSorted(sorted) {
+                t.Errorf("Output not sorted: %v", sorted)
+            }
+        }
+    })
+    
+    // Property 3: All elements should be preserved (multiset equality)
+    t.Run("element_preservation", func(t *testing.T) {
+        for i := 0; i < 1000; i++ {
+            input := generateRandomSlice(rand.Intn(100) + 1)
+            sorted := quickSort(input)
+            
+            if !sameElements(input, sorted) {
+                t.Errorf("Elements not preserved:\ninput:  %v\nsorted: %v", input, sorted)
+            }
+        }
+    })
+}
+
+func generateRandomSlice(size int) []int {
+    slice := make([]int, size)
+    for i := range slice {
+        slice[i] = rand.Intn(1000) - 500 // Range: -500 to 499
+    }
+    return slice
+}
+
+func isSorted(data []int) bool {
+    for i := 1; i < len(data); i++ {
+        if data[i] < data[i-1] {
+            return false
+        }
+    }
+    return true
+}
+
+func sameElements(a, b []int) bool {
+    if len(a) != len(b) {
+        return false
+    }
+    
+    countA := make(map[int]int)
+    countB := make(map[int]int)
+    
+    for _, v := range a {
+        countA[v]++
+    }
+    for _, v := range b {
+        countB[v]++
+    }
+    
+    return reflect.DeepEqual(countA, countB)
+}
+```
+
+*Fuzz Testing for Edge Case Discovery*
+```go
+// ✅ Fuzz testing to discover edge cases automatically
+func FuzzBinarySearch(f *testing.F) {
+    // Seed with known interesting cases
+    f.Add([]byte{1, 2, 3, 4, 5}, 3)
+    f.Add([]byte{}, 1)
+    f.Add([]byte{1}, 1)
+    f.Add([]byte{1, 1, 1}, 1)
+    
+    f.Fuzz(func(t *testing.T, data []byte, target byte) {
+        // Convert bytes to sorted int slice
+        if len(data) == 0 {
+            return // Skip empty inputs
+        }
+        
+        nums := make([]int, len(data))
+        for i, b := range data {
+            nums[i] = int(b)
+        }
+        sort.Ints(nums) // Ensure sorted for binary search
+        
+        index, found := binarySearch(nums, int(target))
+        
+        // Verify properties
+        if found {
+            if index < 0 || index >= len(nums) {
+                t.Errorf("Invalid index returned: %d for slice length %d", index, len(nums))
+            }
+            if nums[index] != int(target) {
+                t.Errorf("Wrong element at index %d: got %d, want %d", index, nums[index], int(target))
+            }
+        } else {
+            // Verify target is not in slice
+            for i, v := range nums {
+                if v == int(target) {
+                    t.Errorf("Target %d found at index %d but search returned not found", target, i)
+                }
+            }
+        }
+    })
+}
+
+// ✅ Fuzz testing for string algorithms
+func FuzzStringSearch(f *testing.F) {
+    f.Add("hello", "ell")
+    f.Add("", "")
+    f.Add("a", "a")
+    f.Add("abcdefg", "xyz")
+    
+    f.Fuzz(func(t *testing.T, text, pattern string) {
+        indices := findAllOccurrences(text, pattern)
+        
+        // Verify each returned index
+        for _, idx := range indices {
+            if idx < 0 || idx+len(pattern) > len(text) {
+                t.Errorf("Invalid index %d for text length %d, pattern length %d", 
+                    idx, len(text), len(pattern))
+            }
+            
+            if len(pattern) > 0 && text[idx:idx+len(pattern)] != pattern {
+                t.Errorf("Mismatch at index %d: got %q, want %q", 
+                    idx, text[idx:idx+len(pattern)], pattern)
+            }
+        }
+        
+        // Verify no missed occurrences
+        for i := 0; i <= len(text)-len(pattern); i++ {
+            if len(pattern) > 0 && text[i:i+len(pattern)] == pattern {
+                found := false
+                for _, idx := range indices {
+                    if idx == i {
+                        found = true
+                        break
+                    }
+                }
+                if !found {
+                    t.Errorf("Missed occurrence at index %d", i)
+                }
+            }
+        }
+    })
+}
+```
+
+**Advanced Benchmarking Techniques**
+
+*Comparative Benchmarking with Multiple Algorithms*
+```go
+// ✅ Benchmarking suite comparing different sorting algorithms
+var sortingSizes = []int{10, 100, 1000, 10000}
+
+func BenchmarkSortingAlgorithms(b *testing.B) {
+    algorithms := map[string]func([]int) []int{
+        "QuickSort":     quickSort,
+        "MergeSort":     mergeSort,
+        "HeapSort":      heapSort,
+        "InsertionSort": insertionSort,
+    }
+    
+    for algName, sortFunc := range algorithms {
+        for _, size := range sortingSizes {
+            b.Run(fmt.Sprintf("%s/size_%d", algName, size), func(b *testing.B) {
+                data := generateRandomData(size)
+                
+                b.ResetTimer()
+                b.ReportAllocs() // Track memory allocations
+                
+                for i := 0; i < b.N; i++ {
+                    input := make([]int, len(data))
+                    copy(input, data) // Fresh copy for each iteration
+                    
+                    _ = sortFunc(input)
+                }
+            })
+        }
+    }
+}
+
+// ✅ Memory allocation benchmarking
+func BenchmarkMemoryUsage(b *testing.B) {
+    sizes := []int{100, 1000, 10000}
+    
+    for _, size := range sizes {
+        b.Run(fmt.Sprintf("SliceAllocation_%d", size), func(b *testing.B) {
+            b.ReportAllocs()
+            
+            for i := 0; i < b.N; i++ {
+                // Test different allocation patterns
+                slice := make([]int, size)
+                _ = slice
+            }
+        })
+        
+        b.Run(fmt.Sprintf("SliceWithCapacity_%d", size), func(b *testing.B) {
+            b.ReportAllocs()
+            
+            for i := 0; i < b.N; i++ {
+                slice := make([]int, 0, size) // Pre-allocate capacity
+                for j := 0; j < size; j++ {
+                    slice = append(slice, j)
+                }
+            }
+        })
+    }
+}
+
+// ✅ CPU profiling integration
+func BenchmarkWithProfiling(b *testing.B) {
+    if testing.Short() {
+        b.Skip("Skipping profiling benchmark in short mode")
+    }
+    
+    // Enable CPU profiling
+    f, err := os.Create("cpu.prof")
+    if err != nil {
+        b.Fatal(err)
+    }
+    defer f.Close()
+    
+    if err := pprof.StartCPUProfile(f); err != nil {
+        b.Fatal(err)
+    }
+    defer pprof.StopCPUProfile()
+    
+    data := generateLargeDataset(100000)
+    
+    b.ResetTimer()
+    for i := 0; i < b.N; i++ {
+        _ = complexAlgorithm(data)
+    }
+}
+```
+
+*Benchmarking Best Practices*
+```go
+// ✅ Parameterized benchmarks with sub-benchmarks
+func BenchmarkSearchAlgorithms(b *testing.B) {
+    testCases := []struct {
+        name     string
+        dataSize int
+        sorted   bool
+    }{
+        {"Small_Sorted", 100, true},
+        {"Small_Random", 100, false},
+        {"Medium_Sorted", 10000, true},
+        {"Medium_Random", 10000, false},
+        {"Large_Sorted", 1000000, true},
+        {"Large_Random", 1000000, false},
+    }
+    
+    algorithms := map[string]func([]int, int) (int, bool){
+        "Linear":   linearSearch,
+        "Binary":   binarySearch,
+        "Exponential": exponentialSearch,
+    }
+    
+    for _, tc := range testCases {
+        data := generateDataset(tc.dataSize, tc.sorted)
+        target := data[len(data)/2] // Search for middle element
+        
+        for algName, searchFunc := range algorithms {
+            // Skip binary search on unsorted data
+            if algName == "Binary" && !tc.sorted {
+                continue
+            }
+            
+            b.Run(fmt.Sprintf("%s/%s", algName, tc.name), func(b *testing.B) {
+                b.ReportAllocs()
+                
+                for i := 0; i < b.N; i++ {
+                    _, _ = searchFunc(data, target)
+                }
+                
+                // Report custom metrics
+                b.ReportMetric(float64(tc.dataSize), "elements")
+                if tc.sorted {
+                    b.ReportMetric(1, "sorted")
+                } else {
+                    b.ReportMetric(0, "sorted")
+                }
+            })
+        }
+    }
+}
+
+// ✅ Benchmark with setup and teardown
+func BenchmarkDataStructureOperations(b *testing.B) {
+    b.Run("HashMap", func(b *testing.B) {
+        // Setup phase (not measured)
+        m := make(map[int]int)
+        keys := generateRandomKeys(1000)
+        
+        b.ResetTimer() // Start measuring from here
+        
+        for i := 0; i < b.N; i++ {
+            key := keys[i%len(keys)]
+            m[key] = i
+            _ = m[key]
+            delete(m, key)
+        }
+    })
+    
+    b.Run("SyncMap", func(b *testing.B) {
+        var m sync.Map
+        keys := generateRandomKeys(1000)
+        
+        b.ResetTimer()
+        
+        for i := 0; i < b.N; i++ {
+            key := keys[i%len(keys)]
+            m.Store(key, i)
+            _, _ = m.Load(key)
+            m.Delete(key)
+        }
+    })
+}
+
+// ✅ Benchmark result analysis helpers
+func analyzePerformance(results []testing.BenchmarkResult) {
+    for _, result := range results {
+        fmt.Printf("Benchmark: %s\n", result.Name)
+        fmt.Printf("  Iterations: %d\n", result.N)
+        fmt.Printf("  Time/op: %v\n", result.T/time.Duration(result.N))
+        fmt.Printf("  Allocs/op: %d\n", result.AllocsPerOp())
+        fmt.Printf("  Bytes/op: %d\n", result.AllocedBytesPerOp())
+        
+        // Calculate throughput
+        if result.Extra != nil {
+            if elements, ok := result.Extra["elements"]; ok {
+                elementsPerSec := elements * float64(result.N) / result.T.Seconds()
+                fmt.Printf("  Elements/sec: %.0f\n", elementsPerSec)
+            }
+        }
+        fmt.Println()
+    }
+}
+```
+
+**Test Data Generation and Management**
+
+*Deterministic Test Data with Reproducible Seeds*
+```go
+// ✅ Reproducible test data generation
+type TestDataGenerator struct {
+    rng *rand.Rand
+}
+
+func NewTestDataGenerator(seed int64) *TestDataGenerator {
+    return &TestDataGenerator{
+        rng: rand.New(rand.NewSource(seed)),
+    }
+}
+
+func (g *TestDataGenerator) GenerateIntSlice(size, min, max int) []int {
+    slice := make([]int, size)
+    for i := range slice {
+        slice[i] = g.rng.Intn(max-min+1) + min
+    }
+    return slice
+}
+
+func (g *TestDataGenerator) GenerateSortedSlice(size int) []int {
+    slice := g.GenerateIntSlice(size, 0, size*2)
+    sort.Ints(slice)
+    return slice
+}
+
+func (g *TestDataGenerator) GenerateNearlySortedSlice(size int, swapCount int) []int {
+    slice := g.GenerateSortedSlice(size)
+    
+    // Introduce some disorder
+    for i := 0; i < swapCount && i < size/2; i++ {
+        idx1 := g.rng.Intn(size)
+        idx2 := g.rng.Intn(size)
+        slice[idx1], slice[idx2] = slice[idx2], slice[idx1]
+    }
+    
+    return slice
+}
+
+func (g *TestDataGenerator) GenerateTreeData(nodeCount int) []TreeNode {
+    nodes := make([]TreeNode, nodeCount)
+    for i := range nodes {
+        nodes[i] = TreeNode{
+            Val:   g.rng.Intn(1000),
+            Left:  nil,
+            Right: nil,
+        }
+    }
+    
+    // Build random tree structure
+    for i := 1; i < nodeCount; i++ {
+        parentIdx := g.rng.Intn(i)
+        if g.rng.Float32() < 0.5 && nodes[parentIdx].Left == nil {
+            nodes[parentIdx].Left = &nodes[i]
+        } else if nodes[parentIdx].Right == nil {
+            nodes[parentIdx].Right = &nodes[i]
+        }
+    }
+    
+    return nodes
+}
+
+// ✅ Test case factories for common patterns
+func TestCaseFactory() []TestCase {
+    return []TestCase{
+        {Name: "Empty", Input: []int{}, Expected: []int{}},
+        {Name: "Single", Input: []int{42}, Expected: []int{42}},
+        {Name: "Sorted", Input: []int{1, 2, 3, 4, 5}, Expected: []int{1, 2, 3, 4, 5}},
+        {Name: "Reverse", Input: []int{5, 4, 3, 2, 1}, Expected: []int{1, 2, 3, 4, 5}},
+        {Name: "Duplicates", Input: []int{3, 1, 2, 3, 1}, Expected: []int{1, 1, 2, 3, 3}},
+        {Name: "AllSame", Input: []int{7, 7, 7, 7}, Expected: []int{7, 7, 7, 7}},
+        {Name: "LargeRange", Input: []int{1000000, 1, 500000}, Expected: []int{1, 500000, 1000000}},
+    }
+}
+
+type TestCase struct {
+    Name     string
+    Input    []int
+    Expected []int
+}
+
+// ✅ Performance regression testing
+func TestPerformanceRegression(t *testing.T) {
+    if testing.Short() {
+        t.Skip("Skipping performance regression test in short mode")
+    }
+    
+    baseline := loadBaselineMetrics("sorting_baseline.json")
+    current := measureCurrentPerformance()
+    
+    for algorithm, metrics := range current {
+        if base, exists := baseline[algorithm]; exists {
+            if metrics.TimePerOp > base.TimePerOp*1.2 { // 20% regression threshold
+                t.Errorf("Performance regression in %s: %.2fms > %.2fms (baseline)", 
+                    algorithm, metrics.TimePerOp.Seconds()*1000, base.TimePerOp.Seconds()*1000)
+            }
+            
+            if metrics.AllocsPerOp > base.AllocsPerOp*1.1 { // 10% allocation increase threshold
+                t.Errorf("Memory regression in %s: %d allocs > %d allocs (baseline)", 
+                    algorithm, metrics.AllocsPerOp, base.AllocsPerOp)
+            }
+        }
+    }
+}
+
+type PerformanceMetrics struct {
+    TimePerOp   time.Duration
+    AllocsPerOp int64
+    BytesPerOp  int64
+}
+```
+
+### Advanced Error Handling Patterns
+
+**Contextual Error Handling for Algorithms**
+
+*Rich Error Types with Context*
+```go
+// ✅ Algorithm-specific error types with detailed context
+type AlgorithmError struct {
+    Op       string        // Operation that failed
+    Input    interface{}   // Input that caused the error
+    Reason   string        // Human-readable reason
+    Code     ErrorCode     // Machine-readable error code
+    Metadata map[string]interface{} // Additional context
+}
+
+type ErrorCode int
+
+const (
+    ErrInvalidInput ErrorCode = iota
+    ErrOutOfBounds
+    ErrNilPointer
+    ErrOverflow
+    ErrTimeout
+    ErrResourceExhausted
+)
+
+func (ae *AlgorithmError) Error() string {
+    return fmt.Sprintf("algorithm error in %s: %s (code: %d)", ae.Op, ae.Reason, ae.Code)
+}
+
+func (ae *AlgorithmError) Unwrap() error {
+    if nested, ok := ae.Metadata["cause"]; ok {
+        if err, ok := nested.(error); ok {
+            return err
+        }
+    }
+    return nil
+}
+
+// ✅ Constructor functions for common error scenarios
+func NewValidationError(op string, input interface{}, reason string) *AlgorithmError {
+    return &AlgorithmError{
+        Op:       op,
+        Input:    input,
+        Reason:   reason,
+        Code:     ErrInvalidInput,
+        Metadata: make(map[string]interface{}),
+    }
+}
+
+func NewTimeoutError(op string, duration time.Duration) *AlgorithmError {
+    return &AlgorithmError{
+        Op:     op,
+        Reason: fmt.Sprintf("operation timed out after %v", duration),
+        Code:   ErrTimeout,
+        Metadata: map[string]interface{}{
+            "timeout": duration,
+        },
+    }
+}
+
+// Usage in algorithm implementations
+func binarySearchWithErrors(data []int, target int) (int, error) {
+    if data == nil {
+        return -1, NewValidationError("binarySearch", data, "input slice is nil")
+    }
+    
+    if len(data) == 0 {
+        return -1, NewValidationError("binarySearch", data, "input slice is empty")
+    }
+    
+    // Verify slice is sorted
+    for i := 1; i < len(data); i++ {
+        if data[i] < data[i-1] {
+            err := NewValidationError("binarySearch", data, "input slice is not sorted")
+            err.Metadata["unsorted_index"] = i
+            return -1, err
+        }
+    }
+    
+    left, right := 0, len(data)-1
+    iterations := 0
+    maxIterations := bits.Len(uint(len(data))) + 1 // log2(n) + 1
+    
+    for left <= right {
+        if iterations > maxIterations {
+            return -1, NewTimeoutError("binarySearch", time.Duration(iterations)*time.Microsecond)
+        }
+        
+        mid := left + (right-left)/2
+        
+        if data[mid] == target {
+            return mid, nil
+        } else if data[mid] < target {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+        
+        iterations++
+    }
+    
+    return -1, nil // Not found, but no error
+}
+```
+
+*Result Type Pattern for Error Handling*
+```go
+// ✅ Result type to avoid error allocations in hot paths
+type Result[T any] struct {
+    value T
+    err   error
+    valid bool
+}
+
+func Ok[T any](value T) Result[T] {
+    return Result[T]{value: value, valid: true}
+}
+
+func Err[T any](err error) Result[T] {
+    return Result[T]{err: err, valid: false}
+}
+
+func (r Result[T]) IsOk() bool {
+    return r.valid && r.err == nil
+}
+
+func (r Result[T]) IsErr() bool {
+    return !r.valid || r.err != nil
+}
+
+func (r Result[T]) Unwrap() (T, error) {
+    return r.value, r.err
+}
+
+func (r Result[T]) UnwrapOr(defaultValue T) T {
+    if r.IsOk() {
+        return r.value
+    }
+    return defaultValue
+}
+
+func (r Result[T]) Map(fn func(T) T) Result[T] {
+    if r.IsOk() {
+        return Ok(fn(r.value))
+    }
+    return Err[T](r.err)
+}
+
+func (r Result[T]) MapErr(fn func(error) error) Result[T] {
+    if r.IsErr() {
+        return Err[T](fn(r.err))
+    }
+    return r
+}
+
+// Usage in performance-critical algorithms
+func fastSearch(data []int, target int) Result[int] {
+    if len(data) == 0 {
+        return Err[int](errors.New("empty slice"))
+    }
+    
+    for i, v := range data {
+        if v == target {
+            return Ok(i)
+        }
+    }
+    
+    return Ok(-1) // Not found, but not an error
+}
+
+// Chain operations with error propagation
+func processDataPipeline(data []int) Result[[]int] {
+    return Ok(data).
+        Map(func(d []int) []int { return filterPositive(d) }).
+        Map(func(d []int) []int { return deduplicate(d) }).
+        Map(func(d []int) []int { return sortData(d) })
+}
+```
+
+*Panic Recovery and Error Boundaries*
+```go
+// ✅ Safe execution wrapper with panic recovery
+type SafeExecutor struct {
+    timeout time.Duration
+    logger  Logger
+}
+
+func NewSafeExecutor(timeout time.Duration, logger Logger) *SafeExecutor {
+    return &SafeExecutor{timeout: timeout, logger: logger}
+}
+
+func (se *SafeExecutor) Execute(name string, fn func() (interface{}, error)) (result interface{}, err error) {
+    done := make(chan struct{})
+    
+    // Panic recovery
+    defer func() {
+        if r := recover(); r != nil {
+            stack := debug.Stack()
+            se.logger.Error("Panic recovered", 
+                "operation", name,
+                "panic", r,
+                "stack", string(stack))
+            
+            err = fmt.Errorf("panic in %s: %v", name, r)
+        }
+    }()
+    
+    // Timeout protection
+    go func() {
+        defer close(done)
+        result, err = fn()
+    }()
+    
+    select {
+    case <-done:
+        return result, err
+    case <-time.After(se.timeout):
+        return nil, NewTimeoutError(name, se.timeout)
+    }
+}
+
+// Usage with algorithms that might panic
+func safeSortWithRecovery(data []int) ([]int, error) {
+    executor := NewSafeExecutor(5*time.Second, defaultLogger)
+    
+    result, err := executor.Execute("quicksort", func() (interface{}, error) {
+        // This might panic on malformed input
+        return riskyQuickSort(data), nil
+    })
+    
+    if err != nil {
+        return nil, err
+    }
+    
+    if sorted, ok := result.([]int); ok {
+        return sorted, nil
+    }
+    
+    return nil, errors.New("unexpected result type")
+}
+
+// ✅ Error boundary pattern for goroutines
+type ErrorBoundary struct {
+    errors chan error
+    done   chan struct{}
+    wg     sync.WaitGroup
+}
+
+func NewErrorBoundary() *ErrorBoundary {
+    return &ErrorBoundary{
+        errors: make(chan error, 10), // Buffered to prevent blocking
+        done:   make(chan struct{}),
+    }
+}
+
+func (eb *ErrorBoundary) Go(name string, fn func() error) {
+    eb.wg.Add(1)
+    
+    go func() {
+        defer eb.wg.Done()
+        defer func() {
+            if r := recover(); r != nil {
+                eb.errors <- fmt.Errorf("panic in %s: %v", name, r)
+            }
+        }()
+        
+        if err := fn(); err != nil {
+            eb.errors <- fmt.Errorf("error in %s: %w", name, err)
+        }
+    }()
+}
+
+func (eb *ErrorBoundary) Wait() error {
+    // Close done channel when all goroutines finish
+    go func() {
+        eb.wg.Wait()
+        close(eb.done)
+    }()
+    
+    // Collect all errors
+    var errors []error
+    
+    for {
+        select {
+        case err := <-eb.errors:
+            errors = append(errors, err)
+        case <-eb.done:
+            // All goroutines finished, collect remaining errors
+            for {
+                select {
+                case err := <-eb.errors:
+                    errors = append(errors, err)
+                default:
+                    goto finished
+                }
+            }
+        finished:
+            if len(errors) == 0 {
+                return nil
+            }
+            
+            // Combine multiple errors
+            return &MultiError{Errors: errors}
+        }
+    }
+}
+
+type MultiError struct {
+    Errors []error
+}
+
+func (me *MultiError) Error() string {
+    if len(me.Errors) == 1 {
+        return me.Errors[0].Error()
+    }
+    
+    var sb strings.Builder
+    sb.WriteString(fmt.Sprintf("%d errors occurred:", len(me.Errors)))
+    
+    for i, err := range me.Errors {
+        sb.WriteString(fmt.Sprintf("\n  %d: %s", i+1, err.Error()))
+    }
+    
+    return sb.String()
+}
+
+// Usage in parallel algorithm processing
+func processParallelWithErrorBoundary(datasets [][]int) error {
+    boundary := NewErrorBoundary()
+    
+    for i, data := range datasets {
+        dataIndex := i
+        dataset := data
+        
+        boundary.Go(fmt.Sprintf("process_%d", dataIndex), func() error {
+            _, err := complexAlgorithm(dataset)
+            return err
+        })
+    }
+    
+    return boundary.Wait()
+}
+```
+
+### Go Module Organization & Packaging Best Practices
+
+**Project Structure for Algorithm Libraries**
+
+*Modular Package Organization*
+```go
+// ✅ Recommended project structure for algorithm libraries
+/*
+go-algorithms/
+├── go.mod
+├── go.sum
+├── README.md
+├── doc.go                    // Package documentation
+├── algorithms/               // Core algorithm implementations
+│   ├── sorting/
+│   │   ├── quicksort.go
+│   │   ├── mergesort.go
+│   │   ├── heapsort.go
+│   │   └── sort_test.go
+│   ├── searching/
+│   │   ├── binary.go
+│   │   ├── linear.go
+│   │   └── search_test.go
+│   ├── graph/
+│   │   ├── dfs.go
+│   │   ├── bfs.go
+│   │   ├── dijkstra.go
+│   │   └── graph_test.go
+│   └── datastructures/
+│       ├── tree/
+│       │   ├── bst.go
+│       │   ├── avl.go
+│       │   └── tree_test.go
+│       ├── heap/
+│       │   ├── minheap.go
+│       │   ├── maxheap.go
+│       │   └── heap_test.go
+│       └── trie/
+│           ├── trie.go
+│           └── trie_test.go
+├── internal/                 // Internal utilities (not exported)
+│   ├── testutil/            // Test utilities
+│   │   ├── generators.go
+│   │   └── assertions.go
+│   ├── benchmark/           // Benchmarking utilities
+│   │   ├── suite.go
+│   │   └── metrics.go
+│   └── common/              // Shared internal types
+│       ├── errors.go
+│       └── interfaces.go
+├── examples/                // Usage examples
+│   ├── basic/
+│   │   └── main.go
+│   ├── advanced/
+│   │   └── main.go
+│   └── performance/
+│       └── main.go
+├── tools/                   // Development tools
+│   ├── gen/                // Code generation
+│   │   └── main.go
+│   └── bench/              // Benchmarking tools
+│       └── main.go
+└── scripts/                // Build and development scripts
+    ├── build.sh
+    ├── test.sh
+    └── benchmark.sh
+*/
+
+// Package documentation in doc.go
+// Package algorithms provides efficient implementations of common algorithms
+// and data structures optimized for Go.
+//
+// This package focuses on:
+//   - Zero-allocation algorithms where possible
+//   - Memory-efficient data structures
+//   - Concurrent-safe implementations
+//   - Comprehensive benchmarking and testing
+//
+// Example usage:
+//
+//	import "github.com/yourorg/go-algorithms/algorithms/sorting"
+//
+//	data := []int{3, 1, 4, 1, 5, 9, 2, 6}
+//	sorted := sorting.QuickSort(data)
+//	fmt.Println(sorted) // [1 1 2 3 4 5 6 9]
+//
+// For more examples, see the examples/ directory.
+package algorithms
+```
+
+*Package Design Principles*
+```go
+// ✅ Package-level interface design
+package sorting
+
+// Sorter defines the interface for all sorting algorithms
+type Sorter interface {
+    Sort(data []int) []int
+    SortInPlace(data []int)
+    Name() string
+    Complexity() Complexity
+}
+
+// Complexity describes time and space complexity
+type Complexity struct {
+    TimeWorst   string // e.g., "O(n²)"
+    TimeAverage string // e.g., "O(n log n)"
+    TimeBest    string // e.g., "O(n)"
+    Space       string // e.g., "O(log n)"
+    Stable      bool   // Whether the sort is stable
+}
+
+// ✅ Factory function pattern for algorithm selection
+func New(algorithm Algorithm) Sorter {
+    switch algorithm {
+    case QuickSortAlgorithm:
+        return &quickSorter{}
+    case MergeSortAlgorithm:
+        return &mergeSorter{}
+    case HeapSortAlgorithm:
+        return &heapSorter{}
+    default:
+        return &quickSorter{} // Default fallback
+    }
+}
+
+type Algorithm int
+
+const (
+    QuickSortAlgorithm Algorithm = iota
+    MergeSortAlgorithm
+    HeapSortAlgorithm
+)
+
+// ✅ Convenience functions for common use cases
+func QuickSort(data []int) []int {
+    return New(QuickSortAlgorithm).Sort(data)
+}
+
+func MergeSort(data []int) []int {
+    return New(MergeSortAlgorithm).Sort(data)
+}
+
+// ✅ Configuration through functional options
+type Options struct {
+    Threshold  int  // Switch to insertion sort below this size
+    Concurrent bool // Use parallel sorting for large datasets
+    Stable     bool // Require stable sorting
+}
+
+type Option func(*Options)
+
+func WithThreshold(threshold int) Option {
+    return func(o *Options) {
+        o.Threshold = threshold
+    }
+}
+
+func WithConcurrency(enabled bool) Option {
+    return func(o *Options) {
+        o.Concurrent = enabled
+    }
+}
+
+func WithStability(stable bool) Option {
+    return func(o *Options) {
+        o.Stable = stable
+    }
+}
+
+// Adaptive sorting with options
+func Sort(data []int, opts ...Option) []int {
+    options := &Options{
+        Threshold:  10,
+        Concurrent: false,
+        Stable:     false,
+    }
+    
+    for _, opt := range opts {
+        opt(options)
+    }
+    
+    // Select algorithm based on options and data characteristics
+    var sorter Sorter
+    
+    if options.Stable {
+        sorter = New(MergeSortAlgorithm)
+    } else if len(data) > 10000 && options.Concurrent {
+        sorter = &parallelQuickSorter{threshold: options.Threshold}
+    } else {
+        sorter = New(QuickSortAlgorithm)
+    }
+    
+    return sorter.Sort(data)
+}
+```
+
+*Versioning and API Evolution*
+```go
+// ✅ Semantic versioning and API stability
+// go.mod
+module github.com/yourorg/go-algorithms
+
+go 1.21
+
+require (
+    golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc
+    golang.org/x/sync v0.3.0
+)
+
+// Version information
+package algorithms
+
+import "runtime/debug"
+
+var (
+    // Version is set during build time
+    Version = "development"
+    
+    // GitCommit is set during build time
+    GitCommit = "unknown"
+    
+    // BuildTime is set during build time
+    BuildTime = "unknown"
+)
+
+// GetVersion returns version information
+func GetVersion() VersionInfo {
+    var revision string
+    var modified bool
+    
+    if info, ok := debug.ReadBuildInfo(); ok {
+        for _, setting := range info.Settings {
+            switch setting.Key {
+            case "vcs.revision":
+                revision = setting.Value
+            case "vcs.modified":
+                modified = setting.Value == "true"
+            }
+        }
+    }
+    
+    return VersionInfo{
+        Version:   Version,
+        GitCommit: GitCommit,
+        BuildTime: BuildTime,
+        Revision:  revision,
+        Modified:  modified,
+    }
+}
+
+type VersionInfo struct {
+    Version   string `json:"version"`
+    GitCommit string `json:"git_commit"`
+    BuildTime string `json:"build_time"`
+    Revision  string `json:"revision"`
+    Modified  bool   `json:"modified"`
+}
+
+// ✅ Backward compatibility with deprecated APIs
+package sorting
+
+import "fmt"
+
+// Deprecated: Use Sort with options instead
+func QuickSortLegacy(data []int) []int {
+    fmt.Println("Warning: QuickSortLegacy is deprecated, use Sort with options")
+    return Sort(data, WithThreshold(10))
+}
+
+// Migration helper for v1 to v2 API
+func MigrateFromV1(oldConfig V1Config) []Option {
+    var opts []Option
+    
+    if oldConfig.UseParallel {
+        opts = append(opts, WithConcurrency(true))
+    }
+    
+    if oldConfig.InsertionThreshold > 0 {
+        opts = append(opts, WithThreshold(oldConfig.InsertionThreshold))
+    }
+    
+    return opts
+}
+
+type V1Config struct {
+    UseParallel         bool
+    InsertionThreshold  int
+}
+```
+
+**Build and Development Tools**
+
+*Comprehensive Build System*
+```bash
+#!/bin/bash
+# scripts/build.sh - Comprehensive build script
+
+set -euo pipefail
+
+# Configuration
+VERSION=${VERSION:-$(git describe --tags --always --dirty)}
+COMMIT=${COMMIT:-$(git rev-parse HEAD)}
+BUILD_TIME=${BUILD_TIME:-$(date -u +"%Y-%m-%dT%H:%M:%SZ")}
+GOOS=${GOOS:-$(go env GOOS)}
+GOARCH=${GOARCH:-$(go env GOARCH)}
+
+# Build flags
+LDFLAGS="-X github.com/yourorg/go-algorithms.Version=${VERSION}"
+LDFLAGS="${LDFLAGS} -X github.com/yourorg/go-algorithms.GitCommit=${COMMIT}"
+LDFLAGS="${LDFLAGS} -X github.com/yourorg/go-algorithms.BuildTime=${BUILD_TIME}"
+
+echo "Building go-algorithms ${VERSION} for ${GOOS}/${GOARCH}"
+
+# Build main library
+go build -ldflags "${LDFLAGS}" -o bin/algorithms ./...
+
+# Build examples
+for example in examples/*/; do
+    if [[ -f "${example}main.go" ]]; then
+        example_name=$(basename "${example}")
+        echo "Building example: ${example_name}"
+        go build -ldflags "${LDFLAGS}" -o "bin/${example_name}" "${example}"
+    fi
+done
+
+# Build tools
+for tool in tools/*/; do
+    if [[ -f "${tool}main.go" ]]; then
+        tool_name=$(basename "${tool}")
+        echo "Building tool: ${tool_name}"
+        go build -ldflags "${LDFLAGS}" -o "bin/${tool_name}" "${tool}"
+    fi
+done
+
+echo "Build completed successfully"
+```
+
+```bash
+#!/bin/bash
+# scripts/test.sh - Comprehensive testing script
+
+set -euo pipefail
+
+echo "Running comprehensive test suite..."
+
+# Unit tests with race detection
+echo "1. Running unit tests with race detection..."
+go test -race -v ./...
+
+# Benchmarks
+echo "2. Running benchmarks..."
+go test -bench=. -benchmem ./...
+
+# Coverage analysis
+echo "3. Generating coverage report..."
+go test -coverprofile=coverage.out ./...
+go tool cover -html=coverage.out -o coverage.html
+echo "Coverage report generated: coverage.html"
+
+# Fuzz testing (if available)
+if command -v go &> /dev/null && go version | grep -q "go1.1[8-9]\|go1.2"; then
+    echo "4. Running fuzz tests..."
+    find . -name "*_test.go" -exec grep -l "func Fuzz" {} \; | while read -r file; do
+        dir=$(dirname "${file}")
+        echo "Fuzzing in ${dir}..."
+        (cd "${dir}" && timeout 30s go test -fuzz=. || true)
+    done
+fi
+
+# Memory leak detection
+echo "5. Checking for memory leaks..."
+go test -memprofile=mem.prof -bench=. ./...
+
+# Static analysis
+echo "6. Running static analysis..."
+if command -v golangci-lint &> /dev/null; then
+    golangci-lint run
+else
+    echo "golangci-lint not found, running basic vet..."
+    go vet ./...
+fi
+
+echo "Test suite completed successfully"
+```
+
+*Go Module Best Practices*
+```go
+// ✅ go.mod with proper versioning and constraints
+module github.com/yourorg/go-algorithms
+
+go 1.21
+
+require (
+    golang.org/x/exp v0.0.0-20230515195305-f3d0a9c9a5cc
+    golang.org/x/sync v0.3.0
+    golang.org/x/sys v0.8.0
+)
+
+require (
+    // Indirect dependencies managed automatically
+    golang.org/x/text v0.9.0 // indirect
+)
+
+// Replace directives for local development
+// replace github.com/yourorg/go-algorithms => ./
+
+// Exclude problematic versions
+// exclude github.com/problematic/module v1.2.3
+
+// Retract versions with critical bugs
+// retract v1.0.0 // Critical performance regression
+```
+
+```go
+// ✅ Advanced build constraints and tags
+//go:build go1.21
+// +build go1.21
+
+package algorithms
+
+// Features available only in Go 1.21+
+func useNewFeatures() {
+    // Use min/max built-ins, new slices package, etc.
+}
+```
+
+```go
+// ✅ Internal package protection
+// internal/testutil/generators.go
+package testutil
+
+import (
+    "math/rand"
+    "time"
+)
+
+// Generator provides test data generation utilities
+// This package is internal and not exported
+type Generator struct {
+    rng *rand.Rand
+}
+
+func NewGenerator() *Generator {
+    return &Generator{
+        rng: rand.New(rand.NewSource(time.Now().UnixNano())),
+    }
+}
+
+func (g *Generator) IntSlice(size, min, max int) []int {
+    slice := make([]int, size)
+    for i := range slice {
+        slice[i] = g.rng.Intn(max-min+1) + min
+    }
+    return slice
+}
+```
+
+**Documentation and Examples**
+
+*Comprehensive Package Documentation*
+```go
+// Package algorithms provides high-performance implementations of fundamental
+// algorithms and data structures, optimized specifically for Go.
+//
+// # Design Philosophy
+//
+// This package follows Go's principles of simplicity, readability, and performance:
+//
+//   - Zero or minimal allocations in hot paths
+//   - Simple, composable interfaces
+//   - Comprehensive testing and benchmarking
+//   - Clear, self-documenting code
+//
+// # Performance Characteristics
+//
+// All algorithms include detailed complexity analysis and are benchmarked
+// against standard library implementations where applicable.
+//
+// # Concurrency
+//
+// Thread-safe implementations are explicitly marked. Most algorithms are
+// designed to be used with Go's concurrency primitives rather than internal
+// synchronization.
+//
+// # Examples
+//
+// Basic sorting:
+//
+//	data := []int{3, 1, 4, 1, 5, 9, 2, 6}
+//	sorted := sorting.QuickSort(data)
+//	fmt.Println(sorted) // [1 1 2 3 4 5 6 9]
+//
+// Advanced sorting with options:
+//
+//	sorted := sorting.Sort(data,
+//		sorting.WithConcurrency(true),
+//		sorting.WithThreshold(50),
+//	)
+//
+// Custom data types:
+//
+//	type Person struct {
+//		Name string
+//		Age  int
+//	}
+//
+//	people := []Person{{Name: "Alice", Age: 30}, {Name: "Bob", Age: 25}}
+//	sorting.SortFunc(people, func(a, b Person) int {
+//		return a.Age - b.Age
+//	})
+//
+// # Subpackages
+//
+//   - algorithms/sorting: Sorting algorithms (quicksort, mergesort, heapsort, etc.)
+//   - algorithms/searching: Search algorithms (binary search, interpolation search, etc.)
+//   - algorithms/graph: Graph algorithms (DFS, BFS, Dijkstra, etc.)
+//   - algorithms/datastructures: Data structures (trees, heaps, tries, etc.)
+//
+// For detailed examples, see the examples/ directory in the repository.
+package algorithms
+
+// Example functions for documentation
+func ExampleQuickSort() {
+    data := []int{3, 1, 4, 1, 5, 9, 2, 6}
+    sorted := QuickSort(data)
+    fmt.Println(sorted)
+    // Output: [1 1 2 3 4 5 6 9]
+}
+
+func ExampleSort_withOptions() {
+    data := make([]int, 10000)
+    for i := range data {
+        data[i] = rand.Intn(1000)
+    }
+    
+    // Use parallel sorting for large datasets
+    sorted := Sort(data,
+        WithConcurrency(true),
+        WithThreshold(50),
+    )
+    
+    fmt.Printf("Sorted %d elements\n", len(sorted))
+    // Output: Sorted 10000 elements
+}
+```
+
+<function_calls>
+<invoke name="TodoWrite">
+<parameter name="todos">[{"content": "Analyze current best practices section structure", "status": "completed", "priority": "high", "id": "1"}, {"content": "Add advanced Go concurrency best practices", "status": "completed", "priority": "high", "id": "2"}, {"content": "Add Go interface design and composition patterns", "status": "completed", "priority": "high", "id": "3"}, {"content": "Add Go testing and benchmarking advanced practices", "status": "completed", "priority": "medium", "id": "4"}, {"content": "Add Go error handling advanced patterns", "status": "completed", "priority": "medium", "id": "5"}, {"content": "Add Go packaging and module organization best practices", "status": "completed", "priority": "medium", "id": "6"}]
 
 ### Sliding Window Template
 ```go
