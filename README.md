@@ -4027,7 +4027,568 @@ func parallelQuickSort(nums []int, workers int) {
 }
 ```
 
-### Anti-patterns to Avoid
+### Anti-patterns to Avoid & Bad Practices
+
+**Critical Performance Anti-patterns**
+
+*Memory Allocation Disasters*
+```go
+// ❌ NEVER: Allocation in tight loops
+func badBubbleSort(nums []int) {
+    n := len(nums)
+    for i := 0; i < n; i++ {
+        for j := 0; j < n-i-1; j++ {
+            temp := make([]int, 1)  // 🚫 Allocates every iteration!
+            if nums[j] > nums[j+1] {
+                temp[0] = nums[j]
+                nums[j] = nums[j+1]
+                nums[j+1] = temp[0]
+            }
+        }
+    }
+    // Memory usage: O(n²) allocations instead of O(1)
+}
+
+// ✅ CORRECT: No allocations in loop
+func goodBubbleSort(nums []int) {
+    n := len(nums)
+    for i := 0; i < n; i++ {
+        for j := 0; j < n-i-1; j++ {
+            if nums[j] > nums[j+1] {
+                nums[j], nums[j+1] = nums[j+1], nums[j]  // Simple swap
+            }
+        }
+    }
+}
+
+// ❌ NEVER: Growing slices without capacity hints
+func badDynamicArray() []int {
+    var result []int
+    for i := 0; i < 100000; i++ {
+        result = append(result, i)  // 🚫 Exponential reallocations!
+        // Allocates: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024...
+        // Total allocations: ~17 times, copying 199,999 elements
+    }
+    return result
+}
+
+// ✅ CORRECT: Pre-allocate with known size
+func goodDynamicArray() []int {
+    result := make([]int, 0, 100000)  // One allocation
+    for i := 0; i < 100000; i++ {
+        result = append(result, i)
+    }
+    return result
+}
+
+// ❌ NEVER: Creating unnecessary intermediate data structures
+func badFilterAndMap(nums []int) []int {
+    // Step 1: Filter evens (creates intermediate slice)
+    var evens []int
+    for _, num := range nums {
+        if num%2 == 0 {
+            evens = append(evens, num)  // 🚫 First allocation
+        }
+    }
+    
+    // Step 2: Square them (creates another intermediate slice)
+    var squared []int
+    for _, num := range evens {
+        squared = append(squared, num*num)  // 🚫 Second allocation
+    }
+    
+    // Step 3: Filter > 100 (creates final slice)
+    var result []int
+    for _, num := range squared {
+        if num > 100 {
+            result = append(result, num)  // 🚫 Third allocation
+        }
+    }
+    
+    return result  // 3 allocations + 3 passes through data
+}
+
+// ✅ CORRECT: Single-pass processing
+func goodFilterAndMap(nums []int) []int {
+    result := make([]int, 0, len(nums)/4)  // Estimate capacity
+    for _, num := range nums {
+        if num%2 == 0 {  // Filter evens
+            squared := num * num  // Square
+            if squared > 100 {    // Filter > 100
+                result = append(result, squared)
+            }
+        }
+    }
+    return result  // 1 allocation + 1 pass through data
+}
+```
+
+*String Manipulation Disasters*
+```go
+// ❌ NEVER: String concatenation in loops (O(n²) complexity)
+func badStringBuilder(words []string) string {
+    var result string
+    for _, word := range words {
+        result += word + " "  // 🚫 Creates new string every iteration!
+        // Each concatenation copies ALL previous characters
+    }
+    return result
+}
+// For 1000 words: ~500,000 character copies!
+
+// ✅ CORRECT: Use strings.Builder
+func goodStringBuilder(words []string) string {
+    var builder strings.Builder
+    totalLen := 0
+    for _, word := range words {
+        totalLen += len(word) + 1  // +1 for space
+    }
+    builder.Grow(totalLen)  // Pre-allocate exact size
+    
+    for _, word := range words {
+        builder.WriteString(word)
+        builder.WriteByte(' ')
+    }
+    return builder.String()
+}
+
+// ❌ NEVER: Inefficient string searching
+func badStringSearch(text, pattern string) []int {
+    var matches []int
+    for i := 0; i <= len(text)-len(pattern); i++ {
+        if text[i:i+len(pattern)] == pattern {  // 🚫 Creates substring every check!
+            matches = append(matches, i)
+        }
+    }
+    return matches
+}
+
+// ✅ CORRECT: Byte-level comparison
+func goodStringSearch(text, pattern string) []int {
+    var matches []int
+    for i := 0; i <= len(text)-len(pattern); i++ {
+        match := true
+        for j := 0; j < len(pattern); j++ {
+            if text[i+j] != pattern[j] {
+                match = false
+                break
+            }
+        }
+        if match {
+            matches = append(matches, i)
+        }
+    }
+    return matches
+}
+
+// ❌ NEVER: Repeated string-to-bytes conversion
+func badStringProcessing(s string) int {
+    count := 0
+    for i := 0; i < len(s); i++ {
+        bytes := []byte(s)  // 🚫 Allocates entire string as bytes every iteration!
+        if bytes[i] >= 'a' && bytes[i] <= 'z' {
+            count++
+        }
+    }
+    return count
+}
+
+// ✅ CORRECT: Direct byte access from string
+func goodStringProcessing(s string) int {
+    count := 0
+    for i := 0; i < len(s); i++ {
+        if s[i] >= 'a' && s[i] <= 'z' {  // Direct byte access
+            count++
+        }
+    }
+    return count
+}
+```
+
+*Interface and Type Assertion Anti-patterns*
+```go
+// ❌ NEVER: Excessive interface{} usage with type assertions
+func badGenericProcessing(items []interface{}) int {
+    sum := 0
+    for _, item := range items {
+        // 🚫 Type assertion overhead on every iteration
+        if val, ok := item.(int); ok {
+            sum += val
+        } else if val, ok := item.(float64); ok {
+            sum += int(val)
+        } else if val, ok := item.(string); ok {
+            if num, err := strconv.Atoi(val); err == nil {
+                sum += num
+            }
+        }
+    }
+    return sum
+}
+
+// ✅ CORRECT: Use generics or separate typed functions
+func goodGenericProcessing[T int | float64](items []T) T {
+    var sum T
+    for _, item := range items {
+        sum += item  // No type assertions needed
+    }
+    return sum
+}
+
+// ❌ NEVER: Interface{} for simple operations
+func badInterfaceUsage() {
+    var items []interface{}
+    items = append(items, 1, 2, 3, 4, 5)  // 🚫 Boxing overhead
+    
+    total := 0
+    for _, item := range items {
+        total += item.(int)  // 🚫 Unboxing overhead
+    }
+}
+
+// ✅ CORRECT: Use concrete types
+func goodInterfaceUsage() {
+    items := []int{1, 2, 3, 4, 5}  // Direct storage
+    
+    total := 0
+    for _, item := range items {
+        total += item  // Direct access
+    }
+}
+```
+
+*Map Usage Anti-patterns*
+```go
+// ❌ NEVER: Using maps for small, known key sets
+func badSmallKeysetMap(char byte) int {
+    // 🚫 Map overhead for just 26 possible keys
+    charValues := map[byte]int{
+        'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7,
+        'h': 8, 'i': 9, 'j': 10, 'k': 11, 'l': 12, 'm': 13, 'n': 14,
+        'o': 15, 'p': 16, 'q': 17, 'r': 18, 's': 19, 't': 20,
+        'u': 21, 'v': 22, 'w': 23, 'x': 24, 'y': 25, 'z': 26,
+    }
+    return charValues[char]
+}
+
+// ✅ CORRECT: Use array for known small range
+func goodSmallKeysetArray(char byte) int {
+    // Array lookup: O(1) with less overhead
+    charValues := [26]int{
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+        14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
+    }
+    return charValues[char-'a']
+}
+
+// ❌ NEVER: Not pre-sizing maps when size is known
+func badMapPreallocation(items []string) map[string]int {
+    result := make(map[string]int)  // 🚫 Will grow multiple times
+    for i, item := range items {
+        result[item] = i
+    }
+    return result
+}
+
+// ✅ CORRECT: Pre-allocate map with known size
+func goodMapPreallocation(items []string) map[string]int {
+    result := make(map[string]int, len(items))  // Pre-sized
+    for i, item := range items {
+        result[item] = i
+    }
+    return result
+}
+
+// ❌ NEVER: Using maps when order matters
+func badOrderedProcessing() []string {
+    counts := make(map[string]int)
+    counts["apple"] = 3
+    counts["banana"] = 1
+    counts["cherry"] = 2
+    
+    // 🚫 Map iteration order is random!
+    var result []string
+    for fruit, count := range counts {
+        for i := 0; i < count; i++ {
+            result = append(result, fruit)
+        }
+    }
+    return result  // Random order every time!
+}
+
+// ✅ CORRECT: Use slice for ordered data
+func goodOrderedProcessing() []string {
+    type fruitCount struct {
+        name  string
+        count int
+    }
+    
+    fruits := []fruitCount{
+        {"apple", 3},
+        {"banana", 1}, 
+        {"cherry", 2},
+    }
+    
+    var result []string
+    for _, fruit := range fruits {
+        for i := 0; i < fruit.count; i++ {
+            result = append(result, fruit.name)
+        }
+    }
+    return result  // Consistent order
+}
+```
+
+*Algorithm Choice Anti-patterns*
+```go
+// ❌ NEVER: Wrong algorithm complexity for the problem size
+func badSortChoice(nums []int) {
+    // 🚫 Bubble sort: O(n²) - terrible for large inputs
+    n := len(nums)
+    for i := 0; i < n; i++ {
+        for j := 0; j < n-i-1; j++ {
+            if nums[j] > nums[j+1] {
+                nums[j], nums[j+1] = nums[j+1], nums[j]
+            }
+        }
+    }
+}
+
+// ✅ CORRECT: Use efficient sorting
+func goodSortChoice(nums []int) {
+    sort.Ints(nums)  // Introsort: O(n log n) average case
+}
+
+// ❌ NEVER: Linear search in sorted data
+func badSearchChoice(sortedNums []int, target int) int {
+    // 🚫 O(n) search in sorted array
+    for i, num := range sortedNums {
+        if num == target {
+            return i
+        }
+    }
+    return -1
+}
+
+// ✅ CORRECT: Binary search in sorted data
+func goodSearchChoice(sortedNums []int, target int) int {
+    left, right := 0, len(sortedNums)-1
+    for left <= right {
+        mid := left + (right-left)/2
+        if sortedNums[mid] == target {
+            return mid
+        } else if sortedNums[mid] < target {
+            left = mid + 1
+        } else {
+            right = mid - 1
+        }
+    }
+    return -1
+}
+
+// ❌ NEVER: Recursive algorithms without memoization for overlapping subproblems
+func badFibonacci(n int) int {
+    if n <= 1 {
+        return n
+    }
+    // 🚫 Exponential time: O(2^n) due to repeated calculations
+    return badFibonacci(n-1) + badFibonacci(n-2)
+}
+
+// ✅ CORRECT: Use memoization or iterative approach
+func goodFibonacci(n int) int {
+    if n <= 1 {
+        return n
+    }
+    
+    prev, curr := 0, 1
+    for i := 2; i <= n; i++ {
+        prev, curr = curr, prev+curr
+    }
+    return curr
+}
+```
+
+*Concurrency Anti-patterns*
+```go
+// ❌ NEVER: Race conditions in concurrent code
+func badConcurrentCounter() {
+    var counter int  // 🚫 No synchronization
+    var wg sync.WaitGroup
+    
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            counter++  // 🚫 Race condition!
+        }()
+    }
+    
+    wg.Wait()
+    fmt.Println(counter)  // Unpredictable result
+}
+
+// ✅ CORRECT: Use atomic operations or mutex
+func goodConcurrentCounter() {
+    var counter int64  // Atomic operations require specific types
+    var wg sync.WaitGroup
+    
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func() {
+            defer wg.Done()
+            atomic.AddInt64(&counter, 1)  // Thread-safe
+        }()
+    }
+    
+    wg.Wait()
+    fmt.Println(atomic.LoadInt64(&counter))  // Predictable result: 1000
+}
+
+// ❌ NEVER: Goroutine leaks
+func badGoroutineManagement() {
+    for i := 0; i < 1000; i++ {
+        go func(id int) {
+            // 🚫 Infinite loop - goroutine never terminates!
+            for {
+                time.Sleep(time.Second)
+                fmt.Printf("Goroutine %d running\n", id)
+            }
+        }(i)
+    }
+    // 🚫 No way to stop these goroutines!
+}
+
+// ✅ CORRECT: Use context for cancellation
+func goodGoroutineManagement() {
+    ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+    defer cancel()
+    
+    var wg sync.WaitGroup
+    for i := 0; i < 1000; i++ {
+        wg.Add(1)
+        go func(id int) {
+            defer wg.Done()
+            for {
+                select {
+                case <-ctx.Done():
+                    return  // Graceful termination
+                default:
+                    time.Sleep(time.Second)
+                    fmt.Printf("Goroutine %d running\n", id)
+                }
+            }
+        }(i)
+    }
+    
+    wg.Wait()
+}
+
+// ❌ NEVER: Shared mutable state without protection
+type badSharedState struct {
+    data map[string]int  // 🚫 No protection for concurrent access
+}
+
+func (s *badSharedState) increment(key string) {
+    s.data[key]++  // 🚫 Race condition on map access
+}
+
+// ✅ CORRECT: Protect shared state with mutex
+type goodSharedState struct {
+    mu   sync.RWMutex
+    data map[string]int
+}
+
+func (s *goodSharedState) increment(key string) {
+    s.mu.Lock()
+    defer s.mu.Unlock()
+    s.data[key]++  // Protected access
+}
+```
+
+*Resource Management Anti-patterns*
+```go
+// ❌ NEVER: Not closing resources
+func badFileProcessing(filename string) error {
+    file, err := os.Open(filename)
+    if err != nil {
+        return err
+    }
+    // 🚫 File never closed - resource leak!
+    
+    data, err := io.ReadAll(file)
+    if err != nil {
+        return err  // 🚫 Early return without closing file
+    }
+    
+    return processData(data)
+}
+
+// ✅ CORRECT: Always use defer for cleanup
+func goodFileProcessing(filename string) error {
+    file, err := os.Open(filename)
+    if err != nil {
+        return err
+    }
+    defer file.Close()  // Guaranteed cleanup
+    
+    data, err := io.ReadAll(file)
+    if err != nil {
+        return err  // File will still be closed
+    }
+    
+    return processData(data)
+}
+
+// ❌ NEVER: Channel deadlocks
+func badChannelUsage() {
+    ch := make(chan int)  // 🚫 Unbuffered channel
+    
+    // This will deadlock!
+    ch <- 42  // 🚫 No receiver available
+    value := <-ch
+    
+    fmt.Println(value)
+}
+
+// ✅ CORRECT: Proper channel usage
+func goodChannelUsage() {
+    ch := make(chan int, 1)  // Buffered channel
+    
+    ch <- 42
+    value := <-ch
+    
+    fmt.Println(value)
+}
+
+// ❌ NEVER: Ignoring error returns
+func badErrorHandling() {
+    file, _ := os.Open("important.txt")  // 🚫 Ignoring error
+    defer file.Close()
+    
+    data := make([]byte, 100)
+    file.Read(data)  // 🚫 Ignoring error and bytes read
+    
+    fmt.Println(string(data))
+}
+
+// ✅ CORRECT: Always handle errors
+func goodErrorHandling() error {
+    file, err := os.Open("important.txt")
+    if err != nil {
+        return fmt.Errorf("failed to open file: %w", err)
+    }
+    defer file.Close()
+    
+    data := make([]byte, 100)
+    n, err := file.Read(data)
+    if err != nil && err != io.EOF {
+        return fmt.Errorf("failed to read file: %w", err)
+    }
+    
+    fmt.Println(string(data[:n]))  // Use actual bytes read
+    return nil
+}
+```
 
 **Performance Anti-patterns**
 ```go
