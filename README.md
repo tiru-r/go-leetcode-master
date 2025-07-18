@@ -5455,12 +5455,13 @@ func hashSlice(data []int) uint64 {
 *Generative Testing with Randomized Inputs*
 ```go
 // ✅ Property-based testing for algorithm correctness
+// Example pattern - replace quickSort with your actual sorting implementation
 func TestSortingProperties(t *testing.T) {
     // Property 1: Sorted output should have same length as input
     t.Run("length_preservation", func(t *testing.T) {
         for i := 0; i < 1000; i++ {
             input := generateRandomSlice(rand.Intn(100) + 1)
-            sorted := quickSort(input)
+            sorted := quickSort(input) // Replace with actual implementation
             
             if len(sorted) != len(input) {
                 t.Errorf("Length mismatch: input=%d, sorted=%d", len(input), len(sorted))
@@ -5622,11 +5623,12 @@ func FuzzStringSearch(f *testing.F) {
 var sortingSizes = []int{10, 100, 1000, 10000}
 
 func BenchmarkSortingAlgorithms(b *testing.B) {
+    // Example pattern - replace with your actual algorithm implementations
     algorithms := map[string]func([]int) []int{
-        "QuickSort":     quickSort,
-        "MergeSort":     mergeSort,
-        "HeapSort":      heapSort,
-        "InsertionSort": insertionSort,
+        "QuickSort":     quickSort,     // Replace with actual implementation
+        "MergeSort":     mergeSort,     // Replace with actual implementation  
+        "HeapSort":      heapSort,      // Replace with actual implementation
+        "InsertionSort": insertionSort, // Replace with actual implementation
     }
     
     for algName, sortFunc := range algorithms {
@@ -6348,13 +6350,14 @@ go-algorithms/
 //
 // Example usage:
 //
-//	import "github.com/yourorg/go-algorithms/algorithms/sorting"
+//	import "github.com/yourorg/go-leetcode-master/two_sum_1"
 //
-//	data := []int{3, 1, 4, 1, 5, 9, 2, 6}
-//	sorted := sorting.QuickSort(data)
-//	fmt.Println(sorted) // [1 1 2 3 4 5 6 9]
+//	nums := []int{2, 7, 11, 15}
+//	target := 9
+//	result := two_sum_1.twoSum(nums, target)
+//	fmt.Println(result) // [0 1]
 //
-// For more examples, see the examples/ directory.
+// For more examples, see the individual problem directories.
 package algorithms
 ```
 
@@ -6728,10 +6731,11 @@ func (g *Generator) IntSlice(size, min, max int) []int {
 
 **Documentation and Examples**
 
-*Comprehensive Package Documentation*
+*Comprehensive Package Documentation (Example Pattern)*
 ```go
 // Package algorithms provides high-performance implementations of fundamental
 // algorithms and data structures, optimized specifically for Go.
+// NOTE: This is an example documentation pattern for algorithm libraries
 //
 // # Design Philosophy
 //
@@ -6755,18 +6759,18 @@ func (g *Generator) IntSlice(size, min, max int) []int {
 //
 // # Examples
 //
-// Basic sorting:
+// Two Sum algorithm:
 //
-//	data := []int{3, 1, 4, 1, 5, 9, 2, 6}
-//	sorted := sorting.QuickSort(data)
-//	fmt.Println(sorted) // [1 1 2 3 4 5 6 9]
+//	nums := []int{2, 7, 11, 15}
+//	target := 9
+//	indices := twoSum(nums, target)
+//	fmt.Println(indices) // [0 1]
 //
-// Advanced sorting with options:
+// Binary tree operations:
 //
-//	sorted := sorting.Sort(data,
-//		sorting.WithConcurrency(true),
-//		sorting.WithThreshold(50),
-//	)
+//	root := &TreeNode{Val: 3, Left: &TreeNode{Val: 9}, Right: &TreeNode{Val: 20}}
+//	result := levelOrder(root)
+//	fmt.Println(result) // [[3] [9 20]]
 //
 // Custom data types:
 //
@@ -6782,42 +6786,802 @@ func (g *Generator) IntSlice(size, min, max int) []int {
 //
 // # Subpackages
 //
-//   - algorithms/sorting: Sorting algorithms (quicksort, mergesort, heapsort, etc.)
-//   - algorithms/searching: Search algorithms (binary search, interpolation search, etc.)
-//   - algorithms/graph: Graph algorithms (DFS, BFS, Dijkstra, etc.)
-//   - algorithms/datastructures: Data structures (trees, heaps, tries, etc.)
+//   - two_sum_1: Hash map based solution for finding two numbers that sum to target
+//   - binary_tree_level_order_traversal_102: BFS tree traversal implementation
+//   - merge_two_sorted_lists_21: Efficient linked list merging algorithm
+//   - longest_substring_without_repeating_characters_3: Sliding window technique
 //
 // For detailed examples, see the examples/ directory in the repository.
 package algorithms
 
 // Example functions for documentation
-func ExampleQuickSort() {
-    data := []int{3, 1, 4, 1, 5, 9, 2, 6}
-    sorted := QuickSort(data)
-    fmt.Println(sorted)
-    // Output: [1 1 2 3 4 5 6 9]
+func ExampleTwoSum() {
+    nums := []int{2, 7, 11, 15}
+    target := 9
+    result := twoSum(nums, target)
+    fmt.Println(result)
+    // Output: [0 1]
 }
 
-func ExampleSort_withOptions() {
-    data := make([]int, 10000)
-    for i := range data {
-        data[i] = rand.Intn(1000)
+func ExampleMergeTwoLists() {
+    // Create first list: 1 -> 2 -> 4
+    list1 := &ListNode{Val: 1, Next: &ListNode{Val: 2, Next: &ListNode{Val: 4}}}
+    
+    // Create second list: 1 -> 3 -> 4
+    list2 := &ListNode{Val: 1, Next: &ListNode{Val: 3, Next: &ListNode{Val: 4}}}
+    
+    merged := mergeTwoLists(list1, list2)
+    // Print merged list values
+    for curr := merged; curr != nil; curr = curr.Next {
+        fmt.Printf("%d ", curr.Val)
     }
-    
-    // Use parallel sorting for large datasets
-    sorted := Sort(data,
-        WithConcurrency(true),
-        WithThreshold(50),
-    )
-    
-    fmt.Printf("Sorted %d elements\n", len(sorted))
-    // Output: Sorted 10000 elements
+    // Output: 1 1 2 3 4 4
 }
 ```
 
-<function_calls>
-<invoke name="TodoWrite">
-<parameter name="todos">[{"content": "Analyze current best practices section structure", "status": "completed", "priority": "high", "id": "1"}, {"content": "Add advanced Go concurrency best practices", "status": "completed", "priority": "high", "id": "2"}, {"content": "Add Go interface design and composition patterns", "status": "completed", "priority": "high", "id": "3"}, {"content": "Add Go testing and benchmarking advanced practices", "status": "completed", "priority": "medium", "id": "4"}, {"content": "Add Go error handling advanced patterns", "status": "completed", "priority": "medium", "id": "5"}, {"content": "Add Go packaging and module organization best practices", "status": "completed", "priority": "medium", "id": "6"}]
+### Efficient Pointer Usage & Anti-Patterns
+
+**Pointer Performance Best Practices**
+
+*Memory-Efficient Pointer Usage*
+```go
+// ✅ Efficient pointer usage for algorithm data structures
+type ListNode struct {
+    Val  int
+    Next *ListNode
+}
+
+// ✅ Stack-friendly operations - avoid unnecessary heap allocations
+func reverseListEfficient(head *ListNode) *ListNode {
+    var prev *ListNode
+    current := head
+    
+    // Using local variables avoids extra allocations
+    for current != nil {
+        next := current.Next  // Store on stack
+        current.Next = prev   // Redirect pointer
+        prev = current        // Move pointers forward
+        current = next
+    }
+    
+    return prev
+}
+
+// ✅ Efficient tree operations with minimal allocations
+type TreeNode struct {
+    Val   int
+    Left  *TreeNode
+    Right *TreeNode
+}
+
+// Reuse slice to avoid allocations in tree traversal
+func inorderTraversalEfficient(root *TreeNode) []int {
+    if root == nil {
+        return nil
+    }
+    
+    result := make([]int, 0, estimateTreeSize(root)) // Pre-allocate capacity
+    var stack []*TreeNode
+    current := root
+    
+    for current != nil || len(stack) > 0 {
+        // Go to leftmost node
+        for current != nil {
+            stack = append(stack, current)
+            current = current.Left
+        }
+        
+        // Process current node
+        current = stack[len(stack)-1]
+        stack = stack[:len(stack)-1]
+        result = append(result, current.Val)
+        
+        // Move to right subtree
+        current = current.Right
+    }
+    
+    return result
+}
+
+func estimateTreeSize(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    // Estimate based on depth for initial capacity
+    depth := maxDepth(root)
+    return (1 << depth) - 1 // 2^depth - 1
+}
+
+func maxDepth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    left := maxDepth(root.Left)
+    right := maxDepth(root.Right)
+    if left > right {
+        return left + 1
+    }
+    return right + 1
+}
+```
+
+*Zero-Copy Operations with Pointers*
+```go
+// ✅ Efficient slice operations without copying
+type SliceView struct {
+    data   []int
+    start  int
+    length int
+}
+
+func NewSliceView(data []int, start, length int) *SliceView {
+    if start < 0 || start >= len(data) || start+length > len(data) {
+        return nil
+    }
+    return &SliceView{
+        data:   data,
+        start:  start,
+        length: length,
+    }
+}
+
+func (sv *SliceView) Get(index int) (int, bool) {
+    if index < 0 || index >= sv.length {
+        return 0, false
+    }
+    return sv.data[sv.start+index], true
+}
+
+func (sv *SliceView) Slice(start, length int) *SliceView {
+    if start < 0 || start >= sv.length || start+length > sv.length {
+        return nil
+    }
+    return &SliceView{
+        data:   sv.data,
+        start:  sv.start + start,
+        length: length,
+    }
+}
+
+// ✅ In-place algorithms to avoid allocations
+func quickSortInPlace(arr []int, low, high int) {
+    if low < high {
+        pivotIndex := partitionInPlace(arr, low, high)
+        quickSortInPlace(arr, low, pivotIndex-1)
+        quickSortInPlace(arr, pivotIndex+1, high)
+    }
+}
+
+func partitionInPlace(arr []int, low, high int) int {
+    pivot := arr[high]
+    i := low - 1
+    
+    for j := low; j < high; j++ {
+        if arr[j] <= pivot {
+            i++
+            arr[i], arr[j] = arr[j], arr[i] // In-place swap
+        }
+    }
+    
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    return i + 1
+}
+
+// ✅ Efficient graph representation with pointers
+type GraphNode struct {
+    Val       int
+    Neighbors []*GraphNode
+}
+
+// DFS with visited tracking using pointer comparison
+func dfsEfficient(node *GraphNode, visited map[*GraphNode]bool, result *[]int) {
+    if node == nil || visited[node] {
+        return
+    }
+    
+    visited[node] = true
+    *result = append(*result, node.Val)
+    
+    for _, neighbor := range node.Neighbors {
+        dfsEfficient(neighbor, visited, result)
+    }
+}
+
+// ✅ Memory pool for frequent pointer allocations
+type NodePool struct {
+    pool sync.Pool
+}
+
+func NewNodePool() *NodePool {
+    return &NodePool{
+        pool: sync.Pool{
+            New: func() interface{} {
+                return &ListNode{}
+            },
+        },
+    }
+}
+
+func (np *NodePool) Get() *ListNode {
+    return np.pool.Get().(*ListNode)
+}
+
+func (np *NodePool) Put(node *ListNode) {
+    // Reset node state before returning to pool
+    node.Val = 0
+    node.Next = nil
+    np.pool.Put(node)
+}
+
+// Usage with pool to avoid allocations
+func buildListFromSlicePooled(values []int, pool *NodePool) *ListNode {
+    if len(values) == 0 {
+        return nil
+    }
+    
+    head := pool.Get()
+    head.Val = values[0]
+    current := head
+    
+    for i := 1; i < len(values); i++ {
+        newNode := pool.Get()
+        newNode.Val = values[i]
+        current.Next = newNode
+        current = newNode
+    }
+    
+    return head
+}
+```
+
+**Pointer Anti-Patterns & Common Mistakes**
+
+*Memory Leaks and Retention Issues*
+```go
+// ❌ ANTI-PATTERN: Memory leaks from circular references
+type BadNode struct {
+    Val    int
+    Parent *BadNode
+    Child  *BadNode
+}
+
+func createCircularLeak() *BadNode {
+    parent := &BadNode{Val: 1}
+    child := &BadNode{Val: 2}
+    
+    // Creates circular reference - memory leak!
+    parent.Child = child
+    child.Parent = parent
+    
+    return parent // Even when this goes out of scope, memory won't be freed
+}
+
+// ✅ CORRECT: Break cycles explicitly or use weak references
+type GoodNode struct {
+    Val      int
+    Children []*GoodNode
+    // Don't store parent pointer, or use weak reference pattern
+}
+
+func (n *GoodNode) AddChild(child *GoodNode) {
+    n.Children = append(n.Children, child)
+}
+
+func (n *GoodNode) Cleanup() {
+    // Explicitly break references for cleanup
+    for i := range n.Children {
+        n.Children[i] = nil
+    }
+    n.Children = nil
+}
+
+// ❌ ANTI-PATTERN: Keeping references to large slices
+type BadCache struct {
+    cache map[string][]byte
+}
+
+func (bc *BadCache) ProcessLargeFile(filename string) error {
+    data, err := os.ReadFile(filename) // Large file
+    if err != nil {
+        return err
+    }
+    
+    // BAD: Keeping reference to entire large slice
+    bc.cache[filename] = data // Memory leak if file is huge
+    
+    return nil
+}
+
+// ✅ CORRECT: Copy only what you need
+type GoodCache struct {
+    cache map[string][]byte
+}
+
+func (gc *GoodCache) ProcessLargeFile(filename string) error {
+    data, err := os.ReadFile(filename)
+    if err != nil {
+        return err
+    }
+    
+    // Process data and keep only summary
+    summary := processAndSummarize(data) // Extract what's needed
+    
+    // Store only the small summary, not the entire file
+    gc.cache[filename] = summary
+    
+    return nil
+}
+
+func processAndSummarize(data []byte) []byte {
+    // Extract only necessary information
+    if len(data) > 1000 {
+        return data[:1000] // Keep only first 1KB
+    }
+    return append([]byte(nil), data...) // Copy the data
+}
+```
+
+*Dangerous Pointer Operations*
+```go
+// ❌ ANTI-PATTERN: Returning pointers to local variables
+func badFunction() *int {
+    x := 42
+    return &x // BAD: x is on stack, will be invalid after return
+}
+
+// ✅ CORRECT: Return values or allocate on heap explicitly
+func goodFunction() *int {
+    x := new(int) // Allocate on heap
+    *x = 42
+    return x
+}
+
+func goodFunctionValue() int {
+    return 42 // Even better: return by value when possible
+}
+
+// ❌ ANTI-PATTERN: Slice pointer confusion
+func badSliceModification(slice []int) {
+    // BAD: This doesn't modify the original slice length/capacity
+    slice = append(slice, 42)
+}
+
+// ✅ CORRECT: Use pointer to slice or return modified slice
+func goodSliceModification(slice *[]int) {
+    *slice = append(*slice, 42)
+}
+
+func goodSliceModificationReturn(slice []int) []int {
+    return append(slice, 42)
+}
+
+// ❌ ANTI-PATTERN: Unsafe pointer arithmetic
+func badPointerArithmetic(data []int) {
+    // BAD: Trying to do C-style pointer arithmetic
+    // This is dangerous and not idiomatic Go
+    ptr := unsafe.Pointer(&data[0])
+    nextPtr := unsafe.Pointer(uintptr(ptr) + unsafe.Sizeof(int(0)))
+    // Don't do this!
+}
+
+// ✅ CORRECT: Use slice indexing
+func goodArrayAccess(data []int) {
+    for i := 0; i < len(data); i++ {
+        value := data[i] // Safe and clear
+        _ = value
+    }
+}
+
+// ❌ ANTI-PATTERN: Modifying data through escaped pointers
+func badDataModification() {
+    data := []int{1, 2, 3, 4, 5}
+    
+    // Get pointer to slice element
+    ptr := &data[2]
+    
+    // Modify slice elsewhere
+    data = append(data, 6, 7, 8) // May cause reallocation
+    
+    // BAD: ptr might now point to invalid memory!
+    *ptr = 999 // Potential crash or memory corruption
+}
+
+// ✅ CORRECT: Use indices instead of pointers to slice elements
+func goodDataModification() {
+    data := []int{1, 2, 3, 4, 5}
+    
+    // Store index instead of pointer
+    index := 2
+    
+    // Modify slice
+    data = append(data, 6, 7, 8)
+    
+    // Safe: Check bounds and modify by index
+    if index < len(data) {
+        data[index] = 999
+    }
+}
+```
+
+*Interface and Type Assertion Pitfalls*
+```go
+// ❌ ANTI-PATTERN: Storing pointers in interfaces unnecessarily
+type BadProcessor struct {
+    items []interface{}
+}
+
+func (bp *BadProcessor) AddItem(item interface{}) {
+    // BAD: Storing potentially large objects in interface{}
+    bp.items = append(bp.items, item)
+}
+
+func (bp *BadProcessor) ProcessItems() {
+    for _, item := range bp.items {
+        // BAD: Type assertion without checking
+        node := item.(*ListNode) // Can panic!
+        processNode(node)
+    }
+}
+
+// ✅ CORRECT: Use type-safe approach with generics
+type GoodProcessor[T any] struct {
+    items []T
+}
+
+func (gp *GoodProcessor[T]) AddItem(item T) {
+    gp.items = append(gp.items, item)
+}
+
+func (gp *GoodProcessor[T]) ProcessItems(processFn func(T)) {
+    for _, item := range gp.items {
+        processFn(item) // Type-safe processing
+    }
+}
+
+// ✅ CORRECT: Safe type assertion with check
+type SafeProcessor struct {
+    items []interface{}
+}
+
+func (sp *SafeProcessor) ProcessItems() {
+    for _, item := range sp.items {
+        if node, ok := item.(*ListNode); ok {
+            processNode(node)
+        } else {
+            // Handle unexpected type gracefully
+            log.Printf("Unexpected type: %T", item)
+        }
+    }
+}
+
+// ❌ ANTI-PATTERN: Nil pointer dereference
+func badNilHandling(node *ListNode) int {
+    // BAD: No nil check
+    return node.Val // Can panic if node is nil
+}
+
+// ✅ CORRECT: Proper nil checking
+func goodNilHandling(node *ListNode) int {
+    if node == nil {
+        return 0 // Or appropriate default/error handling
+    }
+    return node.Val
+}
+
+// ✅ CORRECT: Defensive programming with nil checks
+func safeListTraversal(head *ListNode) []int {
+    var result []int
+    
+    for current := head; current != nil; current = current.Next {
+        result = append(result, current.Val)
+        
+        // Prevent infinite loops in corrupted lists
+        if len(result) > 10000 { // Reasonable limit
+            break
+        }
+    }
+    
+    return result
+}
+```
+
+**Memory Safety Patterns with Pointers**
+
+*Safe Pointer Patterns*
+```go
+// ✅ RAII-style resource management
+type SafeResource struct {
+    data   *[]byte
+    closed bool
+    mu     sync.Mutex
+}
+
+func NewSafeResource(size int) *SafeResource {
+    data := make([]byte, size)
+    return &SafeResource{
+        data: &data,
+    }
+}
+
+func (sr *SafeResource) Read(offset int, length int) ([]byte, error) {
+    sr.mu.Lock()
+    defer sr.mu.Unlock()
+    
+    if sr.closed {
+        return nil, errors.New("resource is closed")
+    }
+    
+    if sr.data == nil {
+        return nil, errors.New("resource is nil")
+    }
+    
+    data := *sr.data
+    if offset < 0 || offset >= len(data) || offset+length > len(data) {
+        return nil, errors.New("invalid range")
+    }
+    
+    // Return copy to prevent external modification
+    result := make([]byte, length)
+    copy(result, data[offset:offset+length])
+    return result, nil
+}
+
+func (sr *SafeResource) Close() error {
+    sr.mu.Lock()
+    defer sr.mu.Unlock()
+    
+    if sr.closed {
+        return nil // Already closed
+    }
+    
+    sr.data = nil // Clear pointer
+    sr.closed = true
+    return nil
+}
+
+// ✅ Safe concurrent access to shared pointers
+type SafeCounter struct {
+    value *int64
+    mu    sync.RWMutex
+}
+
+func NewSafeCounter() *SafeCounter {
+    v := int64(0)
+    return &SafeCounter{value: &v}
+}
+
+func (sc *SafeCounter) Increment() {
+    sc.mu.Lock()
+    defer sc.mu.Unlock()
+    
+    if sc.value != nil {
+        (*sc.value)++
+    }
+}
+
+func (sc *SafeCounter) Get() int64 {
+    sc.mu.RLock()
+    defer sc.mu.RUnlock()
+    
+    if sc.value == nil {
+        return 0
+    }
+    return *sc.value
+}
+
+// ✅ Pointer validation utilities
+func isValidPointer[T any](ptr *T) bool {
+    return ptr != nil
+}
+
+func safeDeref[T any](ptr *T, defaultValue T) T {
+    if ptr == nil {
+        return defaultValue
+    }
+    return *ptr
+}
+
+func safePtrOperation[T any](ptr *T, operation func(*T)) {
+    if ptr != nil {
+        operation(ptr)
+    }
+}
+
+// Usage examples
+func safePtrExample() {
+    var ptr *int
+    
+    // Safe dereferencing
+    value := safeDeref(ptr, 42) // Returns 42 if ptr is nil
+    
+    // Safe operations
+    safePtrOperation(ptr, func(p *int) {
+        *p = 100 // Only executes if ptr is not nil
+    })
+    
+    // Validation
+    if isValidPointer(ptr) {
+        fmt.Println(*ptr)
+    }
+}
+```
+
+*Advanced Pointer Optimization Patterns*
+```go
+// ✅ Pointer-based optimization for large structs
+type LargeStruct struct {
+    Data [1000]int
+    Name string
+    // ... many more fields
+}
+
+// ✅ Pass by pointer for large structs to avoid copying
+func processLargeStructEfficient(ls *LargeStruct) {
+    // Work with the struct without copying
+    ls.Data[0] = 42
+    ls.Name = "processed"
+}
+
+// ❌ Don't pass large structs by value
+func processLargeStructInefficient(ls LargeStruct) LargeStruct {
+    // BAD: This copies the entire struct twice (in and out)
+    ls.Data[0] = 42
+    return ls
+}
+
+// ✅ Pointer receiver for methods on large structs
+func (ls *LargeStruct) ProcessInPlace() {
+    // Efficient: works on original, no copying
+    for i := range ls.Data {
+        ls.Data[i] *= 2
+    }
+}
+
+// ✅ Smart pointer-like pattern for reference counting
+type RefCountedData struct {
+    data     []byte
+    refCount *int32
+    cleanup  func()
+}
+
+func NewRefCountedData(data []byte, cleanup func()) *RefCountedData {
+    refCount := int32(1)
+    return &RefCountedData{
+        data:     data,
+        refCount: &refCount,
+        cleanup:  cleanup,
+    }
+}
+
+func (rcd *RefCountedData) AddRef() *RefCountedData {
+    atomic.AddInt32(rcd.refCount, 1)
+    return rcd
+}
+
+func (rcd *RefCountedData) Release() {
+    if atomic.AddInt32(rcd.refCount, -1) == 0 {
+        // Last reference released
+        if rcd.cleanup != nil {
+            rcd.cleanup()
+        }
+        rcd.data = nil
+        rcd.refCount = nil
+    }
+}
+
+func (rcd *RefCountedData) Data() []byte {
+    if atomic.LoadInt32(rcd.refCount) > 0 {
+        return rcd.data
+    }
+    return nil
+}
+
+// ✅ Efficient pointer-based data structures
+type SkipListNode struct {
+    key     int
+    value   interface{}
+    forward []*SkipListNode // Pointers to next nodes at each level
+}
+
+type SkipList struct {
+    header   *SkipListNode
+    level    int
+    maxLevel int
+}
+
+func NewSkipList(maxLevel int) *SkipList {
+    header := &SkipListNode{
+        forward: make([]*SkipListNode, maxLevel),
+    }
+    return &SkipList{
+        header:   header,
+        level:    0,
+        maxLevel: maxLevel,
+    }
+}
+
+func (sl *SkipList) Search(key int) (interface{}, bool) {
+    current := sl.header
+    
+    // Start from highest level and work down
+    for i := sl.level - 1; i >= 0; i-- {
+        // Move forward while key is greater than next node's key
+        for current.forward[i] != nil && current.forward[i].key < key {
+            current = current.forward[i]
+        }
+    }
+    
+    current = current.forward[0]
+    if current != nil && current.key == key {
+        return current.value, true
+    }
+    
+    return nil, false
+}
+
+// ✅ Memory-efficient tree with parent pointers
+type TreeNodeWithParent struct {
+    Val    int
+    Left   *TreeNodeWithParent
+    Right  *TreeNodeWithParent
+    Parent *TreeNodeWithParent
+}
+
+func (tn *TreeNodeWithParent) IsRoot() bool {
+    return tn.Parent == nil
+}
+
+func (tn *TreeNodeWithParent) IsLeaf() bool {
+    return tn.Left == nil && tn.Right == nil
+}
+
+func (tn *TreeNodeWithParent) AddLeft(val int) *TreeNodeWithParent {
+    newNode := &TreeNodeWithParent{
+        Val:    val,
+        Parent: tn,
+    }
+    tn.Left = newNode
+    return newNode
+}
+
+func (tn *TreeNodeWithParent) AddRight(val int) *TreeNodeWithParent {
+    newNode := &TreeNodeWithParent{
+        Val:    val,
+        Parent: tn,
+    }
+    tn.Right = newNode
+    return newNode
+}
+
+// Navigate up the tree efficiently
+func (tn *TreeNodeWithParent) FindRoot() *TreeNodeWithParent {
+    current := tn
+    for current.Parent != nil {
+        current = current.Parent
+    }
+    return current
+}
+
+// Get path to root
+func (tn *TreeNodeWithParent) PathToRoot() []*TreeNodeWithParent {
+    var path []*TreeNodeWithParent
+    current := tn
+    
+    for current != nil {
+        path = append(path, current)
+        current = current.Parent
+    }
+    
+    // Reverse to get root-to-node path
+    for i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {
+        path[i], path[j] = path[j], path[i]
+    }
+    
+    return path
+}
+```
+
+## Algorithm Patterns
 
 ### Sliding Window Template
 ```go
