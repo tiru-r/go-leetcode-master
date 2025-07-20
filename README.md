@@ -164,6 +164,34 @@ make bench
 | [207. Course Schedule](./course_schedule_207/) | Medium | [Go](./course_schedule_207/solution.go) | Topological Sort, DFS |
 | [261. Graph Valid Tree](./graph_valid_tree_261/) | Medium | [Go](./graph_valid_tree_261/solution.go) | DFS, BFS, Union Find |
 | [269. Alien Dictionary](./alien_dictionary_269/) | Hard | [Go](./alien_dictionary_269/solution.go) | Topological Sort, DFS |
+
+#### Test Cases
+
+The Alien Dictionary problem includes comprehensive test coverage:
+
+```go
+// Basic valid ordering
+{"wrt", "wrf", "er", "ett", "rftt"} → "wertf"
+
+// Simple two character ordering  
+{"z", "x"} → "zx"
+
+// Invalid: contradiction in ordering
+{"z", "x", "z"} → "" (empty - invalid)
+
+// Complex valid ordering
+{"za", "zb", "ca", "cb"} → "azbc"
+
+// Edge cases
+{} → "" (empty input)
+{"abc"} → "abc" (single word)
+{"abc", "abc"} → "abc" (duplicate words)
+
+// Invalid cases
+{"abc", "ab"} → "" (prefix contradiction)
+{"a", "b", "a"} → "" (cycle detection)
+{"ab", "bc", "ca"} → "" (multi-letter cycle)
+```
 | [417. Pacific Atlantic Water Flow](./pacific_atlantic_water_flow_417/) | Medium | [Go](./pacific_atlantic_water_flow_417/solution.go) | DFS, BFS |
 | [847. Shortest Path Visiting All Nodes](./shortest_path_visiting_all_nodes_847/) | Hard | [Go](./shortest_path_visiting_all_nodes_847/solution.go) | BFS, Bit Manipulation |
 | [953. Verifying an Alien Dictionary](./verifying_an_alien_dictionary_953/) | Easy | [Go](./verifying_an_alien_dictionary_953/solution.go) | Hash Map, String |
