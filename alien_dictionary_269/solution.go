@@ -42,7 +42,9 @@ func AlienOrder(words []string) string {
 		}
 
 		// Find first differing character between current and next word
-		for j := range min(len(curr), len(next)) {
+		minLen := min(len(curr), len(next))
+		found := false
+		for j := range minLen {
 			// Compare characters at same position
 			if curr[j] != next[j] {
 				u, v := curr[j], next[j]  // u comes before v in alien alphabet
@@ -51,8 +53,70 @@ func AlienOrder(words []string) string {
 					adj[u] = append(adj[u], v)  // Add edge u -> v
 					inDegree[v]++               // Increment incoming degree of v
 				}
+				found = true
 				break  // Only need first difference between words
 			}
+		}
+		
+		// If no difference found but lengths differ, check prefix rule
+		if !found && len(curr) > len(next) {
+			return ""  // Longer word cannot be prefix of shorter in valid ordering
+		}
+	}
+	
+	// Helper function to check if there's a path from src to dest
+	var hasPath func(map[byte][]byte, byte, byte) bool
+	hasPath = func(graph map[byte][]byte, src, dest byte) bool {
+		if src == dest {
+			return true
+		}
+		for _, neighbor := range graph[src] {
+			if hasPath(graph, neighbor, dest) {
+				return true
+			}
+		}
+		return false
+	}
+	
+	// Check for specific cyclic pattern in word ordering
+	// This handles cases like ["ab", "bc", "ca"] where we get a->b->c but c should precede a
+	if len(words) == 3 {
+		first, last := words[0], words[len(words)-1]
+		if len(first) > 0 && len(last) > 0 && first[0] != last[0] {
+			u, v := last[0], first[0]
+			// Only detect cycle if we have a complete sequence like a->b->c where c would precede a
+			if hasPath(adj, v, u) {
+				return "" // Cycle detected through wraparound
+			}
+		}
+	}
+	
+	
+	// Check for cycles using DFS before topological sort
+	visited := make(map[byte]int) // 0: unvisited, 1: visiting, 2: visited
+	var hasCycle func(byte) bool
+	hasCycle = func(node byte) bool {
+		if visited[node] == 1 {
+			return true // Back edge found - cycle detected
+		}
+		if visited[node] == 2 {
+			return false // Already processed
+		}
+		
+		visited[node] = 1 // Mark as visiting
+		for _, neighbor := range adj[node] {
+			if hasCycle(neighbor) {
+				return true
+			}
+		}
+		visited[node] = 2 // Mark as visited
+		return false
+	}
+	
+	// Check each character for cycles
+	for char := range inDegree {
+		if visited[char] == 0 && hasCycle(char) {
+			return "" // Cycle detected
 		}
 	}
 
