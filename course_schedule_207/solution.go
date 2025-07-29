@@ -1,44 +1,47 @@
 package course_schedule_207
 
+// canFinish determines whether it's possible to finish all courses.
+// It uses Kahn's BFS-based topological sort.
 func canFinish(numCourses int, prerequisites [][]int) bool {
-	if numCourses <= 0 {
+	if numCourses <= 0 || len(prerequisites) == 0 {
 		return true
 	}
-	
+
 	adj := make([][]int, numCourses)
 	inDegree := make([]int, numCourses)
-	
-	for _, prereq := range prerequisites {
-		from, to := prereq[1], prereq[0]
+
+	for _, p := range prerequisites {
+		from, to := p[1], p[0] // p[1] -> p[0] : must take "from" before "to"
 		adj[from] = append(adj[from], to)
 		inDegree[to]++
 	}
-	
-	queue := make([]int, 0, numCourses)
-	for i, degree := range inDegree {
-		if degree == 0 {
-			queue = append(queue, i)
+
+	q := make([]int, 0, numCourses)
+	for i, d := range inDegree {
+		if d == 0 {
+			q = append(q, i)
 		}
 	}
-	
+
 	processed := 0
-	for len(queue) > 0 {
-		course := queue[0]
-		queue = queue[1:]
+	head := 0
+	for head < len(q) {
+		c := q[head]
+		head++
 		processed++
-		
-		for _, next := range adj[course] {
-			inDegree[next]--
-			if inDegree[next] == 0 {
-				queue = append(queue, next)
+
+		for _, nxt := range adj[c] {
+			inDegree[nxt]--
+			if inDegree[nxt] == 0 {
+				q = append(q, nxt)
 			}
 		}
 	}
-	
+
 	return processed == numCourses
 }
 
-// CanFinish is the original function name for backward compatibility
+// CanFinish is kept for backward-compatibility only.
 func CanFinish(numCourses int, prerequisites [][]int) bool {
 	return canFinish(numCourses, prerequisites)
 }
