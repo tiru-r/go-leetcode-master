@@ -1,60 +1,48 @@
 package longest_substring_without_repeating_characters_3
 
 func lengthOfLongestSubstring(s string) int {
-	if len(s) == 0 {
-		return 0
+	var (
+		last [128]int // ASCII fast-path
+		m    map[rune]int
+		useM bool
+
+		left, maxLen int
+	)
+
+	// Initialize sentinel positions for ASCII array
+	for i := range last {
+		last[i] = -1
 	}
 
-	// Use byte array for ASCII optimization (common case)
-	if isASCII(s) {
-		return lengthOfLongestSubstringASCII(s)
-	}
-
-	// Fallback to Unicode-safe implementation
-	return lengthOfLongestSubstringUnicode(s)
-}
-
-func isASCII(s string) bool {
-	for i := 0; i < len(s); i++ {
-		if s[i] >= 128 {
-			return false
+	for right, ch := range s {
+		if ch < 128 && !useM {
+			// ASCII fast path using array lookup
+			if pos := last[ch]; pos >= left {
+				left = pos + 1
+			}
+			last[ch] = right
+		} else {
+			// Switch to map for Unicode support
+			if !useM {
+				// Estimate capacity based on remaining string length
+				capacity := min(len(s)/4, 64) // reasonable default
+				m = make(map[rune]int, capacity)
+				// Migrate ASCII data to map
+				for i, pos := range last {
+					if pos != -1 {
+						m[rune(i)] = pos
+					}
+				}
+				useM = true
+			}
+			if pos, ok := m[ch]; ok && pos >= left {
+				left = pos + 1
+			}
+			m[ch] = right
 		}
-	}
-	return true
-}
 
-func lengthOfLongestSubstringASCII(s string) int {
-	lastPos := [128]int{}
-	for i := range lastPos {
-		lastPos[i] = -1
-	}
-	
-	left, maxLen := 0, 0
-	
-	for right := 0; right < len(s); right++ {
-		char := s[right]
-		if lastPos[char] >= left {
-			left = lastPos[char] + 1
-		}
-		lastPos[char] = right
+		// Update maximum length using modern Go function
 		maxLen = max(maxLen, right-left+1)
 	}
-	
-	return maxLen
-}
-
-func lengthOfLongestSubstringUnicode(s string) int {
-	lastPos := make(map[rune]int)
-	left, maxLen := 0, 0
-	
-	runes := []rune(s)
-	for right, char := range runes {
-		if pos, exists := lastPos[char]; exists && pos >= left {
-			left = pos + 1
-		}
-		lastPos[char] = right
-		maxLen = max(maxLen, right-left+1)
-	}
-	
 	return maxLen
 }

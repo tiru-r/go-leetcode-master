@@ -1,67 +1,99 @@
 package valid_number_65
 
-func isNumber(s string) bool {
-	if len(s) == 0 {
+// isNumber validates if a string represents a valid number using single-pass parsing.
+// Valid formats: integer, decimal, scientific notation (e.g., "123", "3.14", "1e10", "-2.5E-3")
+func isNumber(input string) bool {
+	if len(input) == 0 {
 		return false
 	}
-	
-	i := 0
-	
-	for i < len(s) && s[i] == ' ' {
-		i++
+
+	// Manual trimming for better performance than strings.TrimSpace
+	start, end := 0, len(input)-1
+	for start <= end && isWhitespace(input[start]) {
+		start++
+	}
+	for end >= start && isWhitespace(input[end]) {
+		end--
 	}
 	
-	if i == len(s) {
-		return false
+	if start > end {
+		return false // Only whitespace
 	}
-	
-	if i < len(s) && (s[i] == '+' || s[i] == '-') {
-		i++
+
+	position := start
+	length := end + 1
+
+	// Parse optional leading sign
+	if position < length && isSignCharacter(input[position]) {
+		position++
 	}
-	
-	hasDigits, hasDot := false, false
-	
-	for i < len(s) && (isDigit(s[i]) || s[i] == '.') {
-		if s[i] == '.' {
-			if hasDot {
-				return false
+
+	// State tracking for number components
+	hasMainDigits := false
+	hasDecimalPoint := false
+
+	// Parse main number part (digits with optional decimal point)
+	for position < length {
+		currentChar := input[position]
+		switch {
+		case isDigit(currentChar):
+			hasMainDigits = true
+			position++
+		case currentChar == '.':
+			if hasDecimalPoint {
+				return false // Multiple decimal points
 			}
-			hasDot = true
-		} else {
-			hasDigits = true
+			hasDecimalPoint = true
+			position++
+		default:
+			break // End of main number part
 		}
-		i++
 	}
-	
-	if !hasDigits {
+
+	// Must have at least one digit in main part
+	if !hasMainDigits {
 		return false
 	}
-	
-	if i < len(s) && (s[i] == 'e' || s[i] == 'E') {
-		i++
+
+	// Parse optional exponent part
+	if position < length && isExponentCharacter(input[position]) {
+		position++
 		
-		if i < len(s) && (s[i] == '+' || s[i] == '-') {
-			i++
+		// Optional exponent sign
+		if position < length && isSignCharacter(input[position]) {
+			position++
 		}
 		
+		// Exponent must have digits
 		hasExponentDigits := false
-		for i < len(s) && isDigit(s[i]) {
+		for position < length && isDigit(input[position]) {
 			hasExponentDigits = true
-			i++
+			position++
 		}
 		
 		if !hasExponentDigits {
-			return false
+			return false // Exponent without digits
 		}
 	}
-	
-	for i < len(s) && s[i] == ' ' {
-		i++
-	}
-	
-	return i == len(s)
+
+	// All characters must be consumed
+	return position == length
 }
 
-func isDigit(c byte) bool {
-	return c >= '0' && c <= '9'
+// Helper functions for character classification
+
+func isDigit(char byte) bool {
+	return char >= '0' && char <= '9'
+}
+
+func isSignCharacter(char byte) bool {
+	return char == '+' || char == '-'
+}
+
+func isExponentCharacter(char byte) bool {
+	return char == 'e' || char == 'E'
+}
+
+func isWhitespace(char byte) bool {
+	return char == ' ' || char == '\t' || char == '\n' || char == '\r'
 }

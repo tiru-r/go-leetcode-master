@@ -1,51 +1,53 @@
 package majority_element_ii_229
 
-// majorityElement finds all elements that appear more than ⌊n/3⌋ times.
-// Uses Boyer-Moore majority vote algorithm extended for k=2 candidates.
-// Time: O(n), Space: O(1)
+// majorityElement returns every value that appears more than ⌊n/3⌋ times.
+// Extended Boyer-Moore majority vote: two passes, O(n) time, O(1) space.
 func majorityElement(nums []int) []int {
 	if len(nums) == 0 {
-		return []int{}
+		return nil
 	}
 
-	// Phase 1: Find potential candidates using Boyer-Moore
-	candidate1, candidate2 := 0, 1 // Use different initial values to avoid collision
-	count1, count2 := 0, 0
-
-	for _, num := range nums {
-		if num == candidate1 {
-			count1++
-		} else if num == candidate2 {
-			count2++
-		} else if count1 == 0 {
-			candidate1, count1 = num, 1
-		} else if count2 == 0 {
-			candidate2, count2 = num, 1
+	// Phase 1: find up to two candidates using Boyer-Moore
+	var c1, c2, cnt1, cnt2 int
+	for _, v := range nums {
+		if cnt1 > 0 && v == c1 {
+			cnt1++
+		} else if cnt2 > 0 && v == c2 {
+			cnt2++
+		} else if cnt1 == 0 {
+			c1, cnt1 = v, 1
+		} else if cnt2 == 0 {
+			c2, cnt2 = v, 1
 		} else {
-			count1--
-			count2--
+			cnt1--
+			cnt2--
 		}
 	}
 
-	// Phase 2: Verify candidates actually appear > n/3 times
-	count1, count2 = 0, 0
+	// Phase 2: verify candidates and handle duplicates
 	threshold := len(nums) / 3
-
-	for _, num := range nums {
-		if num == candidate1 {
-			count1++
-		} else if num == candidate2 {
-			count2++
+	ans := make([]int, 0, 2)
+	
+	// Prepare candidates for verification, avoiding duplicates
+	candidates := make([]int, 0, 2)
+	if cnt1 > 0 {
+		candidates = append(candidates, c1)
+	}
+	if cnt2 > 0 && c2 != c1 {
+		candidates = append(candidates, c2)
+	}
+	
+	// Count each candidate in a single pass
+	for _, candidate := range candidates {
+		cnt := 0
+		for _, v := range nums {
+			if v == candidate {
+				cnt++
+			}
+		}
+		if cnt > threshold {
+			ans = append(ans, candidate)
 		}
 	}
-
-	result := make([]int, 0, 2)
-	if count1 > threshold {
-		result = append(result, candidate1)
-	}
-	if count2 > threshold && candidate2 != candidate1 {
-		result = append(result, candidate2)
-	}
-
-	return result
+	return ans
 }

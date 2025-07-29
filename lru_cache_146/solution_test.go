@@ -132,12 +132,21 @@ func TestNewLRUCache(t *testing.T) {
 	if c.capacity != 2 {
 		t.Errorf("expected capacity 2, got %d", c.capacity)
 	}
-	if len(c.cache) != 0 {
-		t.Errorf("expected empty map, got len %d", len(c.cache))
+	if len(c.data) != 0 {
+		t.Errorf("expected empty map, got len %d", len(c.data))
 	}
-	if c.head == nil || c.tail == nil || c.head.next != c.tail || c.tail.prev != c.head {
-		t.Error("sentinel links are wrong")
+	if c.head == nil || c.head.next != c.head || c.head.prev != c.head {
+		t.Error("circular sentinel links are wrong")
 	}
+}
+
+func TestNewLRUCacheValidation(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("expected panic for zero capacity")
+		}
+	}()
+	NewLRUCache(0)
 }
 
 func BenchmarkLRUCache(b *testing.B) {

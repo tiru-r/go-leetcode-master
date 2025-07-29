@@ -50,9 +50,9 @@ func TestShortestPathLength(t *testing.T) {
 }
 
 func TestState(t *testing.T) {
-	s1 := State{node: 0, mask: 5}
-	s2 := State{node: 0, mask: 5}
-	s3 := State{node: 1, mask: 5}
+	s1 := State{node: 0, visitedMask: 5}
+	s2 := State{node: 0, visitedMask: 5}
+	s3 := State{node: 1, visitedMask: 5}
 	
 	if s1 != s2 {
 		t.Error("Equal states should be equal")

@@ -5,36 +5,47 @@ func minWindow(s string, t string) string {
 		return ""
 	}
 
-	tFreq := make(map[byte]int)
-	for i := range t {
-		tFreq[t[i]]++
+	// Count required characters (ASCII only – 128 slots)
+	var need [128]int
+	for i := 0; i < len(t); i++ {
+		need[t[i]]++
 	}
 
-	required := len(tFreq)
-	formed := 0
-	windowCounts := make(map[byte]int)
-	
+	// Count unique characters needed
+	required := 0
+	for _, cnt := range need {
+		if cnt > 0 {
+			required++
+		}
+	}
+
+	// Sliding-window state
+	var have [128]int
+	formed := 0 // Number of unique chars matching their required counts
+
 	left, right := 0, 0
 	minLen := len(s) + 1
-	minLeft := 0
+	minStart := 0
 
 	for right < len(s) {
-		char := s[right]
-		windowCounts[char]++
-		
-		if count, exists := tFreq[char]; exists && windowCounts[char] == count {
+		// Include s[right] in the window
+		rc := s[right]
+		have[rc]++
+		if need[rc] > 0 && have[rc] == need[rc] {
 			formed++
 		}
 
+		// Shrink from the left while the window is valid
 		for left <= right && formed == required {
-			if right-left+1 < minLen {
-				minLen = right - left + 1
-				minLeft = left
+			winLen := right - left + 1
+			if winLen < minLen {
+				minLen = winLen
+				minStart = left
 			}
 
-			leftChar := s[left]
-			windowCounts[leftChar]--
-			if count, exists := tFreq[leftChar]; exists && windowCounts[leftChar] < count {
+			lc := s[left]
+			have[lc]--
+			if need[lc] > 0 && have[lc] < need[lc] {
 				formed--
 			}
 			left++
@@ -45,5 +56,5 @@ func minWindow(s string, t string) string {
 	if minLen == len(s)+1 {
 		return ""
 	}
-	return s[minLeft : minLeft+minLen]
+	return s[minStart : minStart+minLen]
 }

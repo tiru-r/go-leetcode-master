@@ -2,6 +2,7 @@ package design_sql_2408
 
 import (
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -13,6 +14,7 @@ type SQL struct {
 type Table struct {
 	columns int
 	rows    map[int][]string
+	nextID  int
 }
 
 func NewSQL(names []string, columns []int) *SQL {
@@ -21,6 +23,7 @@ func NewSQL(names []string, columns []int) *SQL {
 		tables[name] = &Table{
 			columns: columns[i],
 			rows:    make(map[int][]string),
+			nextID:  1,
 		}
 	}
 	return &SQL{tables: tables}
@@ -31,8 +34,8 @@ func (sql *SQL) Insert(tableName string, row []string) bool {
 	if !exists || len(row) != table.columns {
 		return false
 	}
-	
-	id := len(table.rows) + 1
+	id := table.nextID
+	table.nextID++
 	table.rows[id] = slices.Clone(row)
 	return true
 }
@@ -48,27 +51,29 @@ func (sql *SQL) Select(tableName string, rowID, columnID int) string {
 	if !exists {
 		return "<null>"
 	}
-	
 	row, exists := table.rows[rowID]
 	if !exists || columnID < 1 || columnID > len(row) {
 		return "<null>"
 	}
-	
 	return row[columnID-1]
 }
 
 func (sql *SQL) Export(tableName string) []string {
 	table, exists := sql.tables[tableName]
-	if !exists {
-		return nil
-	}
-	
-	if len(table.rows) == 0 {
+	if !exists || len(table.rows) == 0 {
 		return []string{}
 	}
 	
+	// Get sorted row IDs for deterministic output
+	ids := make([]int, 0, len(table.rows))
+	for id := range table.rows {
+		ids = append(ids, id)
+	}
+	sort.Ints(ids)
+	
 	result := make([]string, 0, len(table.rows))
-	for id, row := range table.rows {
+	for _, id := range ids {
+		row := table.rows[id]
 		var builder strings.Builder
 		builder.WriteString(strconv.Itoa(id))
 		for _, cell := range row {
@@ -77,6 +82,5 @@ func (sql *SQL) Export(tableName string) []string {
 		}
 		result = append(result, builder.String())
 	}
-	
 	return result
 }

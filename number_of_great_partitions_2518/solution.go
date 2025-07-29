@@ -1,63 +1,69 @@
 package number_of_great_partitions_2518
 
+const mod = 1_000_000_007
+
+// WaysToPartition returns the number of ways to pick an index i
+// and change nums[i] to k such that the array can be partitioned
+// into two non-empty contiguous sub-arrays with equal sums.
 func WaysToPartition(nums []int, k int) int {
 	n := len(nums)
 	if n < 2 {
 		return 0
 	}
 
-	total := sum(nums)
-	result := countBasePartitions(nums, total)
+	// Calculate total sum of the array
+	total := 0
+	for _, value := range nums {
+		total += value
+	}
 
-	left, right := make(map[int]int), make(map[int]int)
-	initRightDiffs(nums, total, right)
+	// Count base partitions (without any changes)
+	result := 0
+	prefix := 0
+	for i := 0; i < n-1; i++ {
+		prefix += nums[i]
+		if prefix*2 == total {
+			result++
+		}
+	}
 
-	prefixSum := 0
+	// Initialize sliding hash maps for difference tracking
+	left := make(map[int]int, n)
+	right := make(map[int]int, n)
+
+	// Pre-compute all right-side differences
+	prefix = 0
+	for i := 0; i < n-1; i++ {
+		prefix += nums[i]
+		diff := prefix*2 - total
+		right[diff]++
+	}
+
+	// Sweep through each possible position to change
+	prefix = 0
 	for i := 0; i < n; i++ {
 		delta := k - nums[i]
-		result += left[-2*delta] + right[2*delta]
+		// Cache the doubled delta to avoid repeated calculation
+		doubleDelta := 2 * delta
 
+		// Mathematical derivation:
+		// For equal partition after change: (prefix ± delta)*2 == total
+		// This translates to difference requirements:
+		//   Left side needs: diff = -2*delta
+		//   Right side needs: diff = 2*delta
+		result = (result + left[-doubleDelta] + right[doubleDelta]) % mod
+
+		// Move to next position and update sliding window
 		if i < n-1 {
-			prefixSum += nums[i]
-			diff := prefixSum*2 - total
-			moveDiff(left, right, diff)
+			prefix += nums[i]
+			diff := prefix*2 - total
+
+			// Transfer difference count from right to left map
+			right[diff]--
+			// Optimization: keep zero entries to avoid map resize overhead
+			left[diff]++
 		}
 	}
 
 	return result
-}
-
-func sum(nums []int) int {
-	total := 0
-	for _, num := range nums {
-		total += num
-	}
-	return total
-}
-
-func countBasePartitions(nums []int, total int) int {
-	count, prefixSum := 0, 0
-	for i := 0; i < len(nums)-1; i++ {
-		prefixSum += nums[i]
-		if prefixSum*2 == total {
-			count++
-		}
-	}
-	return count
-}
-
-func initRightDiffs(nums []int, total int, right map[int]int) {
-	prefixSum := 0
-	for i := 0; i < len(nums)-1; i++ {
-		prefixSum += nums[i]
-		right[prefixSum*2-total]++
-	}
-}
-
-func moveDiff(left, right map[int]int, diff int) {
-	right[diff]--
-	if right[diff] == 0 {
-		delete(right, diff)
-	}
-	left[diff]++
 }

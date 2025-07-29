@@ -1,105 +1,71 @@
 package find_sum_of_array_product_of_magical_sequences_3539
 
-import (
-	"slices"
-)
+import "sort"
 
 const MOD = 1_000_000_007
 
-// FindSumOfArrayProductOfMagicalSequences calculates sum of products for all magical sequences
-// Optimized: Time O(n²*k), Space O(n) using coordinate compression and prefix sums
+// FindSumOfArrayProductOfMagicalSequences returns the required sum modulo MOD.
+// Time: O(n²·k)   Space: O(n)
 func FindSumOfArrayProductOfMagicalSequences(nums []int, k int) int {
 	n := len(nums)
-	if n == 0 || k <= 0 {
+	if n == 0 || k <= 0 || k > n {
 		return 0
 	}
-	
-	// Early termination for impossible cases
-	if k > n {
-		return 0
-	}
-	
-	// Coordinate compression: map values to indices for sparse representation
-	unique := make([]int, 0, n)
-	seen := make(map[int]bool)
-	for _, num := range nums {
-		if !seen[num] {
-			unique = append(unique, num)
-			seen[num] = true
-		}
-	}
-	slices.Sort(unique)
-	
-	// Map value to compressed index
-	compress := make(map[int]int, len(unique))
-	for i, val := range unique {
-		compress[val] = i
-	}
-	
-	m := len(unique)
-	
-	// Fast path for k=1
-	if k == 1 {
-		sum := 0
-		for _, num := range nums {
-			sum = (sum + num) % MOD
-		}
-		return sum
-	}
-	
-	// dp[i] = sum of products of magical sequences ending at unique[i]
-	prev := make([]int, m)
-	curr := make([]int, m)
-	
-	// Initialize with single elements
-	for _, num := range nums {
-		idx := compress[num]
-		prev[idx] = (prev[idx] + num) % MOD
-	}
-	
-	// Build sequences of length 2 to k using prefix sums for optimization
-	for length := 2; length <= k; length++ {
-		clear(curr)
-		
-		// Prefix sum array for fast range queries
-		prefixSum := make([]int, m+1)
-		for i := range m {
-			prefixSum[i+1] = (prefixSum[i] + prev[i]) % MOD
-		}
-		
-		// For each unique value, extend all valid previous sequences
-		for i, val := range unique {
-			// Find all smaller values using binary search
-			pos := lowerBound(unique, val)
-			if pos > 0 {
-				// Sum of all sequences ending with values < val
-				contribution := (prefixSum[pos] * val) % MOD
-				curr[i] = (curr[i] + contribution) % MOD
-			}
-		}
-		
-		prev, curr = curr, prev
-	}
-	
-	// Sum all final products
-	result := 0
-	for _, prod := range prev {
-		result = (result + prod) % MOD
-	}
-	
-	return result
-}
 
-// lowerBound returns the first index where unique[i] >= target
-func lowerBound(unique []int, target int) int {
-	left, right := 0, len(unique)
-	for left < right {
-		mid := (left + right) / 2
-		if unique[mid] < target {
-			left = mid + 1
-		} else {
-			right = mid
+	// collect and sort unique values
+	seen := make(map[int]struct{}, n)
+	unique := make([]int, 0, n)
+	for _, v := range nums {
+		if _, ok := seen[v]; !ok {
+			seen[v] = struct{}{}
+			unique = append(unique, v)
 		}
 	}
-	return left
+	sort.Ints(unique)
+	m := len(unique)
+
+	// build value -> index map
+	comp := make(map[int]int, m)
+	for i, v := range unique {
+		comp[v] = i
+	}
+
+	// dp[i] = sum of products of magical sequences ending with unique[i]
+	dp := make([]int64, m)
+	for _, v := range nums {
+		idx := comp[v]
+		dp[idx] += int64(v)
+	}
+	if k == 1 {
+		sum := int64(0)
+		for _, val := range dp {
+			sum += val
+		}
+		return int(sum % MOD)
+	}
+
+	// prefix[i] = prefix sum of dp[0..i-1]
+	prefix := make([]int64, m+1)
+	newDP := make([]int64, m) // reuse this allocation
+	
+	for length := 2; length <= k; length++ {
+		// build prefix sums once per length
+		for i := range m {
+			prefix[i+1] = (prefix[i] + dp[i]) % MOD
+		}
+
+		// clear and reuse the slice
+		for j := range m {
+			v := int64(unique[j])
+			// all indices < j contribute
+			newDP[j] = (prefix[j] * v) % MOD
+		}
+		dp, newDP = newDP, dp // swap slices
+	}
+
+	sum := int64(0)
+	for _, val := range dp {
+		sum = (sum + val) % MOD
+	}
+	return int(sum)
 }

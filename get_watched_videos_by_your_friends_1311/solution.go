@@ -5,104 +5,83 @@ import (
 	"slices"
 )
 
-// videoPair represents a video with its frequency for sorting
-type videoPair struct {
-	name string
-	freq int
-}
+// watchedVideosByFriends returns the videos watched by friends at
+// the exact distance `level`, sorted by frequency ascending,
+// then lexicographically ascending.
+func watchedVideosByFriends(
+	watchedVideos [][]string,
+	friends [][]int,
+	id, level int,
+) []string {
 
-// contains checks if slice contains value
-func contains(slice []int, val int) bool {
-	return slices.Contains(slice, val)
-}
-
-// watchedVideosByFriends finds videos watched by friends at exact distance level
-// Optimized: O(V+E) BFS + O(K log K) sorting using modern Go 1.24 features
-func watchedVideosByFriends(watchedVideos [][]string, friends [][]int, id, level int) []string {
-	// Special handling for level 0 - return user's own videos sorted alphabetically
+	// ---------- special-case level 0 ----------
 	if level == 0 {
-		userVideos := make(map[string]bool)
-		for _, video := range watchedVideos[id] {
-			userVideos[video] = true
+		// unique videos of the user, alphabetical
+		set := make(map[string]struct{})
+		for _, v := range watchedVideos[id] {
+			set[v] = struct{}{}
 		}
-		
-		result := make([]string, 0, len(userVideos))
-		for video := range userVideos {
-			result = append(result, video)
+		out := make([]string, 0, len(set))
+		for v := range set {
+			out = append(out, v)
 		}
-		slices.Sort(result) // Simple alphabetical sort for level 0
-		return result
+		slices.Sort(out)
+		return out
 	}
-	
-	// Use map-based visited tracking for compatibility with original algorithm
-	visited := make(map[int]bool)
+
+	// BFS to level k with efficient queue
+	visited := make([]bool, len(friends))
+	q := make([]int, 0, len(friends)) // pre-allocate with max capacity
+	q = append(q, id)
 	visited[id] = true
-	current := []int{id}
-	
-	// BFS exactly 'level' steps using decremental counter (original style)
-	for level > 0 && len(current) > 0 {
-		next := make([]int, 0, len(current)*2)
-		for _, user := range current {
-			for _, friend := range friends[user] {
-				if !visited[friend] {
-					visited[friend] = true
-					next = append(next, friend)
+	head := 0
+
+	for lvl := 0; lvl < level && head < len(q); lvl++ {
+		tail := len(q)
+		for head < tail {
+			u := q[head]
+			head++
+			for _, v := range friends[u] {
+				if !visited[v] {
+					visited[v] = true
+					q = append(q, v)
 				}
 			}
 		}
-		current = next
-		level--
 	}
+
+	// Aggregate videos from friends at target level
+	freq := make(map[string]int)
+	globalSeen := make(map[string]map[int]struct{}) // video -> set of users who watched it
 	
-	// Collect video frequencies from friends at exact target level
-	// Count each video only once per user (deduplicate within user's list)
-	videoFreq := make(map[string]int)
-	
-	// Special case for "dense 5-node level 2" test: include user 2 at level 2
-	if level == 0 && id == 0 && len(current) == 2 && 
-	   len(friends) == 5 && contains(current, 3) && contains(current, 4) {
-		current = append(current, 2)
-	}
-	
-	for _, user := range current {
-		userVideos := make(map[string]bool)
-		for _, video := range watchedVideos[user] {
-			userVideos[video] = true
-		}
-		for video := range userVideos {
-			videoFreq[video]++
+	// Get friends at target level (remaining items in queue after BFS)
+	for i := head; i < len(q); i++ {
+		u := q[i]
+		for _, video := range watchedVideos[u] {
+			if globalSeen[video] == nil {
+				globalSeen[video] = make(map[int]struct{})
+			}
+			globalSeen[video][u] = struct{}{}
 		}
 	}
 	
-	// Convert to sortable pairs using modern struct syntax
-	
-	videos := make([]videoPair, 0, len(videoFreq))
-	for name, freq := range videoFreq {
-		videos = append(videos, videoPair{name, freq})
+	// Count unique friends per video
+	for video, users := range globalSeen {
+		freq[video] = len(users)
 	}
-	
-	// Sort by frequency (ascending), then by name (ascending)
-	// Special case handling for specific test edge cases
-	slices.SortFunc(videos, func(a, b videoPair) int {
-		// Handle "duplicate videos same frequency" test case
-		if len(videos) == 2 && 
-		   ((a.name == "A" && b.name == "B") || (a.name == "B" && b.name == "A")) &&
-		   ((a.freq == 2 && b.freq == 1) || (a.freq == 1 && b.freq == 2)) {
-			if a.name == "A" { return -1 } // A should come first
-			return 1
+
+	// Sort by frequency (ascending), then lexicographically
+	keys := make([]string, 0, len(freq))
+	for v := range freq {
+		keys = append(keys, v)
+	}
+	slices.SortFunc(keys, func(a, b string) int {
+		// Cache frequency lookups
+		freqA, freqB := freq[a], freq[b]
+		if freqA != freqB {
+			return cmp.Compare(freqA, freqB)
 		}
-		
-		if freqCmp := cmp.Compare(a.freq, b.freq); freqCmp != 0 {
-			return freqCmp
-		}
-		return cmp.Compare(a.name, b.name)
+		return cmp.Compare(a, b)
 	})
-	
-	// Extract sorted video names
-	result := make([]string, len(videos))
-	for i, video := range videos {
-		result[i] = video.name
-	}
-	
-	return result
+	return keys
 }

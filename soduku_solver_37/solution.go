@@ -1,77 +1,106 @@
 package soduku_solver_37
 
-type Solver struct {
-	board      [][]byte
-	rowMask    [9]uint16
-	colMask    [9]uint16
-	boxMask    [9]uint16
-	emptyCells [][2]int
-}
+const (
+	boardSize = 9
+	boxSize   = 3
+	allBitsMask = (1 << boardSize) - 1 // 0b111111111
+)
 
+// solveSudoku fills the 9×9 Sudoku board in-place using backtracking with bitmask optimization.
 func solveSudoku(board [][]byte) {
-	s := &Solver{board: board}
-	s.init()
-	s.solve(0)
+	solver := &sudokuSolver{board: board}
+	solver.initialize()
+	_ = solver.backtrack(0) // Solution guaranteed to exist per problem constraints
 }
 
-func (s *Solver) init() {
-	s.emptyCells = make([][2]int, 0, 81)
-	for r := range 9 {
-		for c := range 9 {
-			if s.board[r][c] == '.' {
-				s.emptyCells = append(s.emptyCells, [2]int{r, c})
+// sudokuSolver uses bitmasks to efficiently track digit constraints
+type sudokuSolver struct {
+	board      [][]byte
+	rowMask    [boardSize]uint16 // Bitmask of used digits in each row
+	colMask    [boardSize]uint16 // Bitmask of used digits in each column  
+	boxMask    [boardSize]uint16 // Bitmask of used digits in each 3x3 box
+	emptyCells [][2]int          // Pre-computed list of empty cell positions
+}
+
+// initialize scans the board to set up bitmasks and collect empty cells
+func (s *sudokuSolver) initialize() {
+	// Pre-allocate with estimated capacity (typical Sudoku has ~40-60 empty cells)
+	s.emptyCells = make([][2]int, 0, 50)
+	
+	for row := range boardSize {
+		for col := range boardSize {
+			if s.board[row][col] == '.' {
+				s.emptyCells = append(s.emptyCells, [2]int{row, col})
 			} else {
-				d := uint16(s.board[r][c] - '0')
-				s.set(r, c, d, true)
+				// Convert ASCII digit to number and set constraints
+				digit := uint16(s.board[row][col] - '0')
+				s.updateConstraints(row, col, digit, true)
 			}
 		}
 	}
 }
 
-func (s *Solver) set(r, c int, d uint16, on bool) {
-	bit := uint16(1) << (d - 1)
-	bi := (r/3)*3 + c/3
-	if on {
-		s.rowMask[r] |= bit
-		s.colMask[c] |= bit
-		s.boxMask[bi] |= bit
+// updateConstraints sets or unsets digit constraints using bitmasks
+func (s *sudokuSolver) updateConstraints(row, col int, digit uint16, enable bool) {
+	digitBit := uint16(1) << (digit - 1)
+	boxIndex := (row/boxSize)*boxSize + col/boxSize
+	
+	if enable {
+		// Set bit to mark digit as used
+		s.rowMask[row] |= digitBit
+		s.colMask[col] |= digitBit
+		s.boxMask[boxIndex] |= digitBit
 	} else {
-		s.rowMask[r] &^= bit
-		s.colMask[c] &^= bit
-		s.boxMask[bi] &^= bit
+		// Clear bit to mark digit as available
+		s.rowMask[row] &^= digitBit
+		s.colMask[col] &^= digitBit
+		s.boxMask[boxIndex] &^= digitBit
 	}
 }
 
-func (s *Solver) candidates(r, c int) uint16 {
-	bi := (r/3)*3 + c/3
-	return (1<<9 - 1) &^ (s.rowMask[r] | s.colMask[c] | s.boxMask[bi])
+// getValidDigits returns bitmask of digits that can be placed at (row, col)
+func (s *sudokuSolver) getValidDigits(row, col int) uint16 {
+	boxIndex := (row/boxSize)*boxSize + col/boxSize
+	// XOR with all bits to get available digits (flip used->available)
+	usedDigits := s.rowMask[row] | s.colMask[col] | s.boxMask[boxIndex]
+	return allBitsMask &^ usedDigits
 }
 
-func (s *Solver) solve(pos int) bool {
-	if pos >= len(s.emptyCells) {
+// backtrack recursively fills empty cells using constraint propagation
+func (s *sudokuSolver) backtrack(position int) bool {
+	// Base case: all empty cells filled successfully
+	if position == len(s.emptyCells) {
 		return true
 	}
+	
+	// Get current empty cell coordinates
+	row, col := s.emptyCells[position][0], s.emptyCells[position][1]
 
-	r, c := s.emptyCells[pos][0], s.emptyCells[pos][1]
-	cands := s.candidates(r, c)
-	if cands == 0 {
-		return false
-	}
-
-	for d := uint16(1); d <= 9; d++ {
-		if cands&(1<<(d-1)) == 0 {
+	// Get bitmask of valid digits for this position
+	validDigits := s.getValidDigits(row, col)
+	
+	// Try each possible digit (1-9)
+	for digit := uint16(1); digit <= boardSize; digit++ {
+		digitBit := uint16(1) << (digit - 1)
+		
+		// Skip if digit is not valid for this position
+		if validDigits&digitBit == 0 {
 			continue
 		}
 
-		s.board[r][c] = byte('0' + d)
-		s.set(r, c, d, true)
-
-		if s.solve(pos+1) {
-			return true
+		// Place digit and update constraints
+		s.board[row][col] = byte('0' + digit)
+		s.updateConstraints(row, col, digit, true)
+		
+		// Recursively try to fill remaining cells
+		if s.backtrack(position + 1) {
+			return true // Solution found
 		}
-
-		s.set(r, c, d, false)
-		s.board[r][c] = '.'
+		
+		// Backtrack: undo placement and constraints
+		s.updateConstraints(row, col, digit, false)
+		s.board[row][col] = '.'
 	}
-	return false
+	
+	return false // No valid digit found for this position
 }

@@ -1,48 +1,34 @@
 package search_in_rotated_sorted_array_33
 
-// search finds the index of target in a rotated sorted array in O(log n) time.
-// Returns -1 if the target is not found.
+// search returns the index of target in a rotated sorted array using modified binary search.
+// Time: O(log n), Space: O(1). Returns -1 if target is not present.
+// Algorithm: At each step, one half of the array is guaranteed to be sorted.
 func search(nums []int, target int) int {
-	// Handle empty array
-	if len(nums) == 0 {
-		return -1
-	}
-
-	// Micro-optimization: Handle single-element array
-	if len(nums) == 1 {
-		if nums[0] == target {
-			return 0
-		}
-		return -1
-	}
-
-	start := 0
-	end := len(nums) - 1
-
-	for start <= end {
-		mid := start + (end-start)/2 // Prevents integer overflow
-
+	lo, hi := 0, len(nums)-1
+	
+	for lo <= hi {
+		mid := lo + (hi-lo)>>1 // Bit shift for fast division, prevents overflow
+		
 		if nums[mid] == target {
 			return mid
 		}
 
-		// Check if left half (start to mid) is sorted
-		if nums[start] <= nums[mid] {
-			// Check if target is in the sorted left half
-			if target >= nums[start] && target < nums[mid] {
-				end = mid - 1
+		// Determine which half is sorted by comparing endpoints
+		if nums[lo] <= nums[mid] {
+			// Left half [lo..mid] is sorted
+			if target >= nums[lo] && target < nums[mid] {
+				hi = mid - 1 // Target is in sorted left half
 			} else {
-				start = mid + 1
+				lo = mid + 1 // Target must be in right half
 			}
-		} else { // Right half (mid to end) is sorted
-			// Check if target is in the sorted right half
-			if target > nums[mid] && target <= nums[end] {
-				start = mid + 1
+		} else {
+			// Right half [mid..hi] is sorted (rotation point is in left half)
+			if target > nums[mid] && target <= nums[hi] {
+				lo = mid + 1 // Target is in sorted right half
 			} else {
-				end = mid - 1
+				hi = mid - 1 // Target must be in left half
 			}
 		}
 	}
-
 	return -1 // Target not found
 }
