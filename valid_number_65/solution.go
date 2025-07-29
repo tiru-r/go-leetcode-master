@@ -15,7 +15,7 @@ func isNumber(input string) bool {
 	for end >= start && isWhitespace(input[end]) {
 		end--
 	}
-	
+
 	if start > end {
 		return false // Only whitespace
 	}
@@ -58,19 +58,19 @@ func isNumber(input string) bool {
 	// Parse optional exponent part
 	if position < length && isExponentCharacter(input[position]) {
 		position++
-		
+
 		// Optional exponent sign
 		if position < length && isSignCharacter(input[position]) {
 			position++
 		}
-		
+
 		// Exponent must have digits
 		hasExponentDigits := false
 		for position < length && isDigit(input[position]) {
 			hasExponentDigits = true
 			position++
 		}
-		
+
 		if !hasExponentDigits {
 			return false // Exponent without digits
 		}
