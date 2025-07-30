@@ -2,10 +2,25 @@
 
 High-performance Go solutions to LeetCode problems with optimal algorithms and Go best practices.
 
+## Overview
+
+This repository contains **149 LeetCode problems** solved in Go, covering all major algorithm categories from Easy to Hard difficulty levels. Each solution is optimized for performance and follows Go best practices with comprehensive test coverage.
+
+### Statistics
+- **Total Problems**: 149 solutions
+- **Difficulty Distribution**: 
+  - Easy: 42 problems (28.2%)
+  - Medium: 75 problems (50.3%) 
+  - Hard: 32 problems (21.5%)
+- **Go Version**: 1.24+
+- **Test Coverage**: 100% with benchmarks
+- **Categories**: 18 algorithm categories covered
+
 ## Table of Contents
 
 - [Features](#features)
 - [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
 - [Problem Categories](#problem-categories)
   - [Arrays & Hashing](#arrays--hashing)
   - [Two Pointers](#two-pointers)
@@ -25,6 +40,7 @@ High-performance Go solutions to LeetCode problems with optimal algorithms and G
   - [Math & Geometry](#math--geometry)
   - [Bit Manipulation](#bit-manipulation)
   - [Concurrency](#concurrency)
+- [Testing & Benchmarks](#testing--benchmarks)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -35,6 +51,8 @@ High-performance Go solutions to LeetCode problems with optimal algorithms and G
 - **Performance Focused**: Zero-allocation patterns and optimizations
 - **Complete Testing**: 100% test coverage with benchmarks
 - **Comprehensive Documentation**: Detailed explanations for each solution
+- **Consistent Structure**: Uniform project organization across all problems
+- **Up-to-Date**: Includes recent problems up to #3539
 
 ## Quick Start
 
@@ -52,7 +70,26 @@ make test
 
 # Run benchmarks
 make bench
+
+# Check test coverage
+make cover_html
 ```
+
+## Project Structure
+
+Each problem follows a consistent directory structure:
+
+```
+problem_name_number/
+├── README.md           # Problem description and approach
+├── solution.go         # Optimized Go solution
+└── solution_test.go    # Comprehensive tests and benchmarks
+```
+
+**Build System:**
+- `Makefile` - Build automation and testing
+- `go.mod` - Go module with dependencies (testify v1.5.1)
+- All problems use Go 1.24+ features
 
 ## Problem Categories
 
@@ -68,6 +105,8 @@ make bench
 | [242. Valid Anagram](./valid_anagram_242/) | Easy | [Go](./valid_anagram_242/solution.go) | Hash Map, Sorting |
 | [347. Top K Frequent Elements](./top_k_frequent_elements_347/) | Medium | [Go](./top_k_frequent_elements_347/solution.go) | Hash Map, Heap |
 | [350. Intersection of Two Arrays II](./intersection_of_two_arrays_ii_350/) | Easy | [Go](./intersection_of_two_arrays_ii_350/solution.go) | Hash Map, Two Pointers |
+| [387. First Unique Character in a String](./first_unique_character_in_a_string_387/) | Easy | [Go](./first_unique_character_in_a_string_387/solution.go) | Hash Map, String |
+| [412. Fizz Buzz](./fizz_buzz_412/) | Easy | [Go](./fizz_buzz_412/solution.go) | Array, Math |
 
 ### Two Pointers
 
@@ -78,6 +117,7 @@ make bench
 | [125. Valid Palindrome](./valid_palindrome_125/) | Easy | [Go](./valid_palindrome_125/solution.go) | Two Pointers, String Processing |
 | [141. Linked List Cycle](./linked_list_cycle_141/) | Easy | [Go](./linked_list_cycle_141/solution.go) | Floyd's Cycle Detection |
 | [160. Intersection of Two Linked Lists](./intersection_of_two_linked_lists_160/) | Easy | [Go](./intersection_of_two_linked_lists_160/solution.go) | Two Pointers |
+| [283. Move Zeroes](./move_zeroes_283/) | Easy | [Go](./move_zeroes_283/solution.go) | Two Pointers, Array |
 
 ### Sliding Window
 
@@ -205,6 +245,8 @@ The Alien Dictionary problem includes comprehensive test coverage:
 
 ### Dynamic Programming
 
+Dynamic Programming problems with optimal substructure and overlapping subproblems.
+
 | Problem | Difficulty | Solution | Key Concepts |
 |---------|------------|----------|--------------|
 | [5. Longest Palindromic Substring](./longest_palindromic_substring_5/) | Medium | [Go](./longest_palindromic_substring_5/solution.go) | DP, String |
@@ -267,12 +309,77 @@ The Alien Dictionary problem includes comprehensive test coverage:
 | [268. Missing Number](./missing_number_268/) | Easy | [Go](./missing_number_268/solution.go) | Bit Manipulation, Math |
 | [371. Sum of Two Integers](./sum_of_two_integers_371/) | Medium | [Go](./sum_of_two_integers_371/solution.go) | Bit Manipulation |
 
+### Additional Problems
+
+Notable recent and advanced problems demonstrating cutting-edge algorithms:
+
+| Problem | Difficulty | Solution | Key Concepts |
+|---------|------------|----------|--------------|
+| [1170. Compare Strings by Frequency of the Smallest Character](./compare_strings_by_frequency_of_the_smallest_character_1170/) | Medium | [Go](./compare_strings_by_frequency_of_the_smallest_character_1170/solution.go) | String Processing, Binary Search |
+| [1176. Diet Plan Performance](./diet_plan_performance_1176/) | Easy | [Go](./diet_plan_performance_1176/solution.go) | Sliding Window, Array |
+| [1304. Find N Unique Integers Sum up to Zero](./find_n_unique_integers_sum_up_to_zero_1304/) | Easy | [Go](./find_n_unique_integers_sum_up_to_zero_1304/solution.go) | Math, Array Construction |
+| [1309. Decrypt String from Alphabet to Integer Mapping](./decrypt_string_from_alphabet_to_integer_mapping_1309/) | Easy | [Go](./decrypt_string_from_alphabet_to_integer_mapping_1309/solution.go) | String Processing |
+| [1310. XOR Queries of a Subarray](./xor_queries_of_a_subarray_1310/) | Medium | [Go](./xor_queries_of_a_subarray_1310/solution.go) | Prefix Sum, Bit Manipulation |
+| [1311. Get Watched Videos by Your Friends](./get_watched_videos_by_your_friends_1311/) | Medium | [Go](./get_watched_videos_by_your_friends_1311/solution.go) | BFS, Hash Map |
+| [1317. Convert Integer to the Sum of Two No-Zero Integers](./convert_integer_to_the_sum_of_two_no_zero_integers_1317/) | Easy | [Go](./convert_integer_to_the_sum_of_two_no_zero_integers_1317/solution.go) | Math, String |
+| [1732. Find the Highest Altitude](./find_the_highest_altitude_1732/) | Easy | [Go](./find_the_highest_altitude_1732/solution.go) | Prefix Sum, Array |
+| [1768. Merge Strings Alternately](./merge_strings_alternately_1768/) | Easy | [Go](./merge_strings_alternately_1768/solution.go) | Two Pointers, String |
+| [2215. Find the Difference of Two Arrays](./find_the_difference_of_two_arrays_2215/) | Easy | [Go](./find_the_difference_of_two_arrays_2215/solution.go) | Hash Set, Array |
+| [2408. Design SQL](./design_sql_2408/) | Medium | [Go](./design_sql_2408/solution.go) | Design, Hash Map |
+| [3276. Select Cells in Grid With Maximum Score](./select_cells_grid_3276/) | Hard | [Go](./select_cells_grid_3276/solution.go) | Dynamic Programming, Bitmask |
+| [3539. Find Sum of Array Product of Magical Sequences](./find_sum_of_array_product_of_magical_sequences_3539/) | Hard | [Go](./find_sum_of_array_product_of_magical_sequences_3539/solution.go) | Advanced Math, Combinatorics |
+
 ### Concurrency
 
 | Problem | Difficulty | Solution | Key Concepts |
 |---------|------------|----------|--------------|
 | [1117. Building H2O](./building_h2o_1117/) | Medium | [Go](./building_h2o_1117/solution.go) | Concurrency, Synchronization |
 | [1226. The Dining Philosophers](./dining_philosophers_1226/) | Medium | [Go](./dining_philosophers_1226/solution.go) | Concurrency, Deadlock Prevention |
+
+## Testing & Benchmarks
+
+This repository emphasizes comprehensive testing and performance analysis:
+
+### Test Coverage
+- **100% test coverage** across all 149 problems
+- **Unit tests** for all edge cases and example inputs
+- **Benchmark tests** for performance analysis
+- **Memory allocation tracking** with `-benchmem`
+
+### Available Make Commands
+
+```bash
+# Run all tests with coverage
+make test
+
+# Run tests with verbose output
+make test_v
+
+# Run benchmarks for all problems
+make bench
+
+# Generate coverage report (HTML)
+make cover_html
+
+# Generate coverage report (function level)
+make cover_func
+
+# Format all Go code
+make fmt
+
+# Run Go vet for code quality
+make vet
+
+# Count total lines of code
+make loc
+
+# Count total problems solved
+make solved
+```
+
+### Test Dependencies
+- **testify v1.5.1** - Testing framework for assertions and test suites
+- Built-in Go testing tools for benchmarks and coverage
 
 ## Contributing
 
@@ -286,6 +393,37 @@ The Alien Dictionary problem includes comprehensive test coverage:
 4. Ensure all tests pass and benchmarks are included
 5. Submit a pull request
 
+### Code Quality Standards
+- Follow Go best practices and idioms
+- Use meaningful variable and function names
+- Include comprehensive test cases
+- Add benchmarks for performance-critical solutions
+- Document complex algorithms with comments
+
+## Repository Highlights
+
+### Problem Range
+- **Classic Problems**: Two Sum (#1), Valid Parentheses (#20), Merge Two Sorted Lists (#21)
+- **Advanced Algorithms**: Critical Connections (#1192), Shortest Path Visiting All Nodes (#847)
+- **Recent Challenges**: Problems up to #3539 showing active maintenance
+- **Concurrency**: Go-specific concurrency problems with goroutines and channels
+
+### Algorithm Categories Covered
+✅ **18 Major Categories** including Arrays, Dynamic Programming, Graphs, Trees, and more  
+✅ **Advanced Graph Algorithms** like Tarjan's Algorithm and Convex Hull  
+✅ **Concurrency Patterns** unique to Go programming  
+✅ **Mathematical Algorithms** for geometry and combinatorics  
+
+### Performance Focus
+- **Zero-allocation patterns** where possible
+- **Optimal time complexity** solutions prioritized
+- **Memory-efficient implementations** with detailed benchmarks
+- **Real-world performance** considerations
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+**Total Problems Solved: 149** | **Go Version: 1.24+** | **Last Updated: 2025**
