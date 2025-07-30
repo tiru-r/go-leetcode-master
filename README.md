@@ -4,17 +4,17 @@ High-performance Go solutions to LeetCode problems with optimal algorithms and G
 
 ## Overview
 
-This repository contains **149 LeetCode problems** solved in Go, covering all major algorithm categories from Easy to Hard difficulty levels. Each solution is optimized for performance and follows Go best practices with comprehensive test coverage.
+This repository contains **150 LeetCode problems** solved in Go, covering all major algorithm categories from Easy to Hard difficulty levels. Each solution is optimized for performance and follows Go best practices with comprehensive test coverage.
 
 ### Statistics
-- **Total Problems**: 149 solutions
+- **Total Problems**: 150 solutions
 - **Difficulty Distribution**: 
-  - Easy: 42 problems (28.2%)
-  - Medium: 75 problems (50.3%) 
-  - Hard: 32 problems (21.5%)
+  - Easy: 53 problems (35.3%)
+  - Medium: 68 problems (45.3%) 
+  - Hard: 29 problems (19.3%)
 - **Go Version**: 1.24+
 - **Test Coverage**: 100% with benchmarks
-- **Categories**: 18 algorithm categories covered
+- **Categories**: 22 algorithm categories covered
 
 ## Table of Contents
 
@@ -39,6 +39,11 @@ This repository contains **149 LeetCode problems** solved in Go, covering all ma
   - [Intervals](#intervals)
   - [Math & Geometry](#math--geometry)
   - [Bit Manipulation](#bit-manipulation)
+  - [String Processing](#string-processing)
+  - [Array Processing](#array-processing)
+  - [Advanced String & Pattern Matching](#advanced-string--pattern-matching)
+  - [Design Problems](#design-problems)
+  - [Complex Algorithms](#complex-algorithms)
   - [Concurrency](#concurrency)
 - [Testing & Benchmarks](#testing--benchmarks)
 - [Contributing](#contributing)
@@ -107,6 +112,7 @@ problem_name_number/
 | [350. Intersection of Two Arrays II](./intersection_of_two_arrays_ii_350/) | Easy | [Go](./intersection_of_two_arrays_ii_350/solution.go) | Hash Map, Two Pointers |
 | [387. First Unique Character in a String](./first_unique_character_in_a_string_387/) | Easy | [Go](./first_unique_character_in_a_string_387/solution.go) | Hash Map, String |
 | [412. Fizz Buzz](./fizz_buzz_412/) | Easy | [Go](./fizz_buzz_412/solution.go) | Array, Math |
+| [575. Distribute Candies](./distribute_candies_575/) | Easy | [Go](./distribute_candies_575/solution.go) | Hash Set, Array |
 
 ### Two Pointers
 
@@ -134,6 +140,7 @@ problem_name_number/
 |---------|------------|----------|--------------|
 | [20. Valid Parentheses](./valid_parentheses_20/) | Easy | [Go](./valid_parentheses_20/solution.go) | Stack, Hash Map |
 | [155. Min Stack](./min_stack_155/) | Medium | [Go](./min_stack_155/solution.go) | Stack, Design |
+| [341. Flatten Nested List Iterator](./flatten_nested_list_iterator_341/) | Medium | [Go](./flatten_nested_list_iterator_341/solution.go) | Stack, Design |
 
 ### Binary Search
 
@@ -309,6 +316,63 @@ Dynamic Programming problems with optimal substructure and overlapping subproble
 | [268. Missing Number](./missing_number_268/) | Easy | [Go](./missing_number_268/solution.go) | Bit Manipulation, Math |
 | [371. Sum of Two Integers](./sum_of_two_integers_371/) | Medium | [Go](./sum_of_two_integers_371/solution.go) | Bit Manipulation |
 
+### String Processing
+
+| Problem | Difficulty | Solution | Key Concepts |
+|---------|------------|----------|--------------|
+| [7. Reverse Integer](./reverse_integer_7/) | Medium | [Go](./reverse_integer_7/solution.go) | Math, Integer Overflow |
+| [9. Palindrome Number](./palindrome_number_9/) | Easy | [Go](./palindrome_number_9/solution.go) | Math, String |
+| [13. Roman to Integer](./roman_to_integer_13/) | Easy | [Go](./roman_to_integer_13/solution.go) | Hash Map, String |
+| [14. Longest Common Prefix](./longest_common_prefix_14/) | Easy | [Go](./longest_common_prefix_14/solution.go) | String, Trie |
+| [38. Count and Say](./count_and_say_38/) | Medium | [Go](./count_and_say_38/solution.go) | String, Recursion |
+| [151. Reverse Words in a String](./reverse_words_in_a_string_151/) | Medium | [Go](./reverse_words_in_a_string_151/solution.go) | String, Two Pointers |
+| [344. Reverse String](./reverse_string_344/) | Easy | [Go](./reverse_string_344/solution.go) | String, Two Pointers |
+| [541. Reverse String II](./reverse_string_ii_541/) | Easy | [Go](./reverse_string_ii_541/solution.go) | String, Two Pointers |
+| [796. Rotate String](./rotate_string_796/) | Easy | [Go](./rotate_string_796/solution.go) | String, KMP |
+
+### Array Processing
+
+| Problem | Difficulty | Solution | Key Concepts |
+|---------|------------|----------|--------------|
+| [26. Remove Duplicates from Sorted Array](./remove_duplicates_from_sorted_array_26/) | Easy | [Go](./remove_duplicates_from_sorted_array_26/solution.go) | Array, Two Pointers |
+| [66. Plus One](./plus_one_66/) | Easy | [Go](./plus_one_66/solution.go) | Array, Math |
+| [88. Merge Sorted Array](./merge_sorted_array_88/) | Easy | [Go](./merge_sorted_array_88/solution.go) | Array, Two Pointers |
+| [118. Pascal's Triangle](./pascals_triangle_118/) | Easy | [Go](./pascals_triangle_118/solution.go) | Array, Dynamic Programming |
+| [169. Majority Element](./majority_element_169/) | Easy | [Go](./majority_element_169/solution.go) | Array, Hash Map, Boyer-Moore |
+| [229. Majority Element II](./majority_element_ii_229/) | Medium | [Go](./majority_element_ii_229/solution.go) | Array, Boyer-Moore |
+
+### Advanced String & Pattern Matching
+
+| Problem | Difficulty | Solution | Key Concepts |
+|---------|------------|----------|--------------|
+| [10. Regular Expression Matching](./regex_matching_10/) | Hard | [Go](./regex_matching_10/solution.go) | Dynamic Programming, Recursion |
+| [44. Wildcard Matching](./wildcard_matching_44/) | Hard | [Go](./wildcard_matching_44/solution.go) | Dynamic Programming, Greedy |
+| [65. Valid Number](./valid_number_65/) | Hard | [Go](./valid_number_65/solution.go) | String, Finite State Machine |
+
+### Design Problems
+
+| Problem | Difficulty | Solution | Key Concepts |
+|---------|------------|----------|--------------|
+| [146. LRU Cache](./lru_cache_146/) | Medium | [Go](./lru_cache_146/solution.go) | Hash Map, Doubly Linked List |
+| [285. Inorder Successor in BST](./inorder_successor_in_bst_285/) | Medium | [Go](./inorder_successor_in_bst_285/solution.go) | BST, Inorder Traversal |
+| [346. Moving Average from Data Stream](./moving_average_from_data_stream_346/) | Easy | [Go](./moving_average_from_data_stream_346/solution.go) | Design, Queue |
+| [348. Design Tic-Tac-Toe](./design_tic_tac_toe_348/) | Medium | [Go](./design_tic_tac_toe_348/solution.go) | Design, Array |
+
+### Complex Algorithms
+
+| Problem | Difficulty | Solution | Key Concepts |
+|---------|------------|----------|--------------|
+| [42. Trapping Rain Water](./trapping_rain_water_42/) | Hard | [Go](./trapping_rain_water_42/solution.go) | Two Pointers, Stack, DP |
+| [126. Word Ladder II](./word_ladder_ii_126/) | Hard | [Go](./word_ladder_ii_126/solution.go) | BFS, DFS, Backtracking |
+| [171. Excel Sheet Column Number](./excel_sheet_column_number_171/) | Easy | [Go](./excel_sheet_column_number_171/solution.go) | Math, String |
+| [202. Happy Number](./happy_number_202/) | Easy | [Go](./happy_number_202/solution.go) | Hash Set, Math |
+| [218. The Skyline Problem](./the_skyline_problem_218/) | Hard | [Go](./the_skyline_problem_218/solution.go) | Heap, Divide & Conquer |
+| [233. Number of Digit One](./number_of_digit_one_233/) | Hard | [Go](./number_of_digit_one_233/solution.go) | Math, Dynamic Programming |
+| [271. Encode and Decode Strings](./encode_and_decode_strings_271/) | Medium | [Go](./encode_and_decode_strings_271/solution.go) | String, Design |
+| [289. Game of Life](./game_of_life_289/) | Medium | [Go](./game_of_life_289/solution.go) | Array, Simulation |
+| [794. Valid Tic-Tac-Toe State](./valid_tic_tac_toe_state_794/) | Medium | [Go](./valid_tic_tac_toe_state_794/solution.go) | String, Game Theory |
+| [937. Reorder Data in Log Files](./reorder_data_in_log_files_937/) | Easy | [Go](./reorder_data_in_log_files_937/solution.go) | String, Sorting |
+
 ### Additional Problems
 
 Notable recent and advanced problems demonstrating cutting-edge algorithms:
@@ -341,7 +405,7 @@ Notable recent and advanced problems demonstrating cutting-edge algorithms:
 This repository emphasizes comprehensive testing and performance analysis:
 
 ### Test Coverage
-- **100% test coverage** across all 149 problems
+- **100% test coverage** across all 150 problems
 - **Unit tests** for all edge cases and example inputs
 - **Benchmark tests** for performance analysis
 - **Memory allocation tracking** with `-benchmem`
@@ -409,10 +473,12 @@ make solved
 - **Concurrency**: Go-specific concurrency problems with goroutines and channels
 
 ### Algorithm Categories Covered
-✅ **18 Major Categories** including Arrays, Dynamic Programming, Graphs, Trees, and more  
+✅ **22 Major Categories** including Arrays, Dynamic Programming, Graphs, Trees, and more  
 ✅ **Advanced Graph Algorithms** like Tarjan's Algorithm and Convex Hull  
 ✅ **Concurrency Patterns** unique to Go programming  
 ✅ **Mathematical Algorithms** for geometry and combinatorics  
+✅ **String Processing** with pattern matching and manipulation  
+✅ **Design Problems** including LRU Cache and data structures  
 
 ### Performance Focus
 - **Zero-allocation patterns** where possible
@@ -426,4 +492,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Total Problems Solved: 149** | **Go Version: 1.24+** | **Last Updated: 2025**
+**Total Problems Solved: 150** | **Go Version: 1.24+** | **Last Updated: 2025**
