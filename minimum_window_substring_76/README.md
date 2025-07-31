@@ -114,26 +114,52 @@ START
 │  left=0, right=0    │
 └──────────┬──────────┘
            ↓
-    ┌─────────────┐
-    │ Expand →    │ ← Keep expanding until window is valid
-    │ right++     │
-    └──────┬──────┘
+    ┌──────────────────┐ ← Main outer loop
+    │  right < len(s)? │
+    └──────┬───────────┘
+           │ YES
            ↓
-    ┌─────────────┐
-    │ Valid?      │ ← Do we have all required characters?
-    │formed==required│
-    └──────┬──────┘
-           ↓ YES
-    ┌─────────────┐
-    │ Contract ←  │ ← Try to shrink while keeping it valid
-    │ left++      │
-    └──────┬──────┘
+    ┌──────────────────┐
+    │ Add s[right]     │ ← Expand window
+    │ have[s[right]]++ │
+    │ Update formed    │
+    └──────┬───────────┘
            ↓
-    ┌─────────────┐
-    │ Still valid?│ ← Can we shrink more?
-    └──────┬──────┘
-           ↓ NO
-    Back to Expand →
+    ┌──────────────────┐ ← Inner contraction loop
+    │ formed==required │
+    │ AND left<=right? │
+    └──────┬───────────┘
+           │ YES
+           ↓
+    ┌──────────────────┐
+ ┌─►│ Update minimum   │ ← Contract while valid
+ │  │ Remove s[left]   │
+ │  │ have[s[left]]--  │
+ │  │ Update formed    │
+ │  │ left++           │
+ │  └──────┬───────────┘
+ │         ↓
+ │  ┌──────────────────┐
+ │  │ Still valid?     │
+ │  │ formed==required │
+ │  │ AND left<=right? │
+ │  └──────┬───────────┘
+ │         │ YES
+ └─────────┘
+           │ NO (window invalid or left > right)
+           ↓
+    ┌──────────────────┐
+    │ right++          │ ← Move to next character
+    └──────┬───────────┘
+           ↓
+    Back to "right < len(s)?" check
+           │
+           ↓ NO (right >= len(s))
+    ┌──────────────────┐
+    │      END         │
+    │ Return result    │
+    │ (empty if none)  │
+    └──────────────────┘
 ```
 
 ### ✅ Key Rules
