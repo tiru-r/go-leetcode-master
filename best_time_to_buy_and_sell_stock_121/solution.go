@@ -17,7 +17,7 @@ func MaxProfit(prices []int) int {
 	for _, price := range prices[1:] {
 		// If current price is lower than minimum seen, update minimum
 		if price < minPrice {
-			minPrice = price  // New lowest price to buy at
+			minPrice = price // New lowest price to buy at
 		} else if profit := price - minPrice; profit > maxProfit {
 			// Calculate profit if we sell at current price
 			// If this profit is better than our best so far, update it

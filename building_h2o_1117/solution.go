@@ -1,34 +1,45 @@
 package building_h2o_1117
 
 type H2O struct {
-	h chan struct{}
-	o chan struct{}
+	h chan func()
+	o chan func()
 }
 
 func New() *H2O {
-	return &H2O{
-		h: make(chan struct{}, 2),
-		o: make(chan struct{}, 1),
+	h2o := &H2O{
+		h: make(chan func()),
+		o: make(chan func()),
 	}
+	
+	go func() {
+		for {
+			h1 := <-h2o.h
+			h2 := <-h2o.h
+			o := <-h2o.o
+			
+			h1()
+			h2()
+			o()
+		}
+	}()
+	
+	return h2o
 }
 
 func (h *H2O) Hydrogen(releaseHydrogen func()) {
-	h.h <- struct{}{} // enqueue H
-	select {          // wait for a full molecule
-	case <-h.o: // got O, need one more H
-		<-h.h
+	done := make(chan struct{})
+	h.h <- func() {
 		releaseHydrogen()
-		releaseHydrogen()
-	case <-h.h: // got second H, need O
-		<-h.o
-		releaseHydrogen()
-		releaseHydrogen()
+		done <- struct{}{}
 	}
+	<-done
 }
 
 func (h *H2O) Oxygen(releaseOxygen func()) {
-	h.o <- struct{}{} // enqueue O
-	<-h.h             // wait for two H
-	<-h.h
-	releaseOxygen()
+	done := make(chan struct{})
+	h.o <- func() {
+		releaseOxygen()
+		done <- struct{}{}
+	}
+	<-done
 }
